@@ -1,3 +1,5 @@
 # Metro house refs
 
-Moodboard of the stylised 3/4 house references used to repaint the Residential district of the Metro city in We Are Destroyers (Phantasm, November 2026). Static site for GitHub Pages: `index.html` plus WebP images in `img/` (full size) and `img/t/` (thumbnails).
+Moodboard of the references behind every house in the Metro city catalogue of We Are Destroyers (89 houses, 7 districts). Residential houses show the stylised 3/4 refs sent to Phantasm (November 2026); every house also shows the SlopMachine reference views its model was built from.
+
+Static site for GitHub Pages: `index.html`, main images in `img/`, thumbnails in `img/t/`, extra views in `img/v/<house>/`.

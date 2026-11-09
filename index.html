@@ -5,19 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 15 16 5l12 10v13H4z' fill='%231c6c87'/%3E%3Crect x='13' y='19' width='6' height='9' fill='%23eef1f5'/%3E%3C/svg%3E">
-<style>
-:root { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
-body { margin: 0; }
-img { max-width: 100%; }
-[hidden] { display: none !important; }
-</style>
 <title>Рефы домов Metro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: a model-maker's catalogue. Pale sky tiles hold each cut-out house; the page is grouped by Metro district, then by building type. */
+/* Layout: a model-maker's catalogue. Pale sky tiles hold each cut-out house; the page runs district by district, then by building type. */
 :root {
+  color-scheme: light;
   --bg: #eef1f5;
   --panel: #ffffff;
   --fg: #17202b;
@@ -28,27 +23,26 @@ img { max-width: 100%; }
   --tile-top: #f3f6f9;
   --tile-bottom: #dde3ea;
   --shade: rgba(23, 32, 43, 0.14);
-  --scrim: rgba(13, 18, 25, 0.86);
+  --scrim: rgba(13, 18, 25, 0.9);
   --display: "Unbounded", "Arial Black", system-ui, sans-serif;
   --body: "Golos Text", "Segoe UI", system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root {
     --bg: #10151c; --panel: #171e27; --fg: #e5eaf1; --muted: #93a0b1; --line: #263140;
     --accent: #62b8d2; --accent-soft: #19333f; --tile-top: #e2e7ee; --tile-bottom: #c6ced9;
-    --shade: rgba(0, 0, 0, 0.35); --scrim: rgba(5, 8, 12, 0.92); color-scheme: dark;
+    --shade: rgba(0, 0, 0, 0.35); --scrim: rgba(5, 8, 12, 0.94); color-scheme: dark;
   }
-}
-:root[data-theme="dark"] {
-  --bg: #10151c; --panel: #171e27; --fg: #e5eaf1; --muted: #93a0b1; --line: #263140;
-  --accent: #62b8d2; --accent-soft: #19333f; --tile-top: #e2e7ee; --tile-bottom: #c6ced9;
-  --shade: rgba(0, 0, 0, 0.35); --scrim: rgba(5, 8, 12, 0.92); color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
+img { max-width: 100%; }
 body {
-  background: var(--bg); color: var(--fg);
+  margin: 0; background: var(--bg); color: var(--fg);
   font-family: var(--body); font-size: 15px; line-height: 1.5;
 }
 body::before {
@@ -65,50 +59,51 @@ body::before {
 .mast { padding-block: 40px 28px; display: grid; gap: 28px; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); align-items: end; }
 .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
 h1 { font-family: var(--display); font-weight: 700; font-size: clamp(40px, 7vw, 76px); line-height: 0.98; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
-.lede { max-width: 56ch; color: var(--muted); margin: 18px 0 0; font-size: 16px; }
+.lede { max-width: 58ch; color: var(--muted); margin: 18px 0 0; font-size: 16px; }
 .lede b { color: var(--fg); font-weight: 600; }
 
 .districts { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
 .districts h2 { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
-.districts ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.districts ul { list-style: none; margin: 0; padding: 0; display: grid; }
 .districts li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-top: 1px solid var(--line); font-variant-numeric: tabular-nums; }
 .districts li:first-child { border-top: 0; }
-.districts .dn { font-family: var(--mono); font-size: 13px; }
+.districts a { font-family: var(--mono); font-size: 13px; color: var(--accent); font-weight: 500; text-decoration: none; }
+.districts a:hover { text-decoration: underline; }
 .districts .dc { color: var(--muted); font-size: 13px; text-align: right; }
-.districts li.has .dn a { color: var(--accent); font-weight: 500; text-decoration: none; }
-.districts li.has .dn a:hover { text-decoration: underline; }
-.districts li.has .dc { color: var(--fg); font-weight: 600; }
+.districts li.total { border-top: 2px solid var(--line); margin-top: 2px; }
+.districts li.total span { font-weight: 600; color: var(--fg); font-size: 13px; }
 
-/* Type nav */
-.types {
+/* District nav */
+.dnav {
   position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
   background: color-mix(in srgb, var(--bg) 92%, transparent);
   backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   border-block: 1px solid var(--line);
 }
-.types .wrap { display: flex; gap: 8px; overflow-x: auto; padding-block: 10px; scrollbar-width: none; }
-.types .wrap::-webkit-scrollbar { display: none; }
-.types a {
+.dnav .wrap { display: flex; gap: 8px; overflow-x: auto; padding-block: 10px; scrollbar-width: none; }
+.dnav .wrap::-webkit-scrollbar { display: none; }
+.dnav a {
   flex: none; display: inline-flex; gap: 8px; align-items: baseline;
   padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel);
-  color: var(--fg); text-decoration: none; font-size: 14px; white-space: nowrap;
+  color: var(--fg); text-decoration: none; font-family: var(--mono); font-size: 13px; white-space: nowrap;
 }
-.types a span { font-family: var(--mono); font-size: 12px; color: var(--muted); }
-.types a:hover, .types a:focus-visible { border-color: var(--accent); }
+.dnav a span { font-size: 12px; color: var(--muted); }
+.dnav a:hover, .dnav a:focus-visible { border-color: var(--accent); }
+.dnav a.on { background: var(--accent); border-color: var(--accent); color: var(--panel); }
+.dnav a.on span { color: var(--panel); opacity: 0.8; }
 
-/* District + groups */
-.district { padding-block: 36px 8px; }
-.district-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; margin-bottom: 4px; }
+/* Districts and groups */
+.district { padding-block: 40px 8px; scroll-margin-top: 56px; }
+.district + .district { border-top: 1px solid var(--line); margin-top: 32px; }
+.district-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; }
 .district-head h2 { font-family: var(--display); font-weight: 500; font-size: clamp(26px, 3.6vw, 36px); margin: 0; letter-spacing: -0.01em; }
 .district-head p { margin: 0; color: var(--muted); }
-.group { padding-top: 28px; scroll-margin-top: 72px; }
+.group { padding-top: 26px; scroll-margin-top: 64px; }
 .group h3 { display: flex; align-items: baseline; gap: 10px; font-size: 18px; font-weight: 600; margin: 0 0 14px; }
 .group h3 span { font-family: var(--mono); font-size: 12px; font-weight: 400; color: var(--muted); }
-.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); }
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); }
 
-.card {
-  all: unset; box-sizing: border-box; cursor: zoom-in; display: flex; flex-direction: column; gap: 10px; min-width: 0;
-}
+.card { all: unset; box-sizing: border-box; cursor: zoom-in; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .tile {
   aspect-ratio: 1 / 1; max-width: 100%; border-radius: 12px; overflow: hidden; position: relative;
   background: linear-gradient(180deg, var(--tile-top) 0%, var(--tile-top) 55%, var(--tile-bottom) 100%);
@@ -119,25 +114,33 @@ h1 { font-family: var(--display); font-weight: 700; font-size: clamp(40px, 7vw, 
   background: radial-gradient(closest-side, var(--shade), transparent); pointer-events: none;
 }
 .tile img { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; transition: transform 0.25s ease; }
+.tile .badge {
+  position: absolute; z-index: 2; top: 8px; right: 8px; padding: 2px 8px; border-radius: 999px;
+  font-family: var(--mono); font-size: 11px; color: #3b4656; background: rgba(255, 255, 255, 0.8);
+}
 .card:hover .tile img, .card:focus-visible .tile img { transform: translateY(-4px) scale(1.02); }
 .card:focus-visible .tile { outline: 3px solid var(--accent); outline-offset: 3px; }
 .cap { display: grid; gap: 2px; min-width: 0; padding-inline: 2px; }
 .cap .ru { font-weight: 500; line-height: 1.3; }
 .cap code { font-family: var(--mono); font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
 
-.foot { padding-block: 40px 56px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); margin-top: 40px; }
-.foot p { margin: 0; max-width: 70ch; }
+.foot { padding-block: 40px 56px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); margin-top: 48px; display: grid; gap: 8px; }
+.foot p { margin: 0; max-width: 75ch; }
+.foot code { font-family: var(--mono); font-size: 12px; }
 
-/* Lightbox */
-.lb { position: fixed; inset: 0; z-index: 20; background: var(--scrim); display: grid; grid-template-rows: 1fr auto;
-  padding: calc(env(safe-area-inset-top, 0px) + 16px) max(16px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 16px) max(16px, env(safe-area-inset-left, 0px)); }
+/* Viewer */
+.lb { position: fixed; inset: 0; z-index: 20; background: var(--scrim); display: grid; grid-template-rows: minmax(0, 1fr) auto auto;
+  padding: calc(env(safe-area-inset-top, 0px) + 16px) max(16px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 14px) max(16px, env(safe-area-inset-left, 0px)); }
 .lb[hidden] { display: none; }
 .lb-stage { min-height: 0; position: relative; }
 .lb-frame { position: absolute; inset: 0; margin: auto; width: min(100%, 860px); max-height: 860px; border-radius: 16px;
   background: linear-gradient(180deg, var(--tile-top) 0%, var(--tile-top) 60%, var(--tile-bottom) 100%); }
 .lb-frame img { position: absolute; inset: 5%; width: 90%; height: 90%; object-fit: contain; }
-.lb-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; width: min(100%, 860px); margin: 14px auto 0; color: #e8edf3; }
-.lb-title { display: grid; gap: 2px; min-width: 0; }
+.lb-views { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; width: min(100%, 860px); margin: 12px auto 0; }
+.lb-views button { height: 34px; min-width: 0; padding: 0 12px; font-size: 13px; }
+.lb-views button[aria-pressed="true"] { background: #e8edf3; color: #17202b; border-color: #e8edf3; }
+.lb-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; width: min(100%, 860px); margin: 12px auto 0; color: #e8edf3; }
+.lb-title { display: grid; gap: 2px; min-width: 0; flex: 1 1 260px; }
 .lb-title strong { font-family: var(--display); font-weight: 500; font-size: 18px; }
 .lb-title code { font-family: var(--mono); font-size: 13px; color: #a9b5c4; overflow-wrap: anywhere; }
 .lb-title small { font-size: 13px; color: #a9b5c4; }
@@ -158,48 +161,36 @@ h1 { font-family: var(--display); font-weight: 700; font-size: clamp(40px, 7vw, 
 </style>
 </head>
 <body>
+
 <header class="wrap mast">
   <div>
     <p class="eyebrow">We Are Destroyers · город Metro</p>
     <h1>Рефы домов</h1>
-    <p class="lede">Стилизованные рефы в ракурсе 3/4, по которым Phantasm перекрашивал дома. Сейчас здесь <b>23 дома жилого района</b>. Нажмите на карточку, чтобы открыть реф крупно.</p>
+    <p class="lede">Рефы всех домов из каталога Metro: <b id="total-houses">89 домов в 7 районах</b>. У жилого района это стилизованные рефы 3/4 для Phantasm. У остальных районов это листы с видами, по которым SlopMachine строил модели. Нажмите на карточку, чтобы открыть реф крупно и переключать виды.</p>
   </div>
   <aside class="districts" aria-label="Районы Metro">
     <h2>Районы Metro</h2>
-    <ul>
-      <li class="has"><span class="dn"><a href="#residential">Residential</a></span><span class="dc">23 рефа</span></li>
-      <li><span class="dn">Downtown</span><span class="dc">12 домов без рефов</span></li>
-      <li><span class="dn">OldTown</span><span class="dc">11 домов без рефов</span></li>
-      <li><span class="dn">Wealthy</span><span class="dc">10 домов без рефов</span></li>
-      <li><span class="dn">Slums</span><span class="dc">8 домов без рефов</span></li>
-      <li><span class="dn">Industrial</span><span class="dc">17 домов без рефов</span></li>
-      <li><span class="dn">Port</span><span class="dc">7 домов без рефов</span></li>
-    </ul>
+    <ul id="district-list"></ul>
   </aside>
 </header>
 
-<nav class="types" aria-label="Типы зданий">
-  <div class="wrap" id="type-nav"></div>
+<nav class="dnav" aria-label="Районы">
+  <div class="wrap" id="dnav"></div>
 </nav>
 
-<main class="wrap">
-  <section class="district" id="residential">
-    <div class="district-head">
-      <h2>Residential</h2>
-      <p>Жилой район в духе Нью-Йорка: ряды, панельки, магазины</p>
-    </div>
-    <div id="groups"></div>
-  </section>
-</main>
+<main class="wrap" id="districts"></main>
 
 <footer class="wrap foot">
-  <p>Источник: рефы, загруженные в Phantasm 4–5 ноября 2026. Фон рефов вырезан. Под каждой карточкой указано имя дома в каталоге Metro (<code>catalog.json</code>). Пять парковых зданий жилого района пока без рефов.</p>
+  <p>Жилой район: 23 рефа ушли в Phantasm 4–5 ноября 2026, по ним перекрашены текстуры. Дополнительные виды этих домов и все рефы других районов взяты из заданий SlopMachine (сентябрь–октябрь 2026), по ним строились модели.</p>
+  <p>Пять парковых зданий в игре стоят в упрощённой версии. Здесь показан исходный реф. Фон всех рефов вырезан автоматически, на тонких деталях возможны белые края.</p>
+  <p>Под каждой карточкой указано имя дома в каталоге (<code>catalog.json</code>). Ссылка на конкретный дом: адрес страницы + <code>#ref-имя-дома</code>.</p>
 </footer>
 
 <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-labelledby="lb-name">
   <div class="lb-stage">
     <div class="lb-frame"><img id="lb-img" alt=""></div>
   </div>
+  <div class="lb-views" id="lb-views" role="group" aria-label="Виды"></div>
   <div class="lb-bar">
     <div class="lb-title">
       <strong id="lb-name"></strong>
@@ -207,111 +198,290 @@ h1 { font-family: var(--display); font-weight: 700; font-size: clamp(40px, 7vw, 
       <small id="lb-meta"></small>
     </div>
     <div class="lb-ctrl">
-      <button type="button" id="lb-prev" aria-label="Предыдущий реф">←</button>
+      <button type="button" id="lb-prev" aria-label="Предыдущий дом">←</button>
       <span id="lb-count"></span>
-      <button type="button" id="lb-next" aria-label="Следующий реф">→</button>
+      <button type="button" id="lb-next" aria-label="Следующий дом">→</button>
       <button type="button" id="lb-close" aria-label="Закрыть">Закрыть</button>
     </div>
   </div>
 </div>
 
 <script>
-const GROUPS = [
-  { id: "rows", title: "Ряды и таунхаусы", houses: [
-    ["brownstone_row", "Браунстоуны"],
-    ["bowfront_limestone_row", "Известняковый ряд с эркерами"],
-    ["federal_painted_row", "Крашеный ряд в федеральном стиле"],
-    ["red_brick_four_storey_townhouse_clean", "Кирпичный таунхаус, 4 этажа"],
-    ["walkup_tenement_row", "Доходный дом без лифта"],
-    ["corner_deli_row", "Угловой дом с гастрономом"],
-    ["amber-bay-building-2", "Янтарный дом с эркерами"],
+const DISTRICTS = [
+  { id: "residential", name: "Residential", blurb: "Нью-Йорк: ряды, панельки, магазины, парк", groups: [
+    { id: "res-rows", title: "Ряды и таунхаусы", houses: [
+      ["brownstone_row", "Браунстоуны"],
+      ["bowfront_limestone_row", "Известняковый ряд с эркерами"],
+      ["federal_painted_row", "Крашеный ряд в федеральном стиле"],
+      ["red_brick_four_storey_townhouse_clean", "Кирпичный таунхаус, 4 этажа"],
+      ["walkup_tenement_row", "Доходный дом без лифта"],
+      ["corner_deli_row", "Угловой дом с гастрономом"],
+      ["amber-bay-building-2", "Янтарный дом с эркерами"],
+    ]},
+    { id: "res-panels", title: "Панельки", houses: [
+      ["panel9_two_entrance", "9 этажей, 2 подъезда"],
+      ["panel9_three_entrance", "9 этажей, 3 подъезда"],
+      ["panel9_four_entrance", "9 этажей, 4 подъезда"],
+    ]},
+    { id: "res-detached", title: "Частные дома", houses: [
+      ["porch_house", "Дом с верандой"],
+      ["red_two_storey_house_mcp", "Кирпичный дом, 2 этажа"],
+      ["ochre-quoin-house", "Охристый дом с рустом"],
+    ]},
+    { id: "res-shops", title: "Магазины и сервис", houses: [
+      ["yellow_three_storey_shop_mcp", "Жёлтый дом с магазином"],
+      ["corner_pharmacy", "Угловая аптека"],
+      ["laundromat", "Прачечная"],
+      ["retro_diner", "Ретро-дайнер"],
+      ["supermarket", "Супермаркет"],
+      ["strip_mall", "Стрип-молл"],
+      ["gas_station", "Заправка"],
+    ]},
+    { id: "res-civic", title: "Общественные здания", houses: [
+      ["brick_school", "Кирпичная школа"],
+      ["fire_station", "Пожарная часть"],
+      ["stone_church", "Каменная церковь"],
+    ]},
+    { id: "res-park", title: "Парковые здания", houses: [
+      ["park_museum", "Музей в парке"],
+      ["orangery", "Оранжерея"],
+      ["park_cafe", "Кафе в парке"],
+      ["bandstand", "Беседка для оркестра"],
+      ["park_stage", "Летняя сцена"],
+    ]},
   ]},
-  { id: "panels", title: "Панельки", houses: [
-    ["panel9_two_entrance", "9 этажей, 2 подъезда"],
-    ["panel9_three_entrance", "9 этажей, 3 подъезда"],
-    ["panel9_four_entrance", "9 этажей, 4 подъезда"],
+  { id: "downtown", name: "Downtown", blurb: "Шанхай: башни делового центра", groups: [
+    { id: "down-towers", title: "Башни", houses: [
+      ["ivory_office_tower_mcp", "Светлая офисная башня"],
+      ["art_deco_tower_v2_mcp", "Башня ар-деко"],
+      ["golden_spire_tower_mcp", "Башня с золотым шпилем"],
+      ["octagonal_glass_tower_mcp", "Восьмигранная стеклянная башня"],
+      ["orange_roof_tower_mcp", "Башня с оранжевой крышей"],
+      ["round_glass_tower_mcp", "Круглая стеклянная башня"],
+      ["tapered_ivory_tower_mcp", "Сужающаяся светлая башня"],
+      ["bank_tower", "Башня банка"],
+    ]},
+    { id: "down-offices", title: "Офисы, отель и мэрия", houses: [
+      ["six_storey_grid_office_mcp", "Офис, 6 этажей"],
+      ["glass_office", "Стеклянный офис"],
+      ["classic_hotel", "Классический отель"],
+      ["city_hall", "Мэрия"],
+    ]},
   ]},
-  { id: "detached", title: "Частные дома", houses: [
-    ["porch_house", "Дом с верандой"],
-    ["red_two_storey_house_mcp", "Кирпичный дом, 2 этажа"],
-    ["ochre-quoin-house", "Охристый дом с рустом"],
+  { id: "oldtown", name: "OldTown", blurb: "Площадь с фонтаном и мощёные переулки", groups: [
+    { id: "old-houses", title: "Дома", houses: [
+      ["half_timbered_house", "Фахверковый дом"],
+      ["stepped_gable_house", "Дом со ступенчатым фронтоном"],
+      ["ochre_townhouse", "Охристый таунхаус"],
+      ["blue_townhouse", "Голубой таунхаус"],
+      ["turret_corner_house", "Угловой дом с башенкой"],
+      ["arcade_stone_house", "Каменный дом с аркадой"],
+      ["whitewashed_cottage", "Белёный коттедж"],
+    ]},
+    { id: "old-square", title: "Площадь", houses: [
+      ["old_tavern", "Старая таверна"],
+      ["square_fountain", "Фонтан на площади"],
+    ]},
+    { id: "old-ruins", title: "Руины", houses: [
+      ["ruined_stone_house", "Разрушенный каменный дом"],
+      ["burnt_timber_shell", "Сгоревший каркас"],
+    ]},
   ]},
-  { id: "shops", title: "Магазины и сервис", houses: [
-    ["yellow_three_storey_shop_mcp", "Жёлтый дом с магазином"],
-    ["corner_pharmacy", "Угловая аптека"],
-    ["laundromat", "Прачечная"],
-    ["retro_diner", "Ретро-дайнер"],
-    ["supermarket", "Супермаркет"],
-    ["strip_mall", "Стрип-молл"],
-    ["gas_station", "Заправка"],
+  { id: "wealthy", name: "Wealthy", blurb: "Особняки на огороженных участках с садами", groups: [
+    { id: "rich-villas", title: "Особняки и виллы", houses: [
+      ["colonial_mansion", "Колониальный особняк"],
+      ["mediterranean_villa", "Средиземноморская вилла"],
+      ["tudor_manor", "Тюдоровская усадьба"],
+      ["modern_glass_villa", "Современная стеклянная вилла"],
+      ["dark_timber_villa", "Вилла из тёмного дерева"],
+      ["chateau_house", "Шато"],
+      ["victorian_mansion", "Викторианский особняк"],
+      ["shingle_estate", "Усадьба в стиле шингл"],
+    ]},
+    { id: "rich-club", title: "Клуб и бутик", houses: [
+      ["country_club", "Загородный клуб"],
+      ["luxury_boutique", "Люксовый бутик"],
+    ]},
   ]},
-  { id: "civic", title: "Общественные здания", houses: [
-    ["brick_school", "Кирпичная школа"],
-    ["fire_station", "Пожарная часть"],
-    ["stone_church", "Каменная церковь"],
+  { id: "slums", name: "Slums", blurb: "Лачуги, сбитые в кучу у порта", groups: [
+    { id: "slum-shacks", title: "Лачуги и лавка", houses: [
+      ["tin_shack", "Жестяная лачуга"],
+      ["plywood_shanty", "Фанерная хибара"],
+      ["stacked_shack", "Надстроенная лачуга"],
+      ["container_home", "Дом из контейнера"],
+      ["cinderblock_hut", "Хижина из шлакоблоков"],
+      ["stilt_shack", "Лачуга на сваях"],
+      ["blue_hut", "Синяя хижина"],
+      ["shutter_shop", "Лавка с рольставней"],
+    ]},
+  ]},
+  { id: "industrial", name: "Industrial", blurb: "Сталелитейный завод, электростанция, склады", groups: [
+    { id: "ind-steel", title: "Сталелитейный завод", houses: [
+      ["blast_furnace", "Доменная печь"],
+      ["hot_blast_stoves", "Воздухонагреватели"],
+      ["melt_shop", "Сталеплавильный цех"],
+      ["steel_chimney", "Заводская труба"],
+      ["gas_holder", "Газгольдер"],
+      ["ore_bunkers", "Рудные бункеры"],
+      ["conveyor_gallery", "Конвейерная галерея"],
+    ]},
+    { id: "ind-power", title: "Электростанция", houses: [
+      ["power_station", "Главный корпус"],
+      ["cooling_tower", "Градирня"],
+      ["power_chimney", "Труба электростанции"],
+      ["coal_shed", "Угольный склад"],
+    ]},
+    { id: "ind-factory", title: "Фабрика и склады", houses: [
+      ["brick_factory", "Кирпичная фабрика"],
+      ["tank_farm", "Резервуарный парк"],
+      ["industrial_warehouse_mcp", "Промышленный склад"],
+      ["brick_industrial_warehouse_mcp", "Кирпичный склад"],
+      ["green_single_storey_warehouse_mcp", "Зелёный одноэтажный склад"],
+    ]},
+  ]},
+  { id: "port", name: "Port", blurb: "Гавань с краном и маяком", groups: [
+    { id: "port-harbour", title: "Гавань", houses: [
+      ["gantry_crane", "Портальный кран"],
+      ["harbour_office", "Управление гавани"],
+      ["lighthouse", "Маяк"],
+      ["port_warehouse", "Портовый склад"],
+    ]},
   ]},
 ];
-// These four were painted on Phantasm's Supra profile; the other 19 on LanPaint.
+// Catalogue zones where a house belongs to more than its section's district.
+const ZONES = {
+  gas_station: "Residential, Industrial",
+  industrial_warehouse_mcp: "Industrial, Port",
+  brick_industrial_warehouse_mcp: "Industrial, Port",
+  green_single_storey_warehouse_mcp: "Industrial, Port",
+  port_warehouse: "Port, Industrial",
+};
+// Painted on Phantasm's Supra profile; the other Residential refs went through LanPaint.
 const SUPRA = new Set(["porch_house", "red_brick_four_storey_townhouse_clean", "yellow_three_storey_shop_mcp", "bowfront_limestone_row"]);
-const DISTRICTS = { gas_station: "Residential, Industrial" };
+const PARK = new Set(["park_museum", "orangery", "park_cafe", "bandstand", "park_stage"]);
+const VIEW_NAMES = { "34": "3/4", front: "Фасад", right: "Справа", back: "Сзади", left: "Слева", top: "Сверху" };
+const VIEWS = {"ochre-quoin-house":[["34","img/ochre-quoin-house.webp"],["front","img/v/ochre-quoin-house/front.webp"],["right","img/v/ochre-quoin-house/right.webp"],["back","img/v/ochre-quoin-house/back.webp"],["left","img/v/ochre-quoin-house/left.webp"],["top","img/v/ochre-quoin-house/top.webp"]],"red_two_storey_house_mcp":[["34","img/red_two_storey_house_mcp.webp"],["front","img/v/red_two_storey_house_mcp/front.webp"],["right","img/v/red_two_storey_house_mcp/right.webp"],["back","img/v/red_two_storey_house_mcp/back.webp"],["left","img/v/red_two_storey_house_mcp/left.webp"],["top","img/v/red_two_storey_house_mcp/top.webp"]],"yellow_three_storey_shop_mcp":[["34","img/yellow_three_storey_shop_mcp.webp"],["front","img/v/yellow_three_storey_shop_mcp/front.webp"],["right","img/v/yellow_three_storey_shop_mcp/right.webp"],["back","img/v/yellow_three_storey_shop_mcp/back.webp"],["left","img/v/yellow_three_storey_shop_mcp/left.webp"],["top","img/v/yellow_three_storey_shop_mcp/top.webp"]],"amber-bay-building-2":[["34","img/amber-bay-building-2.webp"]],"red_brick_four_storey_townhouse_clean":[["34","img/red_brick_four_storey_townhouse_clean.webp"],["front","img/v/red_brick_four_storey_townhouse_clean/front.webp"],["right","img/v/red_brick_four_storey_townhouse_clean/right.webp"],["back","img/v/red_brick_four_storey_townhouse_clean/back.webp"],["left","img/v/red_brick_four_storey_townhouse_clean/left.webp"],["top","img/v/red_brick_four_storey_townhouse_clean/top.webp"]],"ivory_office_tower_mcp":[["front","img/ivory_office_tower_mcp.webp"],["right","img/v/ivory_office_tower_mcp/right.webp"],["back","img/v/ivory_office_tower_mcp/back.webp"],["left","img/v/ivory_office_tower_mcp/left.webp"],["top","img/v/ivory_office_tower_mcp/top.webp"]],"art_deco_tower_v2_mcp":[["front","img/art_deco_tower_v2_mcp.webp"],["right","img/v/art_deco_tower_v2_mcp/right.webp"],["back","img/v/art_deco_tower_v2_mcp/back.webp"],["left","img/v/art_deco_tower_v2_mcp/left.webp"],["top","img/v/art_deco_tower_v2_mcp/top.webp"]],"golden_spire_tower_mcp":[["front","img/golden_spire_tower_mcp.webp"],["right","img/v/golden_spire_tower_mcp/right.webp"],["back","img/v/golden_spire_tower_mcp/back.webp"],["left","img/v/golden_spire_tower_mcp/left.webp"],["top","img/v/golden_spire_tower_mcp/top.webp"]],"octagonal_glass_tower_mcp":[["front","img/octagonal_glass_tower_mcp.webp"],["right","img/v/octagonal_glass_tower_mcp/right.webp"],["back","img/v/octagonal_glass_tower_mcp/back.webp"],["left","img/v/octagonal_glass_tower_mcp/left.webp"],["top","img/v/octagonal_glass_tower_mcp/top.webp"]],"orange_roof_tower_mcp":[["front","img/orange_roof_tower_mcp.webp"],["right","img/v/orange_roof_tower_mcp/right.webp"],["back","img/v/orange_roof_tower_mcp/back.webp"],["left","img/v/orange_roof_tower_mcp/left.webp"],["top","img/v/orange_roof_tower_mcp/top.webp"]],"round_glass_tower_mcp":[["front","img/round_glass_tower_mcp.webp"],["right","img/v/round_glass_tower_mcp/right.webp"],["back","img/v/round_glass_tower_mcp/back.webp"],["left","img/v/round_glass_tower_mcp/left.webp"],["top","img/v/round_glass_tower_mcp/top.webp"]],"tapered_ivory_tower_mcp":[["front","img/tapered_ivory_tower_mcp.webp"],["right","img/v/tapered_ivory_tower_mcp/right.webp"],["back","img/v/tapered_ivory_tower_mcp/back.webp"],["left","img/v/tapered_ivory_tower_mcp/left.webp"],["top","img/v/tapered_ivory_tower_mcp/top.webp"]],"six_storey_grid_office_mcp":[["front","img/six_storey_grid_office_mcp.webp"],["right","img/v/six_storey_grid_office_mcp/right.webp"],["back","img/v/six_storey_grid_office_mcp/back.webp"],["left","img/v/six_storey_grid_office_mcp/left.webp"],["top","img/v/six_storey_grid_office_mcp/top.webp"]],"industrial_warehouse_mcp":[["front","img/industrial_warehouse_mcp.webp"],["right","img/v/industrial_warehouse_mcp/right.webp"],["back","img/v/industrial_warehouse_mcp/back.webp"],["left","img/v/industrial_warehouse_mcp/left.webp"],["top","img/v/industrial_warehouse_mcp/top.webp"]],"brick_industrial_warehouse_mcp":[["front","img/brick_industrial_warehouse_mcp.webp"],["right","img/v/brick_industrial_warehouse_mcp/right.webp"],["back","img/v/brick_industrial_warehouse_mcp/back.webp"],["left","img/v/brick_industrial_warehouse_mcp/left.webp"],["top","img/v/brick_industrial_warehouse_mcp/top.webp"]],"green_single_storey_warehouse_mcp":[["front","img/green_single_storey_warehouse_mcp.webp"],["right","img/v/green_single_storey_warehouse_mcp/right.webp"],["back","img/v/green_single_storey_warehouse_mcp/back.webp"],["left","img/v/green_single_storey_warehouse_mcp/left.webp"],["top","img/v/green_single_storey_warehouse_mcp/top.webp"]],"fire_station":[["34","img/fire_station.webp"],["front","img/v/fire_station/front.webp"],["right","img/v/fire_station/right.webp"],["back","img/v/fire_station/back.webp"],["left","img/v/fire_station/left.webp"]],"stone_church":[["34","img/stone_church.webp"],["front","img/v/stone_church/front.webp"],["right","img/v/stone_church/right.webp"],["back","img/v/stone_church/back.webp"],["left","img/v/stone_church/left.webp"]],"gas_station":[["34","img/gas_station.webp"],["front","img/v/gas_station/front.webp"]],"retro_diner":[["34","img/retro_diner.webp"],["front","img/v/retro_diner/front.webp"],["right","img/v/retro_diner/right.webp"],["back","img/v/retro_diner/back.webp"],["left","img/v/retro_diner/left.webp"]],"porch_house":[["34","img/porch_house.webp"],["front","img/v/porch_house/front.webp"],["right","img/v/porch_house/right.webp"],["back","img/v/porch_house/back.webp"],["left","img/v/porch_house/left.webp"]],"brick_school":[["34","img/brick_school.webp"],["front","img/v/brick_school/front.webp"],["right","img/v/brick_school/right.webp"],["back","img/v/brick_school/back.webp"],["left","img/v/brick_school/left.webp"]],"classic_hotel":[["front","img/classic_hotel.webp"],["right","img/v/classic_hotel/right.webp"],["back","img/v/classic_hotel/back.webp"],["left","img/v/classic_hotel/left.webp"]],"glass_office":[["front","img/glass_office.webp"],["right","img/v/glass_office/right.webp"],["back","img/v/glass_office/back.webp"],["left","img/v/glass_office/left.webp"]],"brick_factory":[["front","img/brick_factory.webp"],["right","img/v/brick_factory/right.webp"],["back","img/v/brick_factory/back.webp"],["left","img/v/brick_factory/left.webp"]],"tank_farm":[["front","img/tank_farm.webp"],["right","img/v/tank_farm/right.webp"],["back","img/v/tank_farm/back.webp"],["left","img/v/tank_farm/left.webp"]],"port_warehouse":[["front","img/port_warehouse.webp"],["right","img/v/port_warehouse/right.webp"],["back","img/v/port_warehouse/back.webp"],["left","img/v/port_warehouse/left.webp"]],"gantry_crane":[["front","img/gantry_crane.webp"],["right","img/v/gantry_crane/right.webp"],["back","img/v/gantry_crane/back.webp"],["left","img/v/gantry_crane/left.webp"]],"harbour_office":[["front","img/harbour_office.webp"],["right","img/v/harbour_office/right.webp"],["back","img/v/harbour_office/back.webp"],["left","img/v/harbour_office/left.webp"]],"lighthouse":[["front","img/lighthouse.webp"],["right","img/v/lighthouse/right.webp"],["back","img/v/lighthouse/back.webp"],["left","img/v/lighthouse/left.webp"]],"tin_shack":[["front","img/tin_shack.webp"]],"plywood_shanty":[["front","img/plywood_shanty.webp"]],"stacked_shack":[["front","img/stacked_shack.webp"]],"container_home":[["front","img/container_home.webp"]],"cinderblock_hut":[["front","img/cinderblock_hut.webp"]],"stilt_shack":[["front","img/stilt_shack.webp"]],"blue_hut":[["front","img/blue_hut.webp"]],"shutter_shop":[["front","img/shutter_shop.webp"]],"colonial_mansion":[["front","img/colonial_mansion.webp"],["right","img/v/colonial_mansion/right.webp"],["back","img/v/colonial_mansion/back.webp"],["left","img/v/colonial_mansion/left.webp"]],"mediterranean_villa":[["front","img/mediterranean_villa.webp"],["right","img/v/mediterranean_villa/right.webp"],["back","img/v/mediterranean_villa/back.webp"],["left","img/v/mediterranean_villa/left.webp"]],"tudor_manor":[["front","img/tudor_manor.webp"],["right","img/v/tudor_manor/right.webp"],["back","img/v/tudor_manor/back.webp"],["left","img/v/tudor_manor/left.webp"]],"modern_glass_villa":[["front","img/modern_glass_villa.webp"],["right","img/v/modern_glass_villa/right.webp"],["back","img/v/modern_glass_villa/back.webp"],["left","img/v/modern_glass_villa/left.webp"]],"dark_timber_villa":[["front","img/dark_timber_villa.webp"],["right","img/v/dark_timber_villa/right.webp"],["back","img/v/dark_timber_villa/back.webp"],["left","img/v/dark_timber_villa/left.webp"]],"chateau_house":[["front","img/chateau_house.webp"],["right","img/v/chateau_house/right.webp"],["back","img/v/chateau_house/back.webp"],["left","img/v/chateau_house/left.webp"]],"victorian_mansion":[["front","img/victorian_mansion.webp"]],"shingle_estate":[["front","img/shingle_estate.webp"],["right","img/v/shingle_estate/right.webp"],["back","img/v/shingle_estate/back.webp"],["left","img/v/shingle_estate/left.webp"]],"country_club":[["front","img/country_club.webp"],["right","img/v/country_club/right.webp"],["back","img/v/country_club/back.webp"],["left","img/v/country_club/left.webp"]],"luxury_boutique":[["front","img/luxury_boutique.webp"],["right","img/v/luxury_boutique/right.webp"],["back","img/v/luxury_boutique/back.webp"],["left","img/v/luxury_boutique/left.webp"]],"city_hall":[["front","img/city_hall.webp"],["right","img/v/city_hall/right.webp"],["back","img/v/city_hall/back.webp"],["left","img/v/city_hall/left.webp"]],"bank_tower":[["front","img/bank_tower.webp"],["right","img/v/bank_tower/right.webp"],["back","img/v/bank_tower/back.webp"],["left","img/v/bank_tower/left.webp"]],"park_museum":[["front","img/park_museum.webp"],["right","img/v/park_museum/right.webp"],["back","img/v/park_museum/back.webp"],["left","img/v/park_museum/left.webp"]],"orangery":[["front","img/orangery.webp"],["right","img/v/orangery/right.webp"],["back","img/v/orangery/back.webp"],["left","img/v/orangery/left.webp"]],"park_cafe":[["front","img/park_cafe.webp"],["right","img/v/park_cafe/right.webp"],["back","img/v/park_cafe/back.webp"],["left","img/v/park_cafe/left.webp"]],"bandstand":[["front","img/bandstand.webp"],["right","img/v/bandstand/right.webp"],["back","img/v/bandstand/back.webp"],["left","img/v/bandstand/left.webp"]],"melt_shop":[["front","img/melt_shop.webp"],["right","img/v/melt_shop/right.webp"],["back","img/v/melt_shop/back.webp"],["left","img/v/melt_shop/left.webp"]],"blast_furnace":[["front","img/blast_furnace.webp"],["right","img/v/blast_furnace/right.webp"],["back","img/v/blast_furnace/back.webp"],["left","img/v/blast_furnace/left.webp"]],"hot_blast_stoves":[["front","img/hot_blast_stoves.webp"],["right","img/v/hot_blast_stoves/right.webp"],["back","img/v/hot_blast_stoves/back.webp"],["left","img/v/hot_blast_stoves/left.webp"]],"steel_chimney":[["front","img/steel_chimney.webp"],["right","img/v/steel_chimney/right.webp"],["back","img/v/steel_chimney/back.webp"],["left","img/v/steel_chimney/left.webp"]],"gas_holder":[["front","img/gas_holder.webp"],["right","img/v/gas_holder/right.webp"],["back","img/v/gas_holder/back.webp"],["left","img/v/gas_holder/left.webp"]],"ore_bunkers":[["front","img/ore_bunkers.webp"],["right","img/v/ore_bunkers/right.webp"],["back","img/v/ore_bunkers/back.webp"],["left","img/v/ore_bunkers/left.webp"]],"conveyor_gallery":[["front","img/conveyor_gallery.webp"],["right","img/v/conveyor_gallery/right.webp"],["back","img/v/conveyor_gallery/back.webp"],["left","img/v/conveyor_gallery/left.webp"]],"power_station":[["front","img/power_station.webp"],["right","img/v/power_station/right.webp"],["back","img/v/power_station/back.webp"],["left","img/v/power_station/left.webp"]],"cooling_tower":[["front","img/cooling_tower.webp"],["right","img/v/cooling_tower/right.webp"],["back","img/v/cooling_tower/back.webp"],["left","img/v/cooling_tower/left.webp"]],"power_chimney":[["front","img/power_chimney.webp"],["right","img/v/power_chimney/right.webp"],["back","img/v/power_chimney/back.webp"],["left","img/v/power_chimney/left.webp"]],"coal_shed":[["front","img/coal_shed.webp"],["right","img/v/coal_shed/right.webp"],["back","img/v/coal_shed/back.webp"],["left","img/v/coal_shed/left.webp"]],"brownstone_row":[["34","img/brownstone_row.webp"],["front","img/v/brownstone_row/front.webp"],["right","img/v/brownstone_row/right.webp"],["back","img/v/brownstone_row/back.webp"],["left","img/v/brownstone_row/left.webp"]],"walkup_tenement_row":[["34","img/walkup_tenement_row.webp"],["front","img/v/walkup_tenement_row/front.webp"],["right","img/v/walkup_tenement_row/right.webp"],["back","img/v/walkup_tenement_row/back.webp"],["left","img/v/walkup_tenement_row/left.webp"]],"bowfront_limestone_row":[["34","img/bowfront_limestone_row.webp"],["front","img/v/bowfront_limestone_row/front.webp"],["right","img/v/bowfront_limestone_row/right.webp"],["back","img/v/bowfront_limestone_row/back.webp"],["left","img/v/bowfront_limestone_row/left.webp"]],"federal_painted_row":[["34","img/federal_painted_row.webp"],["front","img/v/federal_painted_row/front.webp"],["right","img/v/federal_painted_row/right.webp"],["back","img/v/federal_painted_row/back.webp"],["left","img/v/federal_painted_row/left.webp"]],"corner_deli_row":[["34","img/corner_deli_row.webp"],["front","img/v/corner_deli_row/front.webp"],["right","img/v/corner_deli_row/right.webp"],["back","img/v/corner_deli_row/back.webp"],["left","img/v/corner_deli_row/left.webp"]],"panel9_two_entrance":[["34","img/panel9_two_entrance.webp"],["front","img/v/panel9_two_entrance/front.webp"],["right","img/v/panel9_two_entrance/right.webp"],["back","img/v/panel9_two_entrance/back.webp"],["left","img/v/panel9_two_entrance/left.webp"]],"panel9_three_entrance":[["34","img/panel9_three_entrance.webp"],["front","img/v/panel9_three_entrance/front.webp"],["right","img/v/panel9_three_entrance/right.webp"],["back","img/v/panel9_three_entrance/back.webp"],["left","img/v/panel9_three_entrance/left.webp"]],"panel9_four_entrance":[["34","img/panel9_four_entrance.webp"],["front","img/v/panel9_four_entrance/front.webp"],["right","img/v/panel9_four_entrance/right.webp"],["back","img/v/panel9_four_entrance/back.webp"],["left","img/v/panel9_four_entrance/left.webp"]],"supermarket":[["34","img/supermarket.webp"],["front","img/v/supermarket/front.webp"],["right","img/v/supermarket/right.webp"],["back","img/v/supermarket/back.webp"],["left","img/v/supermarket/left.webp"]],"strip_mall":[["34","img/strip_mall.webp"],["front","img/v/strip_mall/front.webp"],["right","img/v/strip_mall/right.webp"],["back","img/v/strip_mall/back.webp"],["left","img/v/strip_mall/left.webp"]],"corner_pharmacy":[["34","img/corner_pharmacy.webp"],["front","img/v/corner_pharmacy/front.webp"],["right","img/v/corner_pharmacy/right.webp"],["back","img/v/corner_pharmacy/back.webp"],["left","img/v/corner_pharmacy/left.webp"]],"laundromat":[["34","img/laundromat.webp"],["front","img/v/laundromat/front.webp"],["right","img/v/laundromat/right.webp"],["back","img/v/laundromat/back.webp"],["left","img/v/laundromat/left.webp"]],"half_timbered_house":[["front","img/half_timbered_house.webp"],["right","img/v/half_timbered_house/right.webp"],["back","img/v/half_timbered_house/back.webp"],["left","img/v/half_timbered_house/left.webp"]],"stepped_gable_house":[["front","img/stepped_gable_house.webp"],["right","img/v/stepped_gable_house/right.webp"],["back","img/v/stepped_gable_house/back.webp"],["left","img/v/stepped_gable_house/left.webp"]],"ochre_townhouse":[["front","img/ochre_townhouse.webp"],["right","img/v/ochre_townhouse/right.webp"],["back","img/v/ochre_townhouse/back.webp"],["left","img/v/ochre_townhouse/left.webp"]],"blue_townhouse":[["front","img/blue_townhouse.webp"],["right","img/v/blue_townhouse/right.webp"],["back","img/v/blue_townhouse/back.webp"],["left","img/v/blue_townhouse/left.webp"]],"turret_corner_house":[["front","img/turret_corner_house.webp"],["right","img/v/turret_corner_house/right.webp"],["back","img/v/turret_corner_house/back.webp"],["left","img/v/turret_corner_house/left.webp"]],"old_tavern":[["front","img/old_tavern.webp"],["right","img/v/old_tavern/right.webp"],["back","img/v/old_tavern/back.webp"],["left","img/v/old_tavern/left.webp"]],"arcade_stone_house":[["front","img/arcade_stone_house.webp"],["right","img/v/arcade_stone_house/right.webp"],["back","img/v/arcade_stone_house/back.webp"],["left","img/v/arcade_stone_house/left.webp"]],"whitewashed_cottage":[["front","img/whitewashed_cottage.webp"],["right","img/v/whitewashed_cottage/right.webp"],["back","img/v/whitewashed_cottage/back.webp"],["left","img/v/whitewashed_cottage/left.webp"]],"ruined_stone_house":[["front","img/ruined_stone_house.webp"],["right","img/v/ruined_stone_house/right.webp"],["back","img/v/ruined_stone_house/back.webp"],["left","img/v/ruined_stone_house/left.webp"]],"burnt_timber_shell":[["front","img/burnt_timber_shell.webp"],["right","img/v/burnt_timber_shell/right.webp"],["back","img/v/burnt_timber_shell/back.webp"],["left","img/v/burnt_timber_shell/left.webp"]],"square_fountain":[["front","img/square_fountain.webp"]],"park_stage":[["front","img/park_stage.webp"],["right","img/v/park_stage/right.webp"],["back","img/v/park_stage/back.webp"],["left","img/v/park_stage/left.webp"],["top","img/v/park_stage/top.webp"]]};
+
+function plural(n, one, few, many) {
+  const m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+  return many;
+}
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 
 const flat = [];
-const nav = document.getElementById("type-nav");
-const groupsEl = document.getElementById("groups");
+const list = document.getElementById("district-list");
+const dnav = document.getElementById("dnav");
+const main = document.getElementById("districts");
 
-for (const g of GROUPS) {
-  const a = document.createElement("a");
-  a.href = "#" + g.id;
-  a.innerHTML = g.title + " <span>" + g.houses.length + "</span>";
-  nav.appendChild(a);
+for (const d of DISTRICTS) {
+  const n = d.groups.reduce((s, g) => s + g.houses.length, 0);
+  const li = el("li");
+  const a = el("a", null, d.name); a.href = "#" + d.id;
+  li.append(a, el("span", "dc", n + " " + plural(n, "дом", "дома", "домов")));
+  list.appendChild(li);
 
-  const sec = document.createElement("section");
-  sec.className = "group";
-  sec.id = g.id;
-  const h = document.createElement("h3");
-  h.innerHTML = g.title + " <span>" + g.houses.length + "</span>";
-  sec.appendChild(h);
-  const grid = document.createElement("div");
-  grid.className = "grid";
-  for (const [id, ru] of g.houses) {
-    const i = flat.length;
-    flat.push({ id, ru, group: g.title });
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "card";
-    b.setAttribute("aria-label", ru + ", открыть крупно");
-    b.innerHTML =
-      '<div class="tile"><img loading="lazy" decoding="async" src="img/t/' + id + '.webp" alt="' + ru + '"></div>' +
-      '<div class="cap"><span class="ru">' + ru + '</span><code>' + id + '</code></div>';
-    b.addEventListener("click", () => open(i, b));
-    grid.appendChild(b);
+  const chip = el("a", null, d.name + " "); chip.href = "#" + d.id; chip.dataset.d = d.id;
+  chip.appendChild(el("span", null, String(n)));
+  dnav.appendChild(chip);
+
+  const sec = el("section", "district"); sec.id = d.id;
+  const head = el("div", "district-head");
+  head.append(el("h2", null, d.name), el("p", null, d.blurb));
+  sec.appendChild(head);
+  for (const g of d.groups) {
+    const gs = el("section", "group"); gs.id = g.id;
+    const h = el("h3", null, g.title + " ");
+    h.appendChild(el("span", null, String(g.houses.length)));
+    gs.appendChild(h);
+    const grid = el("div", "grid");
+    for (const [id, ru] of g.houses) {
+      const views = VIEWS[id] || [];
+      const i = flat.length;
+      flat.push({ id, ru, district: d.name, group: g.title, views });
+      const b = el("button", "card"); b.type = "button";
+      b.setAttribute("aria-label", ru + ", открыть крупно");
+      const tile = el("div", "tile");
+      const img = el("img"); img.loading = "lazy"; img.decoding = "async"; img.alt = ru;
+      img.src = "img/t/" + id + ".webp";
+      tile.appendChild(img);
+      if (views.length > 1) tile.appendChild(el("span", "badge", views.length + " " + plural(views.length, "вид", "вида", "видов")));
+      const cap = el("div", "cap");
+      cap.append(el("span", "ru", ru), el("code", null, id));
+      b.append(tile, cap);
+      b.addEventListener("click", () => open(i, 0, b));
+      grid.appendChild(b);
+    }
+    gs.appendChild(grid);
+    sec.appendChild(gs);
   }
-  sec.appendChild(grid);
-  groupsEl.appendChild(sec);
+  main.appendChild(sec);
 }
+const totalLi = el("li", "total");
+totalLi.append(el("span", null, "Всего"), el("span", null, flat.length + " " + plural(flat.length, "дом", "дома", "домов")));
+list.appendChild(totalLi);
+document.getElementById("total-houses").textContent =
+  flat.length + " " + plural(flat.length, "дом", "дома", "домов") + " в " + DISTRICTS.length + " районах";
 
+// Highlight the district chip in view.
+const chips = [...dnav.querySelectorAll("a")];
+const spy = new IntersectionObserver(entries => {
+  for (const e of entries) if (e.isIntersecting) {
+    chips.forEach(c => c.classList.toggle("on", c.dataset.d === e.target.id));
+    const on = chips.find(c => c.dataset.d === e.target.id);
+    if (on) on.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }
+}, { rootMargin: "-45% 0px -50% 0px" });
+document.querySelectorAll(".district").forEach(s => spy.observe(s));
+
+// Viewer
 const lb = document.getElementById("lb");
 const lbImg = document.getElementById("lb-img");
-let cur = -1, opener = null;
+const lbViews = document.getElementById("lb-views");
+let cur = -1, curView = 0, opener = null;
 const slug = id => "ref-" + id.replace(/_/g, "-");
 
-function show(i) {
+function source(h) {
+  if (h.views.length && h.views[0][0] === "34") {
+    const extra = h.views.length > 1 ? "; виды: SlopMachine" : "";
+    return "реф 3/4: Phantasm " + (SUPRA.has(h.id) ? "Supra" : "LanPaint") + extra;
+  }
+  return "реф: SlopMachine" + (PARK.has(h.id) ? "; в игре упрощённая модель" : "");
+}
+function showView(v) {
+  const h = flat[cur];
+  curView = Math.max(0, Math.min(v, h.views.length - 1));
+  const src = h.views.length ? h.views[curView][1] : "img/" + h.id + ".webp";
+  lbImg.src = src;
+  lbImg.alt = h.ru + (h.views.length ? ", " + VIEW_NAMES[h.views[curView][0]] : "");
+  [...lbViews.children].forEach((b, k) => b.setAttribute("aria-pressed", String(k === curView)));
+}
+function show(i, v) {
   cur = (i + flat.length) % flat.length;
   const h = flat[cur];
-  lbImg.src = "img/" + h.id + ".webp";
-  lbImg.alt = h.ru;
+  lbViews.replaceChildren();
+  if (h.views.length > 1) {
+    h.views.forEach(([key], k) => {
+      const b = el("button", null, VIEW_NAMES[key] || key); b.type = "button";
+      b.addEventListener("click", () => showView(k));
+      lbViews.appendChild(b);
+    });
+  }
+  lbViews.hidden = h.views.length < 2;
+  showView(v || 0);
   document.getElementById("lb-name").textContent = h.ru;
   document.getElementById("lb-id").textContent = h.id;
-  document.getElementById("lb-meta").textContent =
-    (DISTRICTS[h.id] || "Residential") + " · " + h.group + " · Phantasm " + (SUPRA.has(h.id) ? "Supra" : "LanPaint");
+  document.getElementById("lb-meta").textContent = (ZONES[h.id] || h.district) + " · " + h.group + " · " + source(h);
   document.getElementById("lb-count").textContent = (cur + 1) + " / " + flat.length;
   try { history.replaceState(null, "", "#" + slug(h.id)); } catch (e) {}
-  const n = flat[(cur + 1) % flat.length];
-  new Image().src = "img/" + n.id + ".webp";
+  for (const [, p] of h.views.slice(1)) new Image().src = p;
+  const next = flat[(cur + 1) % flat.length].views[0];
+  if (next) new Image().src = next[1];
 }
-function open(i, from) {
+function open(i, v, from) {
   opener = from || null;
-  show(i);
+  show(i, v);
   lb.hidden = false;
   document.body.style.overflow = "hidden";
   document.getElementById("lb-close").focus();
@@ -331,12 +501,14 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape") close();
   else if (e.key === "ArrowLeft") show(cur - 1);
   else if (e.key === "ArrowRight") show(cur + 1);
+  else if (e.key === "ArrowUp") showView(curView - 1);
+  else if (e.key === "ArrowDown") showView(curView + 1);
 });
 
 function fromHash() {
   const m = location.hash.slice(1);
   const i = flat.findIndex(h => slug(h.id) === m);
-  if (i >= 0) open(i);
+  if (i >= 0) open(i, 0);
 }
 window.addEventListener("hashchange", fromHash);
 fromHash();
