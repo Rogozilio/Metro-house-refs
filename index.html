@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: a model-maker's catalogue. Pale sky tiles hold each cut-out house; the page runs district by district, then by building type. */
+/* Layout: a model-maker's catalogue. Pale sky tiles hold each cut-out building or prop; the page runs district by district, buildings first, then props. */
 :root {
   color-scheme: light;
   --bg: #eef1f5;
@@ -19,7 +19,6 @@
   --muted: #5a6575;
   --line: #d4dae3;
   --accent: #1c6c87;
-  --accent-soft: #d6e9f0;
   --tile-top: #f3f6f9;
   --tile-bottom: #dde3ea;
   --shade: rgba(23, 32, 43, 0.14);
@@ -33,7 +32,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #10151c; --panel: #171e27; --fg: #e5eaf1; --muted: #93a0b1; --line: #263140;
-    --accent: #62b8d2; --accent-soft: #19333f; --tile-top: #e2e7ee; --tile-bottom: #c6ced9;
+    --accent: #62b8d2; --tile-top: #e2e7ee; --tile-bottom: #c6ced9;
     --shade: rgba(0, 0, 0, 0.35); --scrim: rgba(5, 8, 12, 0.97); color-scheme: dark;
   }
 }
@@ -56,52 +55,63 @@ body::before {
 }
 
 /* Masthead */
-.mast { padding-block: 40px 28px; display: grid; gap: 28px; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); align-items: end; }
+.mast { padding-block: 40px 28px; display: grid; gap: 28px; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: end; }
 .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
 h1 { font-family: var(--display); font-weight: 700; font-size: clamp(40px, 7vw, 76px); line-height: 0.98; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
 .lede { max-width: 58ch; color: var(--muted); margin: 18px 0 0; font-size: 16px; }
 .lede b { color: var(--fg); font-weight: 600; }
 
-.districts { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
-.districts h2 { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
-.districts ul { list-style: none; margin: 0; padding: 0; display: grid; }
-.districts li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-top: 1px solid var(--line); font-variant-numeric: tabular-nums; }
-.districts li:first-child { border-top: 0; }
-.districts a { font-family: var(--mono); font-size: 13px; color: var(--accent); font-weight: 500; text-decoration: none; }
+.districts { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px; overflow-x: auto; }
+.districts table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 13px; }
+.districts th { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-align: right; padding: 0 0 8px 12px; }
+.districts th:first-child { text-align: left; padding-left: 0; }
+.districts td { padding: 6px 0 6px 12px; border-top: 1px solid var(--line); text-align: right; color: var(--muted); }
+.districts td:first-child { text-align: left; padding-left: 0; }
+.districts a { font-family: var(--mono); color: var(--accent); font-weight: 500; text-decoration: none; }
 .districts a:hover { text-decoration: underline; }
-.districts .dc { color: var(--muted); font-size: 13px; text-align: right; }
-.districts li.total { border-top: 2px solid var(--line); margin-top: 2px; }
-.districts li.total span { font-weight: 600; color: var(--fg); font-size: 13px; }
+.districts tr.total td { border-top: 2px solid var(--line); color: var(--fg); font-weight: 600; }
 
-/* District nav */
+/* Sticky bar: kind filter + district chips */
 .dnav {
   position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
   background: color-mix(in srgb, var(--bg) 92%, transparent);
   backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   border-block: 1px solid var(--line);
 }
-.dnav .wrap { display: flex; gap: 8px; overflow-x: auto; padding-block: 10px; scrollbar-width: none; }
-.dnav .wrap::-webkit-scrollbar { display: none; }
-.dnav a {
+.dnav .wrap { display: flex; gap: 12px; align-items: center; padding-block: 10px; }
+.seg { flex: none; display: inline-flex; padding: 3px; border-radius: 999px; background: var(--panel); border: 1px solid var(--line); }
+.seg button {
+  font: inherit; font-size: 13px; font-weight: 500; color: var(--muted); background: none; border: 0;
+  border-radius: 999px; padding: 5px 12px; cursor: pointer; white-space: nowrap;
+}
+.seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+.seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.chips { display: flex; gap: 8px; overflow-x: auto; min-width: 0; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chips a {
   flex: none; display: inline-flex; gap: 8px; align-items: baseline;
   padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel);
   color: var(--fg); text-decoration: none; font-family: var(--mono); font-size: 13px; white-space: nowrap;
 }
-.dnav a span { font-size: 12px; color: var(--muted); }
-.dnav a:hover, .dnav a:focus-visible { border-color: var(--accent); }
-.dnav a.on { background: var(--accent); border-color: var(--accent); color: var(--panel); }
-.dnav a.on span { color: var(--panel); opacity: 0.8; }
+.chips a span { font-size: 12px; color: var(--muted); }
+.chips a:hover, .chips a:focus-visible { border-color: var(--accent); }
+.chips a.on { background: var(--accent); border-color: var(--accent); color: var(--panel); }
+.chips a.on span { color: var(--panel); opacity: 0.8; }
 
-/* Districts and groups */
+/* Districts, kinds and groups */
 .district { padding-block: 40px 8px; scroll-margin-top: 56px; }
 .district + .district { border-top: 1px solid var(--line); margin-top: 32px; }
 .district-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; }
 .district-head h2 { font-family: var(--display); font-weight: 500; font-size: clamp(26px, 3.6vw, 36px); margin: 0; letter-spacing: -0.01em; }
 .district-head p { margin: 0; color: var(--muted); }
-.group { padding-top: 26px; scroll-margin-top: 64px; }
+.kind { padding-top: 22px; }
+.kind-label { display: flex; align-items: center; gap: 10px; margin: 6px 0 0; font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.kind-label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.group { padding-top: 22px; scroll-margin-top: 64px; }
 .group h3 { display: flex; align-items: baseline; gap: 10px; font-size: 18px; font-weight: 600; margin: 0 0 14px; }
 .group h3 span { font-family: var(--mono); font-size: 12px; font-weight: 400; color: var(--muted); }
 .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); }
+.kind[data-kind="props"] .grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr)); gap: 14px; }
 
 .card { all: unset; box-sizing: border-box; cursor: zoom-in; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .tile {
@@ -125,7 +135,7 @@ h1 { font-family: var(--display); font-weight: 700; font-size: clamp(40px, 7vw, 
 .cap code { font-family: var(--mono); font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
 
 .foot { padding-block: 40px 56px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); margin-top: 48px; display: grid; gap: 8px; }
-.foot p { margin: 0; max-width: 75ch; }
+.foot p { margin: 0; max-width: 78ch; }
 .foot code { font-family: var(--mono); font-size: 12px; }
 
 /* Viewer */
@@ -151,8 +161,10 @@ h1 { font-family: var(--display); font-weight: 700; font-size: clamp(40px, 7vw, 
 
 @media (max-width: 760px) {
   .mast { grid-template-columns: minmax(0, 1fr); padding-block: 28px 20px; }
-  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .grid, .kind[data-kind="props"] .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
   .cap .ru { font-size: 14px; }
+  .dnav .wrap { flex-wrap: wrap; row-gap: 8px; }
+  .chips { flex: 1 1 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
   .tile img { transition: none; }
@@ -166,24 +178,34 @@ h1 { font-family: var(--display); font-weight: 700; font-size: clamp(40px, 7vw, 
   <div>
     <p class="eyebrow">We Are Destroyers · город Metro</p>
     <h1>Рефы домов</h1>
-    <p class="lede">Рефы всех домов из каталога Metro: <b id="total-houses">89 домов в 7 районах</b>. У жилого района это стилизованные рефы 3/4 для Phantasm. У остальных районов это листы с видами, по которым SlopMachine строил модели. Нажмите на карточку, чтобы открыть реф крупно и переключать виды.</p>
+    <p class="lede">Рефы каталога Metro: <b id="total-line">89 зданий и 170 пропсов</b>. У жилого района главные рефы зданий — стилизованные 3/4 для Phantasm. Остальное — рефы, по которым SlopMachine строил модели. Нажмите на карточку, чтобы открыть реф крупно и переключать виды.</p>
   </div>
   <aside class="districts" aria-label="Районы Metro">
-    <h2>Районы Metro</h2>
-    <ul id="district-list"></ul>
+    <table>
+      <thead><tr><th scope="col">Район</th><th scope="col">Зданий</th><th scope="col">Пропсов</th></tr></thead>
+      <tbody id="district-rows"></tbody>
+    </table>
   </aside>
 </header>
 
-<nav class="dnav" aria-label="Районы">
-  <div class="wrap" id="dnav"></div>
+<nav class="dnav" aria-label="Фильтр и районы">
+  <div class="wrap">
+    <div class="seg" role="group" aria-label="Что показывать">
+      <button type="button" data-mode="all" aria-pressed="true">Всё</button>
+      <button type="button" data-mode="houses" aria-pressed="false">Здания</button>
+      <button type="button" data-mode="props" aria-pressed="false">Пропсы</button>
+    </div>
+    <div class="chips" id="dnav"></div>
+  </div>
 </nav>
 
 <main class="wrap" id="districts"></main>
 
 <footer class="wrap foot">
-  <p>Жилой район: 23 рефа ушли в Phantasm 4–5 ноября 2026, по ним перекрашены текстуры. Дополнительные виды этих домов и все рефы других районов взяты из заданий SlopMachine (сентябрь–октябрь 2026), по ним строились модели.</p>
-  <p>Пять парковых зданий в игре стоят в упрощённой версии. Здесь показан исходный реф. Фон всех рефов вырезан автоматически, на тонких деталях возможны белые края.</p>
-  <p>Под каждой карточкой указано имя дома в каталоге (<code>catalog.json</code>). Ссылка на конкретный дом: адрес страницы + <code>#ref-имя-дома</code>.</p>
+  <p>Здания жилого района: 23 рефа ушли в Phantasm 4–5 ноября 2026, по ним перекрашены текстуры. Остальные виды зданий и рефы пропсов взяты из заданий SlopMachine (сентябрь–ноябрь 2026), по ним строились модели. Рефы трёх уличных деревьев жилого района и трёх ковров барахолки — GPT-картинки из <code>GeneratedArt</code>.</p>
+  <p>Пять парковых зданий в игре стоят в упрощённой версии. Моховые камни, парковый дуб и пропсы жилого района с перекраской показаны по рефу исходной модели.</p>
+  <p id="no-ref-line">58 пропсов каталога без рефа: 22 секции заборов Wealthy, 20 камней хенджа, 9 машин I Am Bird, 3 сухих дерева трущоб, скамья летней сцены, приствольная решётка, стол и стул кафе. Для них не нашлось рефа ни в SlopMachine, ни в GeneratedArt.</p>
+  <p>Фон рефов вырезан автоматически, на тонких деталях возможны белые края. Под карточкой — имя в каталоге (<code>catalog.json</code>). Ссылка на конкретную карточку: адрес страницы + <code>#ref-имя</code> для здания или <code>#prop-имя</code> для пропса.</p>
 </footer>
 
 <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-labelledby="lb-name">
@@ -198,157 +220,388 @@ h1 { font-family: var(--display); font-weight: 700; font-size: clamp(40px, 7vw, 
       <small id="lb-meta"></small>
     </div>
     <div class="lb-ctrl">
-      <button type="button" id="lb-prev" aria-label="Предыдущий дом">←</button>
+      <button type="button" id="lb-prev" aria-label="Предыдущая карточка">←</button>
       <span id="lb-count"></span>
-      <button type="button" id="lb-next" aria-label="Следующий дом">→</button>
+      <button type="button" id="lb-next" aria-label="Следующая карточка">→</button>
       <button type="button" id="lb-close" aria-label="Закрыть">Закрыть</button>
     </div>
   </div>
 </div>
 
 <script>
-const DISTRICTS = [
-  { id: "residential", name: "Residential", blurb: "Нью-Йорк: ряды, панельки, магазины, парк", groups: [
-    { id: "res-rows", title: "Ряды и таунхаусы", houses: [
-      ["brownstone_row", "Браунстоуны"],
-      ["bowfront_limestone_row", "Известняковый ряд с эркерами"],
-      ["federal_painted_row", "Крашеный ряд в федеральном стиле"],
-      ["red_brick_four_storey_townhouse_clean", "Кирпичный таунхаус, 4 этажа"],
-      ["walkup_tenement_row", "Доходный дом без лифта"],
-      ["corner_deli_row", "Угловой дом с гастрономом"],
-      ["amber-bay-building-2", "Янтарный дом с эркерами"],
+const SECTIONS = [
+  { id: "residential", name: "Residential", blurb: "Нью-Йорк: ряды, панельки, магазины, парк",
+    houses: [
+      { id: "res-rows", title: "Ряды и таунхаусы", items: [
+        ["brownstone_row", "Браунстоуны"],
+        ["bowfront_limestone_row", "Известняковый ряд с эркерами"],
+        ["federal_painted_row", "Крашеный ряд в федеральном стиле"],
+        ["red_brick_four_storey_townhouse_clean", "Кирпичный таунхаус, 4 этажа"],
+        ["walkup_tenement_row", "Доходный дом без лифта"],
+        ["corner_deli_row", "Угловой дом с гастрономом"],
+        ["amber-bay-building-2", "Янтарный дом с эркерами"],
+      ]},
+      { id: "res-panels", title: "Панельки", items: [
+        ["panel9_two_entrance", "9 этажей, 2 подъезда"],
+        ["panel9_three_entrance", "9 этажей, 3 подъезда"],
+        ["panel9_four_entrance", "9 этажей, 4 подъезда"],
+      ]},
+      { id: "res-detached", title: "Частные дома", items: [
+        ["porch_house", "Дом с верандой"],
+        ["red_two_storey_house_mcp", "Кирпичный дом, 2 этажа"],
+        ["ochre-quoin-house", "Охристый дом с рустом"],
+      ]},
+      { id: "res-shops", title: "Магазины и сервис", items: [
+        ["yellow_three_storey_shop_mcp", "Жёлтый дом с магазином"],
+        ["corner_pharmacy", "Угловая аптека"],
+        ["laundromat", "Прачечная"],
+        ["retro_diner", "Ретро-дайнер"],
+        ["supermarket", "Супермаркет"],
+        ["strip_mall", "Стрип-молл"],
+        ["gas_station", "Заправка"],
+      ]},
+      { id: "res-civic", title: "Общественные здания", items: [
+        ["brick_school", "Кирпичная школа"],
+        ["fire_station", "Пожарная часть"],
+        ["stone_church", "Каменная церковь"],
+      ]},
+      { id: "res-park", title: "Парковые здания", items: [
+        ["park_museum", "Музей в парке"],
+        ["orangery", "Оранжерея"],
+        ["park_cafe", "Кафе в парке"],
+        ["bandstand", "Беседка для оркестра"],
+        ["park_stage", "Летняя сцена"],
+      ]},
+    ],
+    props: [
+      { id: "res-p-trees", title: "Уличные деревья", items: [
+        ["residential_tree_round", "Круглое уличное дерево"],
+        ["residential_tree_oval", "Овальное уличное дерево"],
+        ["residential_tree_young", "Молодое уличное дерево"],
+      ]},
+      { id: "res-p-street", title: "Улица и двор", items: [
+        ["residential_park_bench", "Скамейка"],
+        ["residential_trash_bin", "Урна"],
+        ["residential_fire_hydrant", "Пожарный гидрант"],
+        ["picnic_table", "Стол для пикника"],
+        ["playground_slide", "Горка"],
+        ["billboard", "Билборд"],
+      ]},
     ]},
-    { id: "res-panels", title: "Панельки", houses: [
-      ["panel9_two_entrance", "9 этажей, 2 подъезда"],
-      ["panel9_three_entrance", "9 этажей, 3 подъезда"],
-      ["panel9_four_entrance", "9 этажей, 4 подъезда"],
+  { id: "downtown", name: "Downtown", blurb: "Шанхай: башни делового центра",
+    houses: [
+      { id: "down-towers", title: "Башни", items: [
+        ["ivory_office_tower_mcp", "Светлая офисная башня"],
+        ["art_deco_tower_v2_mcp", "Башня ар-деко"],
+        ["golden_spire_tower_mcp", "Башня с золотым шпилем"],
+        ["octagonal_glass_tower_mcp", "Восьмигранная стеклянная башня"],
+        ["orange_roof_tower_mcp", "Башня с оранжевой крышей"],
+        ["round_glass_tower_mcp", "Круглая стеклянная башня"],
+        ["tapered_ivory_tower_mcp", "Сужающаяся светлая башня"],
+        ["bank_tower", "Башня банка"],
+      ]},
+      { id: "down-offices", title: "Офисы, отель и мэрия", items: [
+        ["six_storey_grid_office_mcp", "Офис, 6 этажей"],
+        ["glass_office", "Стеклянный офис"],
+        ["classic_hotel", "Классический отель"],
+        ["city_hall", "Мэрия"],
+      ]},
+    ],
+    props: [
+      { id: "down-p-street", title: "Улица", items: [
+        ["phone_booth", "Телефонная будка"],
+        ["parking_meter", "Паркомат"],
+        ["bike_rack", "Велопарковка"],
+        ["palm_tree", "Пальма"],
+        ["flower_planter", "Цветочный вазон"],
+        ["bronze_statue", "Бронзовая статуя"],
+        ["newsstand", "Газетный киоск"],
+        ["hotdog_cart", "Тележка с хот-догами"],
+        ["vending_machine", "Торговый автомат"],
+      ]},
     ]},
-    { id: "res-detached", title: "Частные дома", houses: [
-      ["porch_house", "Дом с верандой"],
-      ["red_two_storey_house_mcp", "Кирпичный дом, 2 этажа"],
-      ["ochre-quoin-house", "Охристый дом с рустом"],
+  { id: "oldtown", name: "OldTown", blurb: "Площадь с фонтаном и мощёные переулки",
+    houses: [
+      { id: "old-houses", title: "Дома", items: [
+        ["half_timbered_house", "Фахверковый дом"],
+        ["stepped_gable_house", "Дом со ступенчатым фронтоном"],
+        ["ochre_townhouse", "Охристый таунхаус"],
+        ["blue_townhouse", "Голубой таунхаус"],
+        ["turret_corner_house", "Угловой дом с башенкой"],
+        ["arcade_stone_house", "Каменный дом с аркадой"],
+        ["whitewashed_cottage", "Белёный коттедж"],
+      ]},
+      { id: "old-square", title: "Площадь", items: [
+        ["old_tavern", "Старая таверна"],
+        ["square_fountain", "Фонтан на площади"],
+      ]},
+      { id: "old-ruins", title: "Руины", items: [
+        ["ruined_stone_house", "Разрушенный каменный дом"],
+        ["burnt_timber_shell", "Сгоревший каркас"],
+      ]},
+    ],
+    props: []},
+  { id: "wealthy", name: "Wealthy", blurb: "Особняки на огороженных участках с садами",
+    houses: [
+      { id: "rich-villas", title: "Особняки и виллы", items: [
+        ["colonial_mansion", "Колониальный особняк"],
+        ["mediterranean_villa", "Средиземноморская вилла"],
+        ["tudor_manor", "Тюдоровская усадьба"],
+        ["modern_glass_villa", "Современная стеклянная вилла"],
+        ["dark_timber_villa", "Вилла из тёмного дерева"],
+        ["chateau_house", "Шато"],
+        ["victorian_mansion", "Викторианский особняк"],
+        ["shingle_estate", "Усадьба в стиле шингл"],
+      ]},
+      { id: "rich-club", title: "Клуб и бутик", items: [
+        ["country_club", "Загородный клуб"],
+        ["luxury_boutique", "Люксовый бутик"],
+      ]},
+    ],
+    props: [
+      { id: "rich-p-garden", title: "Сад", items: [
+        ["topiary_spiral", "Топиари-спираль"],
+        ["italian_cypress", "Итальянский кипарис"],
+        ["ornamental_tree", "Декоративное дерево"],
+        ["hydrangea_shrub", "Гортензия"],
+        ["rose_bed", "Розарий"],
+        ["stone_urn", "Каменная ваза"],
+        ["marble_statue", "Мраморная статуя"],
+        ["birdbath", "Поилка для птиц"],
+        ["garden_fountain", "Садовый фонтан"],
+        ["vine_pergola", "Пергола с виноградом"],
+        ["garden_gazebo", "Беседка"],
+        ["iron_lamp_post", "Кованый фонарь"],
+      ]},
+      { id: "rich-p-leisure", title: "Отдых", items: [
+        ["swimming_pool", "Бассейн"],
+        ["sun_loungers", "Шезлонги"],
+        ["patio_set", "Стол с зонтом"],
+        ["hot_tub", "Гидромассажная ванна"],
+        ["outdoor_kitchen", "Летняя кухня"],
+        ["fire_pit_set", "Костровая зона"],
+        ["swing_bench", "Садовые качели"],
+        ["tennis_court", "Теннисный корт"],
+        ["trampoline", "Батут"],
+        ["playhouse", "Детский домик"],
+        ["basketball_hoop", "Баскетбольное кольцо"],
+      ]},
+      { id: "rich-p-cars", title: "Машины", items: [
+        ["sports_car", "Спорткар"],
+        ["luxury_sedan", "Представительский седан"],
+        ["luxury_suv", "Люксовый внедорожник"],
+        ["vintage_convertible", "Винтажный кабриолет"],
+        ["golf_cart", "Гольф-кар"],
+      ]},
+      { id: "rich-p-gates", title: "Ограды и постройки", items: [
+        ["driveway_gate", "Въездные ворота"],
+        ["iron_fence", "Кованая ограда"],
+        ["wicket_gate", "Калитка"],
+        ["greenhouse", "Теплица"],
+        ["garden_shed", "Садовый сарай"],
+      ]},
     ]},
-    { id: "res-shops", title: "Магазины и сервис", houses: [
-      ["yellow_three_storey_shop_mcp", "Жёлтый дом с магазином"],
-      ["corner_pharmacy", "Угловая аптека"],
-      ["laundromat", "Прачечная"],
-      ["retro_diner", "Ретро-дайнер"],
-      ["supermarket", "Супермаркет"],
-      ["strip_mall", "Стрип-молл"],
-      ["gas_station", "Заправка"],
+  { id: "slums", name: "Slums", blurb: "Лачуги, сбитые в кучу у порта, и барахолка",
+    houses: [
+      { id: "slum-shacks", title: "Лачуги и лавка", items: [
+        ["tin_shack", "Жестяная лачуга"],
+        ["plywood_shanty", "Фанерная хибара"],
+        ["stacked_shack", "Надстроенная лачуга"],
+        ["container_home", "Дом из контейнера"],
+        ["cinderblock_hut", "Хижина из шлакоблоков"],
+        ["stilt_shack", "Лачуга на сваях"],
+        ["blue_hut", "Синяя хижина"],
+        ["shutter_shop", "Лавка с рольставней"],
+      ]},
+    ],
+    props: [
+      { id: "slum-p-market", title: "Барахолка", items: [
+        ["bazaar_trestle_table", "Стол на козлах"],
+        ["bazaar_crate_counter", "Прилавок из ящиков"],
+        ["market_stall", "Рыночный прилавок"],
+        ["bazaar_enamel_kettle", "Эмалированный чайник"],
+        ["bazaar_tube_radio", "Ламповый радиоприёмник"],
+        ["bazaar_rotary_phone", "Дисковый телефон"],
+        ["bazaar_gas_mask", "Противогаз"],
+        ["bazaar_box_camera", "Старый фотоаппарат"],
+        ["bazaar_plate_stack", "Стопка тарелок"],
+        ["bazaar_book_stack", "Стопка книг"],
+        ["bazaar_boots", "Сапоги"],
+        ["bazaar_vase", "Ваза"],
+        ["bazaar_table_lamp", "Настольная лампа"],
+        ["bazaar_toolbox", "Ящик с инструментами"],
+        ["bazaar_toy_truck", "Игрушечный грузовик"],
+        ["bazaar_rug_paisley", "Ковёр с пейсли"],
+        ["bazaar_rug_oilcloth", "Клеёнка с цветами"],
+        ["bazaar_rug_blanket", "Армейское одеяло"],
+      ]},
+      { id: "slum-p-yard", title: "Двор", items: [
+        ["slum_kitchen", "Уличная кухня"],
+        ["slum_wash_table", "Стол для стирки"],
+        ["slum_bench", "Деревянная скамья"],
+        ["slum_chair_stack", "Пластиковые стулья"],
+        ["slum_potted_plants", "Растения в горшках"],
+        ["slum_wheelbarrow", "Тачка"],
+        ["slum_clothesline", "Бельевая верёвка"],
+        ["slum_clothesline_sheets", "Верёвка с простынями"],
+        ["slum_laundry_rack", "Сушилка для белья"],
+      ]},
+      { id: "slum-p-drums", title: "Бочки и баллоны", items: [
+        ["slum_oil_drum", "Бочка из-под масла"],
+        ["slum_rubble_drum", "Бочка с щебнем"],
+        ["slum_water_drum", "Пластиковая бочка"],
+        ["slum_jerrycan", "Канистры"],
+        ["slum_gas_cylinder", "Газовые баллоны"],
+        ["slum_wooden_barrel", "Деревянная бочка"],
+        ["slum_washer", "Сломанная стиралка"],
+        ["burn_barrel", "Бочка-костёр"],
+      ]},
+      { id: "slum-p-junk", title: "Хлам", items: [
+        ["slum_tyre_stack", "Стопка шин"],
+        ["slum_tyre", "Пара шин"],
+        ["slum_cinder_blocks", "Шлакоблоки"],
+        ["slum_pallet", "Поддоны"],
+        ["slum_crate", "Деревянный ящик"],
+        ["slum_rubble_crate", "Ящик с щебнем"],
+        ["slum_basins", "Тазы"],
+        ["slum_planks", "Доски"],
+        ["slum_corrugated_sheets", "Листы профнастила"],
+        ["scrap_pile", "Куча хлама"],
+      ]},
+      { id: "slum-p-build", title: "Навесы, прилавки и заборы", items: [
+        ["slum_shed", "Сарай-пристройка"],
+        ["slum_outhouse", "Уличный туалет"],
+        ["tarp_shelter", "Брезентовый навес"],
+        ["slum_tarp_lean_to", "Навес у стены"],
+        ["slum_veg_stall", "Овощной прилавок"],
+        ["slum_goods_stall", "Прилавок с товаром"],
+        ["slum_pallet_fence", "Забор из поддонов"],
+        ["slum_corrugated_fence", "Забор из профнастила"],
+        ["slum_plank_fence", "Дощатый забор"],
+        ["slum_patchwork_fence", "Лоскутный забор"],
+      ]},
     ]},
-    { id: "res-civic", title: "Общественные здания", houses: [
-      ["brick_school", "Кирпичная школа"],
-      ["fire_station", "Пожарная часть"],
-      ["stone_church", "Каменная церковь"],
+  { id: "industrial", name: "Industrial", blurb: "Сталелитейный завод, электростанция, склады",
+    houses: [
+      { id: "ind-steel", title: "Сталелитейный завод", items: [
+        ["blast_furnace", "Доменная печь"],
+        ["hot_blast_stoves", "Воздухонагреватели"],
+        ["melt_shop", "Сталеплавильный цех"],
+        ["steel_chimney", "Заводская труба"],
+        ["gas_holder", "Газгольдер"],
+        ["ore_bunkers", "Рудные бункеры"],
+        ["conveyor_gallery", "Конвейерная галерея"],
+      ]},
+      { id: "ind-power", title: "Электростанция", items: [
+        ["power_station", "Главный корпус"],
+        ["cooling_tower", "Градирня"],
+        ["power_chimney", "Труба электростанции"],
+        ["coal_shed", "Угольный склад"],
+      ]},
+      { id: "ind-factory", title: "Фабрика и склады", items: [
+        ["brick_factory", "Кирпичная фабрика"],
+        ["tank_farm", "Резервуарный парк"],
+        ["industrial_warehouse_mcp", "Промышленный склад"],
+        ["brick_industrial_warehouse_mcp", "Кирпичный склад"],
+        ["green_single_storey_warehouse_mcp", "Зелёный одноэтажный склад"],
+      ]},
+    ],
+    props: []},
+  { id: "port", name: "Port", blurb: "Гавань с краном и маяком",
+    houses: [
+      { id: "port-harbour", title: "Гавань", items: [
+        ["gantry_crane", "Портальный кран"],
+        ["harbour_office", "Управление гавани"],
+        ["lighthouse", "Маяк"],
+        ["port_warehouse", "Портовый склад"],
+      ]},
+    ],
+    props: [
+      { id: "port-p-quay", title: "Причал", items: [
+        ["container_red_40", "Красный контейнер, 40 футов"],
+        ["container_blue_20", "Синий контейнер, 20 футов"],
+        ["container_green_40", "Зелёный контейнер, 40 футов"],
+        ["container_reefer_40", "Рефконтейнер, 40 футов"],
+        ["crate_stack", "Штабель ящиков"],
+        ["barrel_pallet", "Бочки на поддоне"],
+        ["mooring_bollard", "Швартовная тумба"],
+        ["forklift", "Вилочный погрузчик"],
+      ]},
     ]},
-    { id: "res-park", title: "Парковые здания", houses: [
-      ["park_museum", "Музей в парке"],
-      ["orangery", "Оранжерея"],
-      ["park_cafe", "Кафе в парке"],
-      ["bandstand", "Беседка для оркестра"],
-      ["park_stage", "Летняя сцена"],
+  { id: "city", name: "Весь город", blurb: "Пропсы без привязки к району: улицы, транспорт, парки",
+    houses: [],
+    props: [
+      { id: "city-p-street", title: "Улица", items: [
+        ["street_lamp", "Уличный фонарь"],
+        ["traffic_light", "Светофор"],
+        ["stop_sign", "Знак «Стоп»"],
+        ["bus_shelter", "Остановка"],
+        ["park_bench", "Скамейка"],
+        ["trash_bin", "Урна"],
+        ["fire_hydrant", "Пожарный гидрант"],
+        ["mailbox", "Почтовый ящик"],
+        ["newspaper_box", "Газетный автомат"],
+        ["dumpster", "Мусорный контейнер"],
+        ["jersey_barrier", "Бетонный отбойник"],
+        ["traffic_cone", "Дорожный конус"],
+        ["road_barricade", "Дорожное ограждение"],
+      ]},
+      { id: "city-p-traffic", title: "Транспорт", items: [
+        ["sedan", "Седан"],
+        ["hatchback", "Хэтчбек"],
+        ["pickup", "Пикап"],
+        ["delivery_van", "Фургон доставки"],
+        ["taxi", "Такси"],
+        ["city_bus", "Городской автобус"],
+        ["box_truck", "Грузовик с фургоном"],
+        ["police_car", "Полицейская машина"],
+      ]},
+      { id: "city-p-green", title: "Деревья и кусты", items: [
+        ["street_tree", "Уличное дерево"],
+        ["oak_tree", "Дуб"],
+        ["birch_tree", "Берёза"],
+        ["pine_tree", "Ель"],
+        ["park_oak", "Дуб в парке"],
+        ["park_oak_tall", "Высокий дуб"],
+        ["park_oak_leaning", "Наклонный дуб"],
+        ["park_oak_curved", "Изогнутый дуб"],
+        ["park_oak_old", "Старый дуб"],
+        ["park_shrub_round", "Круглый куст"],
+        ["park_white_shrub", "Куст с белыми цветами"],
+        ["park_laurel", "Лавр"],
+        ["round_bush", "Шарообразный куст"],
+        ["box_hedge", "Живая изгородь"],
+        ["flower_bed", "Клумба"],
+      ]},
+      { id: "city-p-rocks", title: "Камни", items: [
+        ["park_boulder", "Валун"],
+        ["park_rock_slab", "Каменная плита"],
+        ["park_rock_cluster", "Группа камней"],
+        ["park_standing_rock", "Стоячий камень"],
+        ["park_boulder_moss", "Валун со мхом"],
+        ["park_rock_slab_moss", "Плита со мхом"],
+        ["park_rock_cluster_moss", "Камни со мхом"],
+        ["park_standing_rock_moss", "Стоячий камень со мхом"],
+      ]},
+      { id: "city-p-park", title: "Парк", items: [
+        ["equestrian_statue", "Конная статуя"],
+        ["stone_obelisk", "Обелиск"],
+        ["stone_fountain", "Каменный фонтан"],
+        ["grand_fountain", "Большой фонтан"],
+        ["drinking_fountain", "Питьевой фонтанчик"],
+        ["park_lamp", "Парковый фонарь"],
+        ["victorian_bench", "Викторианская скамья"],
+        ["rose_pergola", "Пергола для роз"],
+      ]},
+      { id: "city-p-play", title: "Детские площадки", items: [
+        ["swing_set", "Качели"],
+        ["merry_go_round", "Карусель"],
+        ["play_tower", "Игровая башня"],
+        ["seesaw", "Качалка-балансир"],
+      ]},
     ]},
-  ]},
-  { id: "downtown", name: "Downtown", blurb: "Шанхай: башни делового центра", groups: [
-    { id: "down-towers", title: "Башни", houses: [
-      ["ivory_office_tower_mcp", "Светлая офисная башня"],
-      ["art_deco_tower_v2_mcp", "Башня ар-деко"],
-      ["golden_spire_tower_mcp", "Башня с золотым шпилем"],
-      ["octagonal_glass_tower_mcp", "Восьмигранная стеклянная башня"],
-      ["orange_roof_tower_mcp", "Башня с оранжевой крышей"],
-      ["round_glass_tower_mcp", "Круглая стеклянная башня"],
-      ["tapered_ivory_tower_mcp", "Сужающаяся светлая башня"],
-      ["bank_tower", "Башня банка"],
-    ]},
-    { id: "down-offices", title: "Офисы, отель и мэрия", houses: [
-      ["six_storey_grid_office_mcp", "Офис, 6 этажей"],
-      ["glass_office", "Стеклянный офис"],
-      ["classic_hotel", "Классический отель"],
-      ["city_hall", "Мэрия"],
-    ]},
-  ]},
-  { id: "oldtown", name: "OldTown", blurb: "Площадь с фонтаном и мощёные переулки", groups: [
-    { id: "old-houses", title: "Дома", houses: [
-      ["half_timbered_house", "Фахверковый дом"],
-      ["stepped_gable_house", "Дом со ступенчатым фронтоном"],
-      ["ochre_townhouse", "Охристый таунхаус"],
-      ["blue_townhouse", "Голубой таунхаус"],
-      ["turret_corner_house", "Угловой дом с башенкой"],
-      ["arcade_stone_house", "Каменный дом с аркадой"],
-      ["whitewashed_cottage", "Белёный коттедж"],
-    ]},
-    { id: "old-square", title: "Площадь", houses: [
-      ["old_tavern", "Старая таверна"],
-      ["square_fountain", "Фонтан на площади"],
-    ]},
-    { id: "old-ruins", title: "Руины", houses: [
-      ["ruined_stone_house", "Разрушенный каменный дом"],
-      ["burnt_timber_shell", "Сгоревший каркас"],
-    ]},
-  ]},
-  { id: "wealthy", name: "Wealthy", blurb: "Особняки на огороженных участках с садами", groups: [
-    { id: "rich-villas", title: "Особняки и виллы", houses: [
-      ["colonial_mansion", "Колониальный особняк"],
-      ["mediterranean_villa", "Средиземноморская вилла"],
-      ["tudor_manor", "Тюдоровская усадьба"],
-      ["modern_glass_villa", "Современная стеклянная вилла"],
-      ["dark_timber_villa", "Вилла из тёмного дерева"],
-      ["chateau_house", "Шато"],
-      ["victorian_mansion", "Викторианский особняк"],
-      ["shingle_estate", "Усадьба в стиле шингл"],
-    ]},
-    { id: "rich-club", title: "Клуб и бутик", houses: [
-      ["country_club", "Загородный клуб"],
-      ["luxury_boutique", "Люксовый бутик"],
-    ]},
-  ]},
-  { id: "slums", name: "Slums", blurb: "Лачуги, сбитые в кучу у порта", groups: [
-    { id: "slum-shacks", title: "Лачуги и лавка", houses: [
-      ["tin_shack", "Жестяная лачуга"],
-      ["plywood_shanty", "Фанерная хибара"],
-      ["stacked_shack", "Надстроенная лачуга"],
-      ["container_home", "Дом из контейнера"],
-      ["cinderblock_hut", "Хижина из шлакоблоков"],
-      ["stilt_shack", "Лачуга на сваях"],
-      ["blue_hut", "Синяя хижина"],
-      ["shutter_shop", "Лавка с рольставней"],
-    ]},
-  ]},
-  { id: "industrial", name: "Industrial", blurb: "Сталелитейный завод, электростанция, склады", groups: [
-    { id: "ind-steel", title: "Сталелитейный завод", houses: [
-      ["blast_furnace", "Доменная печь"],
-      ["hot_blast_stoves", "Воздухонагреватели"],
-      ["melt_shop", "Сталеплавильный цех"],
-      ["steel_chimney", "Заводская труба"],
-      ["gas_holder", "Газгольдер"],
-      ["ore_bunkers", "Рудные бункеры"],
-      ["conveyor_gallery", "Конвейерная галерея"],
-    ]},
-    { id: "ind-power", title: "Электростанция", houses: [
-      ["power_station", "Главный корпус"],
-      ["cooling_tower", "Градирня"],
-      ["power_chimney", "Труба электростанции"],
-      ["coal_shed", "Угольный склад"],
-    ]},
-    { id: "ind-factory", title: "Фабрика и склады", houses: [
-      ["brick_factory", "Кирпичная фабрика"],
-      ["tank_farm", "Резервуарный парк"],
-      ["industrial_warehouse_mcp", "Промышленный склад"],
-      ["brick_industrial_warehouse_mcp", "Кирпичный склад"],
-      ["green_single_storey_warehouse_mcp", "Зелёный одноэтажный склад"],
-    ]},
-  ]},
-  { id: "port", name: "Port", blurb: "Гавань с краном и маяком", groups: [
-    { id: "port-harbour", title: "Гавань", houses: [
-      ["gantry_crane", "Портальный кран"],
-      ["harbour_office", "Управление гавани"],
-      ["lighthouse", "Маяк"],
-      ["port_warehouse", "Портовый склад"],
-    ]},
-  ]},
 ];
-// Catalogue zones where a house belongs to more than its section's district.
+// Catalogue zones where a building belongs to more than its section's district.
 const ZONES = {
   gas_station: "Residential, Industrial",
   industrial_warehouse_mcp: "Industrial, Port",
@@ -359,8 +612,10 @@ const ZONES = {
 // Painted on Phantasm's Supra profile; the other Residential refs went through LanPaint.
 const SUPRA = new Set(["porch_house", "red_brick_four_storey_townhouse_clean", "yellow_three_storey_shop_mcp", "bowfront_limestone_row"]);
 const PARK = new Set(["park_museum", "orangery", "park_cafe", "bandstand", "park_stage"]);
-const VIEW_NAMES = { "34": "3/4", front: "Фасад", right: "Справа", back: "Сзади", left: "Слева", top: "Сверху" };
+const VIEW_NAMES = { "34": "3/4", front: "Фасад", right: "Справа", back: "Сзади", left: "Слева", top: "Сверху", r1: "Реф 1", r2: "Реф 2" };
 const VIEWS = {"ochre-quoin-house":[["34","img/ochre-quoin-house.webp"],["front","img/v/ochre-quoin-house/front.webp"],["right","img/v/ochre-quoin-house/right.webp"],["back","img/v/ochre-quoin-house/back.webp"],["left","img/v/ochre-quoin-house/left.webp"],["top","img/v/ochre-quoin-house/top.webp"]],"red_two_storey_house_mcp":[["34","img/red_two_storey_house_mcp.webp"],["front","img/v/red_two_storey_house_mcp/front.webp"],["right","img/v/red_two_storey_house_mcp/right.webp"],["back","img/v/red_two_storey_house_mcp/back.webp"],["left","img/v/red_two_storey_house_mcp/left.webp"],["top","img/v/red_two_storey_house_mcp/top.webp"]],"yellow_three_storey_shop_mcp":[["34","img/yellow_three_storey_shop_mcp.webp"],["front","img/v/yellow_three_storey_shop_mcp/front.webp"],["right","img/v/yellow_three_storey_shop_mcp/right.webp"],["back","img/v/yellow_three_storey_shop_mcp/back.webp"],["left","img/v/yellow_three_storey_shop_mcp/left.webp"],["top","img/v/yellow_three_storey_shop_mcp/top.webp"]],"amber-bay-building-2":[["34","img/amber-bay-building-2.webp"]],"red_brick_four_storey_townhouse_clean":[["34","img/red_brick_four_storey_townhouse_clean.webp"],["front","img/v/red_brick_four_storey_townhouse_clean/front.webp"],["right","img/v/red_brick_four_storey_townhouse_clean/right.webp"],["back","img/v/red_brick_four_storey_townhouse_clean/back.webp"],["left","img/v/red_brick_four_storey_townhouse_clean/left.webp"],["top","img/v/red_brick_four_storey_townhouse_clean/top.webp"]],"ivory_office_tower_mcp":[["front","img/ivory_office_tower_mcp.webp"],["right","img/v/ivory_office_tower_mcp/right.webp"],["back","img/v/ivory_office_tower_mcp/back.webp"],["left","img/v/ivory_office_tower_mcp/left.webp"],["top","img/v/ivory_office_tower_mcp/top.webp"]],"art_deco_tower_v2_mcp":[["front","img/art_deco_tower_v2_mcp.webp"],["right","img/v/art_deco_tower_v2_mcp/right.webp"],["back","img/v/art_deco_tower_v2_mcp/back.webp"],["left","img/v/art_deco_tower_v2_mcp/left.webp"],["top","img/v/art_deco_tower_v2_mcp/top.webp"]],"golden_spire_tower_mcp":[["front","img/golden_spire_tower_mcp.webp"],["right","img/v/golden_spire_tower_mcp/right.webp"],["back","img/v/golden_spire_tower_mcp/back.webp"],["left","img/v/golden_spire_tower_mcp/left.webp"],["top","img/v/golden_spire_tower_mcp/top.webp"]],"octagonal_glass_tower_mcp":[["front","img/octagonal_glass_tower_mcp.webp"],["right","img/v/octagonal_glass_tower_mcp/right.webp"],["back","img/v/octagonal_glass_tower_mcp/back.webp"],["left","img/v/octagonal_glass_tower_mcp/left.webp"],["top","img/v/octagonal_glass_tower_mcp/top.webp"]],"orange_roof_tower_mcp":[["front","img/orange_roof_tower_mcp.webp"],["right","img/v/orange_roof_tower_mcp/right.webp"],["back","img/v/orange_roof_tower_mcp/back.webp"],["left","img/v/orange_roof_tower_mcp/left.webp"],["top","img/v/orange_roof_tower_mcp/top.webp"]],"round_glass_tower_mcp":[["front","img/round_glass_tower_mcp.webp"],["right","img/v/round_glass_tower_mcp/right.webp"],["back","img/v/round_glass_tower_mcp/back.webp"],["left","img/v/round_glass_tower_mcp/left.webp"],["top","img/v/round_glass_tower_mcp/top.webp"]],"tapered_ivory_tower_mcp":[["front","img/tapered_ivory_tower_mcp.webp"],["right","img/v/tapered_ivory_tower_mcp/right.webp"],["back","img/v/tapered_ivory_tower_mcp/back.webp"],["left","img/v/tapered_ivory_tower_mcp/left.webp"],["top","img/v/tapered_ivory_tower_mcp/top.webp"]],"six_storey_grid_office_mcp":[["front","img/six_storey_grid_office_mcp.webp"],["right","img/v/six_storey_grid_office_mcp/right.webp"],["back","img/v/six_storey_grid_office_mcp/back.webp"],["left","img/v/six_storey_grid_office_mcp/left.webp"],["top","img/v/six_storey_grid_office_mcp/top.webp"]],"industrial_warehouse_mcp":[["front","img/industrial_warehouse_mcp.webp"],["right","img/v/industrial_warehouse_mcp/right.webp"],["back","img/v/industrial_warehouse_mcp/back.webp"],["left","img/v/industrial_warehouse_mcp/left.webp"],["top","img/v/industrial_warehouse_mcp/top.webp"]],"brick_industrial_warehouse_mcp":[["front","img/brick_industrial_warehouse_mcp.webp"],["right","img/v/brick_industrial_warehouse_mcp/right.webp"],["back","img/v/brick_industrial_warehouse_mcp/back.webp"],["left","img/v/brick_industrial_warehouse_mcp/left.webp"],["top","img/v/brick_industrial_warehouse_mcp/top.webp"]],"green_single_storey_warehouse_mcp":[["front","img/green_single_storey_warehouse_mcp.webp"],["right","img/v/green_single_storey_warehouse_mcp/right.webp"],["back","img/v/green_single_storey_warehouse_mcp/back.webp"],["left","img/v/green_single_storey_warehouse_mcp/left.webp"],["top","img/v/green_single_storey_warehouse_mcp/top.webp"]],"fire_station":[["34","img/fire_station.webp"],["front","img/v/fire_station/front.webp"],["right","img/v/fire_station/right.webp"],["back","img/v/fire_station/back.webp"],["left","img/v/fire_station/left.webp"]],"stone_church":[["34","img/stone_church.webp"],["front","img/v/stone_church/front.webp"],["right","img/v/stone_church/right.webp"],["back","img/v/stone_church/back.webp"],["left","img/v/stone_church/left.webp"]],"gas_station":[["34","img/gas_station.webp"],["front","img/v/gas_station/front.webp"]],"retro_diner":[["34","img/retro_diner.webp"],["front","img/v/retro_diner/front.webp"],["right","img/v/retro_diner/right.webp"],["back","img/v/retro_diner/back.webp"],["left","img/v/retro_diner/left.webp"]],"porch_house":[["34","img/porch_house.webp"],["front","img/v/porch_house/front.webp"],["right","img/v/porch_house/right.webp"],["back","img/v/porch_house/back.webp"],["left","img/v/porch_house/left.webp"]],"brick_school":[["34","img/brick_school.webp"],["front","img/v/brick_school/front.webp"],["right","img/v/brick_school/right.webp"],["back","img/v/brick_school/back.webp"],["left","img/v/brick_school/left.webp"]],"classic_hotel":[["front","img/classic_hotel.webp"],["right","img/v/classic_hotel/right.webp"],["back","img/v/classic_hotel/back.webp"],["left","img/v/classic_hotel/left.webp"]],"glass_office":[["front","img/glass_office.webp"],["right","img/v/glass_office/right.webp"],["back","img/v/glass_office/back.webp"],["left","img/v/glass_office/left.webp"]],"brick_factory":[["front","img/brick_factory.webp"],["right","img/v/brick_factory/right.webp"],["back","img/v/brick_factory/back.webp"],["left","img/v/brick_factory/left.webp"]],"tank_farm":[["front","img/tank_farm.webp"],["right","img/v/tank_farm/right.webp"],["back","img/v/tank_farm/back.webp"],["left","img/v/tank_farm/left.webp"]],"port_warehouse":[["front","img/port_warehouse.webp"],["right","img/v/port_warehouse/right.webp"],["back","img/v/port_warehouse/back.webp"],["left","img/v/port_warehouse/left.webp"]],"gantry_crane":[["front","img/gantry_crane.webp"],["right","img/v/gantry_crane/right.webp"],["back","img/v/gantry_crane/back.webp"],["left","img/v/gantry_crane/left.webp"]],"harbour_office":[["front","img/harbour_office.webp"],["right","img/v/harbour_office/right.webp"],["back","img/v/harbour_office/back.webp"],["left","img/v/harbour_office/left.webp"]],"lighthouse":[["front","img/lighthouse.webp"],["right","img/v/lighthouse/right.webp"],["back","img/v/lighthouse/back.webp"],["left","img/v/lighthouse/left.webp"]],"tin_shack":[["front","img/tin_shack.webp"]],"plywood_shanty":[["front","img/plywood_shanty.webp"]],"stacked_shack":[["front","img/stacked_shack.webp"]],"container_home":[["front","img/container_home.webp"]],"cinderblock_hut":[["front","img/cinderblock_hut.webp"]],"stilt_shack":[["front","img/stilt_shack.webp"]],"blue_hut":[["front","img/blue_hut.webp"]],"shutter_shop":[["front","img/shutter_shop.webp"]],"colonial_mansion":[["front","img/colonial_mansion.webp"],["right","img/v/colonial_mansion/right.webp"],["back","img/v/colonial_mansion/back.webp"],["left","img/v/colonial_mansion/left.webp"]],"mediterranean_villa":[["front","img/mediterranean_villa.webp"],["right","img/v/mediterranean_villa/right.webp"],["back","img/v/mediterranean_villa/back.webp"],["left","img/v/mediterranean_villa/left.webp"]],"tudor_manor":[["front","img/tudor_manor.webp"],["right","img/v/tudor_manor/right.webp"],["back","img/v/tudor_manor/back.webp"],["left","img/v/tudor_manor/left.webp"]],"modern_glass_villa":[["front","img/modern_glass_villa.webp"],["right","img/v/modern_glass_villa/right.webp"],["back","img/v/modern_glass_villa/back.webp"],["left","img/v/modern_glass_villa/left.webp"]],"dark_timber_villa":[["front","img/dark_timber_villa.webp"],["right","img/v/dark_timber_villa/right.webp"],["back","img/v/dark_timber_villa/back.webp"],["left","img/v/dark_timber_villa/left.webp"]],"chateau_house":[["front","img/chateau_house.webp"],["right","img/v/chateau_house/right.webp"],["back","img/v/chateau_house/back.webp"],["left","img/v/chateau_house/left.webp"]],"victorian_mansion":[["front","img/victorian_mansion.webp"]],"shingle_estate":[["front","img/shingle_estate.webp"],["right","img/v/shingle_estate/right.webp"],["back","img/v/shingle_estate/back.webp"],["left","img/v/shingle_estate/left.webp"]],"country_club":[["front","img/country_club.webp"],["right","img/v/country_club/right.webp"],["back","img/v/country_club/back.webp"],["left","img/v/country_club/left.webp"]],"luxury_boutique":[["front","img/luxury_boutique.webp"],["right","img/v/luxury_boutique/right.webp"],["back","img/v/luxury_boutique/back.webp"],["left","img/v/luxury_boutique/left.webp"]],"city_hall":[["front","img/city_hall.webp"],["right","img/v/city_hall/right.webp"],["back","img/v/city_hall/back.webp"],["left","img/v/city_hall/left.webp"]],"bank_tower":[["front","img/bank_tower.webp"],["right","img/v/bank_tower/right.webp"],["back","img/v/bank_tower/back.webp"],["left","img/v/bank_tower/left.webp"]],"park_museum":[["front","img/park_museum.webp"],["right","img/v/park_museum/right.webp"],["back","img/v/park_museum/back.webp"],["left","img/v/park_museum/left.webp"]],"orangery":[["front","img/orangery.webp"],["right","img/v/orangery/right.webp"],["back","img/v/orangery/back.webp"],["left","img/v/orangery/left.webp"]],"park_cafe":[["front","img/park_cafe.webp"],["right","img/v/park_cafe/right.webp"],["back","img/v/park_cafe/back.webp"],["left","img/v/park_cafe/left.webp"]],"bandstand":[["front","img/bandstand.webp"],["right","img/v/bandstand/right.webp"],["back","img/v/bandstand/back.webp"],["left","img/v/bandstand/left.webp"]],"melt_shop":[["front","img/melt_shop.webp"],["right","img/v/melt_shop/right.webp"],["back","img/v/melt_shop/back.webp"],["left","img/v/melt_shop/left.webp"]],"blast_furnace":[["front","img/blast_furnace.webp"],["right","img/v/blast_furnace/right.webp"],["back","img/v/blast_furnace/back.webp"],["left","img/v/blast_furnace/left.webp"]],"hot_blast_stoves":[["front","img/hot_blast_stoves.webp"],["right","img/v/hot_blast_stoves/right.webp"],["back","img/v/hot_blast_stoves/back.webp"],["left","img/v/hot_blast_stoves/left.webp"]],"steel_chimney":[["front","img/steel_chimney.webp"],["right","img/v/steel_chimney/right.webp"],["back","img/v/steel_chimney/back.webp"],["left","img/v/steel_chimney/left.webp"]],"gas_holder":[["front","img/gas_holder.webp"],["right","img/v/gas_holder/right.webp"],["back","img/v/gas_holder/back.webp"],["left","img/v/gas_holder/left.webp"]],"ore_bunkers":[["front","img/ore_bunkers.webp"],["right","img/v/ore_bunkers/right.webp"],["back","img/v/ore_bunkers/back.webp"],["left","img/v/ore_bunkers/left.webp"]],"conveyor_gallery":[["front","img/conveyor_gallery.webp"],["right","img/v/conveyor_gallery/right.webp"],["back","img/v/conveyor_gallery/back.webp"],["left","img/v/conveyor_gallery/left.webp"]],"power_station":[["front","img/power_station.webp"],["right","img/v/power_station/right.webp"],["back","img/v/power_station/back.webp"],["left","img/v/power_station/left.webp"]],"cooling_tower":[["front","img/cooling_tower.webp"],["right","img/v/cooling_tower/right.webp"],["back","img/v/cooling_tower/back.webp"],["left","img/v/cooling_tower/left.webp"]],"power_chimney":[["front","img/power_chimney.webp"],["right","img/v/power_chimney/right.webp"],["back","img/v/power_chimney/back.webp"],["left","img/v/power_chimney/left.webp"]],"coal_shed":[["front","img/coal_shed.webp"],["right","img/v/coal_shed/right.webp"],["back","img/v/coal_shed/back.webp"],["left","img/v/coal_shed/left.webp"]],"brownstone_row":[["34","img/brownstone_row.webp"],["front","img/v/brownstone_row/front.webp"],["right","img/v/brownstone_row/right.webp"],["back","img/v/brownstone_row/back.webp"],["left","img/v/brownstone_row/left.webp"]],"walkup_tenement_row":[["34","img/walkup_tenement_row.webp"],["front","img/v/walkup_tenement_row/front.webp"],["right","img/v/walkup_tenement_row/right.webp"],["back","img/v/walkup_tenement_row/back.webp"],["left","img/v/walkup_tenement_row/left.webp"]],"bowfront_limestone_row":[["34","img/bowfront_limestone_row.webp"],["front","img/v/bowfront_limestone_row/front.webp"],["right","img/v/bowfront_limestone_row/right.webp"],["back","img/v/bowfront_limestone_row/back.webp"],["left","img/v/bowfront_limestone_row/left.webp"]],"federal_painted_row":[["34","img/federal_painted_row.webp"],["front","img/v/federal_painted_row/front.webp"],["right","img/v/federal_painted_row/right.webp"],["back","img/v/federal_painted_row/back.webp"],["left","img/v/federal_painted_row/left.webp"]],"corner_deli_row":[["34","img/corner_deli_row.webp"],["front","img/v/corner_deli_row/front.webp"],["right","img/v/corner_deli_row/right.webp"],["back","img/v/corner_deli_row/back.webp"],["left","img/v/corner_deli_row/left.webp"]],"panel9_two_entrance":[["34","img/panel9_two_entrance.webp"],["front","img/v/panel9_two_entrance/front.webp"],["right","img/v/panel9_two_entrance/right.webp"],["back","img/v/panel9_two_entrance/back.webp"],["left","img/v/panel9_two_entrance/left.webp"]],"panel9_three_entrance":[["34","img/panel9_three_entrance.webp"],["front","img/v/panel9_three_entrance/front.webp"],["right","img/v/panel9_three_entrance/right.webp"],["back","img/v/panel9_three_entrance/back.webp"],["left","img/v/panel9_three_entrance/left.webp"]],"panel9_four_entrance":[["34","img/panel9_four_entrance.webp"],["front","img/v/panel9_four_entrance/front.webp"],["right","img/v/panel9_four_entrance/right.webp"],["back","img/v/panel9_four_entrance/back.webp"],["left","img/v/panel9_four_entrance/left.webp"]],"supermarket":[["34","img/supermarket.webp"],["front","img/v/supermarket/front.webp"],["right","img/v/supermarket/right.webp"],["back","img/v/supermarket/back.webp"],["left","img/v/supermarket/left.webp"]],"strip_mall":[["34","img/strip_mall.webp"],["front","img/v/strip_mall/front.webp"],["right","img/v/strip_mall/right.webp"],["back","img/v/strip_mall/back.webp"],["left","img/v/strip_mall/left.webp"]],"corner_pharmacy":[["34","img/corner_pharmacy.webp"],["front","img/v/corner_pharmacy/front.webp"],["right","img/v/corner_pharmacy/right.webp"],["back","img/v/corner_pharmacy/back.webp"],["left","img/v/corner_pharmacy/left.webp"]],"laundromat":[["34","img/laundromat.webp"],["front","img/v/laundromat/front.webp"],["right","img/v/laundromat/right.webp"],["back","img/v/laundromat/back.webp"],["left","img/v/laundromat/left.webp"]],"half_timbered_house":[["front","img/half_timbered_house.webp"],["right","img/v/half_timbered_house/right.webp"],["back","img/v/half_timbered_house/back.webp"],["left","img/v/half_timbered_house/left.webp"]],"stepped_gable_house":[["front","img/stepped_gable_house.webp"],["right","img/v/stepped_gable_house/right.webp"],["back","img/v/stepped_gable_house/back.webp"],["left","img/v/stepped_gable_house/left.webp"]],"ochre_townhouse":[["front","img/ochre_townhouse.webp"],["right","img/v/ochre_townhouse/right.webp"],["back","img/v/ochre_townhouse/back.webp"],["left","img/v/ochre_townhouse/left.webp"]],"blue_townhouse":[["front","img/blue_townhouse.webp"],["right","img/v/blue_townhouse/right.webp"],["back","img/v/blue_townhouse/back.webp"],["left","img/v/blue_townhouse/left.webp"]],"turret_corner_house":[["front","img/turret_corner_house.webp"],["right","img/v/turret_corner_house/right.webp"],["back","img/v/turret_corner_house/back.webp"],["left","img/v/turret_corner_house/left.webp"]],"old_tavern":[["front","img/old_tavern.webp"],["right","img/v/old_tavern/right.webp"],["back","img/v/old_tavern/back.webp"],["left","img/v/old_tavern/left.webp"]],"arcade_stone_house":[["front","img/arcade_stone_house.webp"],["right","img/v/arcade_stone_house/right.webp"],["back","img/v/arcade_stone_house/back.webp"],["left","img/v/arcade_stone_house/left.webp"]],"whitewashed_cottage":[["front","img/whitewashed_cottage.webp"],["right","img/v/whitewashed_cottage/right.webp"],["back","img/v/whitewashed_cottage/back.webp"],["left","img/v/whitewashed_cottage/left.webp"]],"ruined_stone_house":[["front","img/ruined_stone_house.webp"],["right","img/v/ruined_stone_house/right.webp"],["back","img/v/ruined_stone_house/back.webp"],["left","img/v/ruined_stone_house/left.webp"]],"burnt_timber_shell":[["front","img/burnt_timber_shell.webp"],["right","img/v/burnt_timber_shell/right.webp"],["back","img/v/burnt_timber_shell/back.webp"],["left","img/v/burnt_timber_shell/left.webp"]],"square_fountain":[["front","img/square_fountain.webp"]],"park_stage":[["front","img/park_stage.webp"],["right","img/v/park_stage/right.webp"],["back","img/v/park_stage/back.webp"],["left","img/v/park_stage/left.webp"],["top","img/v/park_stage/top.webp"]]};
+const PVIEWS = {"park_bench":[["front","img/p/park_bench.webp"]],"street_lamp":[["front","img/p/street_lamp.webp"]],"trash_bin":[["front","img/p/trash_bin.webp"]],"fire_hydrant":[["front","img/p/fire_hydrant.webp"]],"traffic_light":[["front","img/p/traffic_light.webp"]],"mailbox":[["front","img/p/mailbox.webp"]],"newspaper_box":[["front","img/p/newspaper_box.webp"]],"bus_shelter":[["front","img/p/bus_shelter.webp"]],"phone_booth":[["front","img/p/phone_booth.webp"]],"parking_meter":[["front","img/p/parking_meter.webp"]],"bike_rack":[["front","img/p/bike_rack.webp"]],"stop_sign":[["front","img/p/stop_sign.webp"]],"oak_tree":[["front","img/p/oak_tree.webp"]],"birch_tree":[["front","img/p/birch_tree.webp"]],"pine_tree":[["front","img/p/pine_tree.webp"]],"palm_tree":[["front","img/p/palm_tree.webp"]],"round_bush":[["front","img/p/round_bush.webp"]],"box_hedge":[["front","img/p/box_hedge.webp"]],"flower_planter":[["front","img/p/flower_planter.webp"]],"street_tree":[["front","img/p/street_tree.webp"]],"sedan":[["front","img/p/sedan.webp"]],"hatchback":[["front","img/p/hatchback.webp"]],"pickup":[["front","img/p/pickup.webp"]],"delivery_van":[["front","img/p/delivery_van.webp"]],"taxi":[["front","img/p/taxi.webp"]],"city_bus":[["front","img/p/city_bus.webp"]],"box_truck":[["front","img/p/box_truck.webp"]],"police_car":[["front","img/p/police_car.webp"]],"container_red_40":[["front","img/p/container_red_40.webp"]],"container_blue_20":[["front","img/p/container_blue_20.webp"]],"container_green_40":[["front","img/p/container_green_40.webp"]],"container_reefer_40":[["front","img/p/container_reefer_40.webp"]],"crate_stack":[["front","img/p/crate_stack.webp"]],"barrel_pallet":[["front","img/p/barrel_pallet.webp"]],"mooring_bollard":[["front","img/p/mooring_bollard.webp"]],"forklift":[["front","img/p/forklift.webp"]],"dumpster":[["front","img/p/dumpster.webp"]],"jersey_barrier":[["front","img/p/jersey_barrier.webp"]],"traffic_cone":[["front","img/p/traffic_cone.webp"]],"road_barricade":[["front","img/p/road_barricade.webp"]],"picnic_table":[["front","img/p/picnic_table.webp"]],"stone_fountain":[["front","img/p/stone_fountain.webp"]],"playground_slide":[["front","img/p/playground_slide.webp"]],"bronze_statue":[["front","img/p/bronze_statue.webp"]],"market_stall":[["front","img/p/market_stall.webp"]],"tarp_shelter":[["front","img/p/tarp_shelter.webp"]],"scrap_pile":[["front","img/p/scrap_pile.webp"]],"burn_barrel":[["front","img/p/burn_barrel.webp"]],"billboard":[["front","img/p/billboard.webp"]],"newsstand":[["front","img/p/newsstand.webp"]],"hotdog_cart":[["front","img/p/hotdog_cart.webp"]],"vending_machine":[["front","img/p/vending_machine.webp"]],"swimming_pool":[["front","img/p/swimming_pool.webp"]],"garden_gazebo":[["front","img/p/garden_gazebo.webp"]],"sun_loungers":[["front","img/p/sun_loungers.webp"]],"patio_set":[["front","img/p/patio_set.webp"]],"sports_car":[["front","img/p/sports_car.webp"]],"luxury_sedan":[["front","img/p/luxury_sedan.webp"]],"luxury_suv":[["front","img/p/luxury_suv.webp"]],"vintage_convertible":[["front","img/p/vintage_convertible.webp"]],"topiary_spiral":[["front","img/p/topiary_spiral.webp"]],"italian_cypress":[["front","img/p/italian_cypress.webp"]],"marble_statue":[["front","img/p/marble_statue.webp"]],"iron_lamp_post":[["front","img/p/iron_lamp_post.webp"]],"driveway_gate":[["front","img/p/driveway_gate.webp"]],"iron_fence":[["front","img/p/iron_fence.webp"]],"golf_cart":[["front","img/p/golf_cart.webp"]],"stone_urn":[["front","img/p/stone_urn.webp"]],"grand_fountain":[["front","img/p/grand_fountain.webp"]],"equestrian_statue":[["front","img/p/equestrian_statue.webp"]],"stone_obelisk":[["front","img/p/stone_obelisk.webp"]],"park_lamp":[["front","img/p/park_lamp.webp"]],"victorian_bench":[["front","img/p/victorian_bench.webp"]],"flower_bed":[["front","img/p/flower_bed.webp"]],"drinking_fountain":[["front","img/p/drinking_fountain.webp"]],"rose_pergola":[["front","img/p/rose_pergola.webp"]],"swing_set":[["front","img/p/swing_set.webp"]],"merry_go_round":[["front","img/p/merry_go_round.webp"]],"play_tower":[["front","img/p/play_tower.webp"]],"seesaw":[["front","img/p/seesaw.webp"]],"wicket_gate":[["front","img/p/wicket_gate.webp"]],"rose_bed":[["front","img/p/rose_bed.webp"]],"hydrangea_shrub":[["front","img/p/hydrangea_shrub.webp"]],"ornamental_tree":[["front","img/p/ornamental_tree.webp"]],"birdbath":[["front","img/p/birdbath.webp"]],"hot_tub":[["front","img/p/hot_tub.webp"]],"outdoor_kitchen":[["front","img/p/outdoor_kitchen.webp"]],"fire_pit_set":[["front","img/p/fire_pit_set.webp"]],"swing_bench":[["front","img/p/swing_bench.webp"]],"tennis_court":[["front","img/p/tennis_court.webp"]],"trampoline":[["front","img/p/trampoline.webp"]],"playhouse":[["front","img/p/playhouse.webp"]],"basketball_hoop":[["front","img/p/basketball_hoop.webp"]],"greenhouse":[["front","img/p/greenhouse.webp"]],"garden_shed":[["front","img/p/garden_shed.webp"]],"garden_fountain":[["front","img/p/garden_fountain.webp"]],"vine_pergola":[["front","img/p/vine_pergola.webp"]],"park_boulder":[["front","img/p/park_boulder.webp"]],"park_rock_slab":[["front","img/p/park_rock_slab.webp"]],"park_rock_cluster":[["front","img/p/park_rock_cluster.webp"]],"park_standing_rock":[["front","img/p/park_standing_rock.webp"]],"park_shrub_round":[["front","img/p/park_shrub_round.webp"]],"park_white_shrub":[["front","img/p/park_white_shrub.webp"]],"park_laurel":[["front","img/p/park_laurel.webp"]],"park_oak":[["front","img/p/park_oak.webp"]],"park_oak_tall":[["front","img/p/park_oak_tall.webp"]],"park_oak_leaning":[["front","img/p/park_oak_leaning.webp"]],"park_oak_curved":[["front","img/p/park_oak_curved.webp"]],"park_oak_old":[["front","img/p/park_oak_old.webp"]],"park_boulder_moss":[["front","img/p/park_boulder_moss.webp"]],"park_rock_slab_moss":[["front","img/p/park_rock_slab_moss.webp"]],"park_rock_cluster_moss":[["front","img/p/park_rock_cluster_moss.webp"]],"park_standing_rock_moss":[["front","img/p/park_standing_rock_moss.webp"]],"slum_pallet_fence":[["front","img/p/slum_pallet_fence.webp"]],"slum_corrugated_fence":[["front","img/p/slum_corrugated_fence.webp"]],"slum_plank_fence":[["front","img/p/slum_plank_fence.webp"]],"slum_patchwork_fence":[["front","img/p/slum_patchwork_fence.webp"]],"slum_oil_drum":[["front","img/p/slum_oil_drum.webp"]],"slum_rubble_drum":[["front","img/p/slum_rubble_drum.webp"]],"slum_water_drum":[["front","img/p/slum_water_drum.webp"]],"slum_jerrycan":[["front","img/p/slum_jerrycan.webp"]],"slum_gas_cylinder":[["front","img/p/slum_gas_cylinder.webp"]],"slum_wooden_barrel":[["front","img/p/slum_wooden_barrel.webp"]],"slum_washer":[["front","img/p/slum_washer.webp"]],"slum_tyre_stack":[["front","img/p/slum_tyre_stack.webp"]],"slum_tyre":[["front","img/p/slum_tyre.webp"]],"slum_cinder_blocks":[["front","img/p/slum_cinder_blocks.webp"]],"slum_pallet":[["front","img/p/slum_pallet.webp"]],"slum_crate":[["front","img/p/slum_crate.webp"]],"slum_rubble_crate":[["front","img/p/slum_rubble_crate.webp"]],"slum_basins":[["front","img/p/slum_basins.webp"]],"slum_clothesline":[["front","img/p/slum_clothesline.webp"]],"slum_clothesline_sheets":[["front","img/p/slum_clothesline_sheets.webp"]],"slum_laundry_rack":[["front","img/p/slum_laundry_rack.webp"]],"slum_kitchen":[["front","img/p/slum_kitchen.webp"]],"slum_wash_table":[["front","img/p/slum_wash_table.webp"]],"slum_bench":[["front","img/p/slum_bench.webp"]],"slum_chair_stack":[["front","img/p/slum_chair_stack.webp"]],"slum_potted_plants":[["front","img/p/slum_potted_plants.webp"]],"slum_wheelbarrow":[["front","img/p/slum_wheelbarrow.webp"]],"slum_shed":[["front","img/p/slum_shed.webp"]],"slum_outhouse":[["front","img/p/slum_outhouse.webp"]],"slum_veg_stall":[["front","img/p/slum_veg_stall.webp"]],"slum_goods_stall":[["front","img/p/slum_goods_stall.webp"]],"slum_tarp_lean_to":[["front","img/p/slum_tarp_lean_to.webp"]],"slum_planks":[["front","img/p/slum_planks.webp"]],"slum_corrugated_sheets":[["front","img/p/slum_corrugated_sheets.webp"]],"bazaar_trestle_table":[["front","img/p/bazaar_trestle_table.webp"]],"bazaar_crate_counter":[["front","img/p/bazaar_crate_counter.webp"]],"bazaar_rug_paisley":[["r1","img/p/bazaar_rug_paisley.webp"]],"bazaar_rug_oilcloth":[["r1","img/p/bazaar_rug_oilcloth.webp"]],"bazaar_rug_blanket":[["r1","img/p/bazaar_rug_blanket.webp"]],"bazaar_enamel_kettle":[["front","img/p/bazaar_enamel_kettle.webp"]],"bazaar_tube_radio":[["front","img/p/bazaar_tube_radio.webp"]],"bazaar_rotary_phone":[["front","img/p/bazaar_rotary_phone.webp"]],"bazaar_gas_mask":[["front","img/p/bazaar_gas_mask.webp"]],"bazaar_box_camera":[["front","img/p/bazaar_box_camera.webp"]],"bazaar_plate_stack":[["front","img/p/bazaar_plate_stack.webp"]],"bazaar_book_stack":[["front","img/p/bazaar_book_stack.webp"]],"bazaar_boots":[["front","img/p/bazaar_boots.webp"]],"bazaar_vase":[["front","img/p/bazaar_vase.webp"]],"bazaar_table_lamp":[["front","img/p/bazaar_table_lamp.webp"]],"bazaar_toolbox":[["front","img/p/bazaar_toolbox.webp"]],"bazaar_toy_truck":[["front","img/p/bazaar_toy_truck.webp"]],"residential_tree_round":[["r1","img/p/residential_tree_round.webp"],["r2","img/p/v/residential_tree_round/r2.webp"]],"residential_tree_oval":[["r1","img/p/residential_tree_oval.webp"],["r2","img/p/v/residential_tree_oval/r2.webp"]],"residential_tree_young":[["r1","img/p/residential_tree_young.webp"],["r2","img/p/v/residential_tree_young/r2.webp"]],"residential_fire_hydrant":[["front","img/p/residential_fire_hydrant.webp"]],"residential_park_bench":[["front","img/p/residential_park_bench.webp"]],"residential_trash_bin":[["front","img/p/residential_trash_bin.webp"]]};
+const PMETA = {"barrel_pallet":{"role":"BarrelPallet","zones":["Port","Industrial"],"src":"job","note":""},"basketball_hoop":{"role":"Hoop","zones":["Wealthy"],"src":"job","note":""},"bazaar_book_stack":{"role":"BazaarGoods","zones":["Slums"],"src":"job","note":""},"bazaar_boots":{"role":"BazaarGoods","zones":["Slums"],"src":"job","note":""},"bazaar_box_camera":{"role":"BazaarGoods","zones":["Slums"],"src":"job","note":""},"bazaar_crate_counter":{"role":"BazaarStall","zones":["Slums"],"src":"job","note":""},"bazaar_enamel_kettle":{"role":"BazaarGoods","zones":["Slums"],"src":"job","note":""},"bazaar_gas_mask":{"role":"BazaarGoods","zones":["Slums"],"src":"job","note":""},"bazaar_plate_stack":{"role":"BazaarGoods","zones":["Slums"],"src":"job","note":""},"bazaar_rotary_phone":{"role":"BazaarGoods","zones":["Slums"],"src":"job","note":""},"bazaar_rug_blanket":{"role":"BazaarRug","zones":["Slums"],"src":"gpt","note":""},"bazaar_rug_oilcloth":{"role":"BazaarRug","zones":["Slums"],"src":"gpt","note":""},"bazaar_rug_paisley":{"role":"BazaarRug","zones":["Slums"],"src":"gpt","note":""},"bazaar_table_lamp":{"role":"BazaarGoods","zones":["Slums"],"src":"job","note":""},"bazaar_toolbox":{"role":"BazaarGoods","zones":["Slums"],"src":"job","note":""},"bazaar_toy_truck":{"role":"BazaarGoods","zones":["Slums"],"src":"job","note":""},"bazaar_trestle_table":{"role":"BazaarStall","zones":["Slums"],"src":"job","note":""},"bazaar_tube_radio":{"role":"BazaarGoods","zones":["Slums"],"src":"job","note":""},"bazaar_vase":{"role":"BazaarGoods","zones":["Slums"],"src":"job","note":""},"bike_rack":{"role":"BikeRack","zones":["Downtown","Residential"],"src":"job","note":""},"billboard":{"role":"Billboard","zones":["Residential","Industrial"],"src":"job","note":""},"birch_tree":{"role":"ParkTree","zones":[],"src":"job","note":""},"birdbath":{"role":"Birdbath","zones":["Wealthy"],"src":"job","note":""},"box_hedge":{"role":"Hedge","zones":[],"src":"job","note":""},"box_truck":{"role":"Truck","zones":[],"src":"job","note":""},"bronze_statue":{"role":"Statue","zones":["Downtown","Residential"],"src":"job","note":""},"burn_barrel":{"role":"BurnBarrel","zones":["Slums"],"src":"job","note":""},"bus_shelter":{"role":"BusShelter","zones":[],"src":"job","note":""},"city_bus":{"role":"Bus","zones":[],"src":"job","note":""},"container_blue_20":{"role":"Container","zones":["Port","Industrial"],"src":"job","note":""},"container_green_40":{"role":"Container","zones":["Port","Industrial"],"src":"job","note":""},"container_red_40":{"role":"Container","zones":["Port","Industrial"],"src":"job","note":""},"container_reefer_40":{"role":"Container","zones":["Port","Industrial"],"src":"job","note":""},"crate_stack":{"role":"Crate","zones":["Port","Industrial","Slums"],"src":"job","note":""},"delivery_van":{"role":"Van","zones":[],"src":"job","note":""},"drinking_fountain":{"role":"DrinkingFountain","zones":[],"src":"job","note":""},"driveway_gate":{"role":"Gate","zones":["Wealthy"],"src":"job","note":""},"dumpster":{"role":"Dumpster","zones":[],"src":"job","note":""},"equestrian_statue":{"role":"Monument","zones":[],"src":"job","note":""},"fire_hydrant":{"role":"Hydrant","zones":[],"src":"job","note":""},"fire_pit_set":{"role":"FirePit","zones":["Wealthy"],"src":"job","note":""},"flower_bed":{"role":"FlowerBed","zones":[],"src":"job","note":""},"flower_planter":{"role":"Planter","zones":["Downtown","Residential"],"src":"job","note":""},"forklift":{"role":"Forklift","zones":["Port","Industrial"],"src":"job","note":""},"garden_fountain":{"role":"GardenFountain","zones":["Wealthy"],"src":"job","note":""},"garden_gazebo":{"role":"Gazebo","zones":["Wealthy"],"src":"job","note":""},"garden_shed":{"role":"Shed","zones":["Wealthy"],"src":"job","note":""},"golf_cart":{"role":"GolfCart","zones":["Wealthy"],"src":"job","note":""},"grand_fountain":{"role":"GrandFountain","zones":[],"src":"job","note":""},"greenhouse":{"role":"Greenhouse","zones":["Wealthy"],"src":"job","note":""},"hatchback":{"role":"Car","zones":[],"src":"job","note":""},"hot_tub":{"role":"HotTub","zones":["Wealthy"],"src":"job","note":""},"hotdog_cart":{"role":"Cart","zones":["Downtown"],"src":"job","note":""},"hydrangea_shrub":{"role":"FlowerShrub","zones":["Wealthy"],"src":"job","note":""},"iron_fence":{"role":"Fence","zones":["Wealthy"],"src":"job","note":""},"iron_lamp_post":{"role":"StreetLamp","zones":["Wealthy"],"src":"job","note":""},"italian_cypress":{"role":"StreetTree","zones":["Wealthy"],"src":"job","note":""},"jersey_barrier":{"role":"JerseyBarrier","zones":[],"src":"job","note":""},"luxury_sedan":{"role":"Car","zones":["Wealthy"],"src":"job","note":""},"luxury_suv":{"role":"Car","zones":["Wealthy"],"src":"job","note":""},"mailbox":{"role":"Mailbox","zones":[],"src":"job","note":""},"marble_statue":{"role":"Statue","zones":["Wealthy"],"src":"job","note":""},"market_stall":{"role":"MarketStall","zones":["Slums"],"src":"job","note":""},"merry_go_round":{"role":"MerryGoRound","zones":[],"src":"job","note":""},"mooring_bollard":{"role":"Bollard","zones":["Port"],"src":"job","note":""},"newspaper_box":{"role":"NewsBox","zones":[],"src":"job","note":""},"newsstand":{"role":"Kiosk","zones":["Downtown"],"src":"job","note":""},"oak_tree":{"role":"ParkTree","zones":[],"src":"job","note":""},"ornamental_tree":{"role":"OrnamentalTree","zones":["Wealthy"],"src":"job","note":""},"outdoor_kitchen":{"role":"OutdoorKitchen","zones":["Wealthy"],"src":"job","note":""},"palm_tree":{"role":"StreetTree","zones":["Downtown","Port","Residential"],"src":"job","note":""},"park_bench":{"role":"Bench","zones":[],"src":"job","note":""},"park_boulder":{"role":"Rock","zones":[],"src":"job","note":""},"park_boulder_moss":{"role":"Rock","zones":[],"src":"job","note":"в игре с мхом"},"park_lamp":{"role":"PathLamp","zones":[],"src":"job","note":""},"park_laurel":{"role":"ParkShrub","zones":[],"src":"job","note":""},"park_oak":{"role":"CityParkTree","zones":[],"src":"job","note":"модель oak_tree"},"park_oak_curved":{"role":"CityParkTree","zones":[],"src":"job","note":""},"park_oak_leaning":{"role":"CityParkTree","zones":[],"src":"job","note":""},"park_oak_old":{"role":"CityParkTree","zones":[],"src":"job","note":""},"park_oak_tall":{"role":"CityParkTree","zones":[],"src":"job","note":""},"park_rock_cluster":{"role":"Rock","zones":[],"src":"job","note":""},"park_rock_cluster_moss":{"role":"Rock","zones":[],"src":"job","note":"в игре с мхом"},"park_rock_slab":{"role":"Rock","zones":[],"src":"job","note":""},"park_rock_slab_moss":{"role":"Rock","zones":[],"src":"job","note":"в игре с мхом"},"park_shrub_round":{"role":"ParkShrub","zones":[],"src":"job","note":""},"park_standing_rock":{"role":"Rock","zones":[],"src":"job","note":""},"park_standing_rock_moss":{"role":"Rock","zones":[],"src":"job","note":"в игре с мхом"},"park_white_shrub":{"role":"ParkShrub","zones":[],"src":"job","note":""},"parking_meter":{"role":"ParkingMeter","zones":["Downtown"],"src":"job","note":""},"patio_set":{"role":"PatioSet","zones":["Wealthy"],"src":"job","note":""},"phone_booth":{"role":"PhoneBooth","zones":["Downtown","Residential"],"src":"job","note":""},"pickup":{"role":"Car","zones":[],"src":"job","note":""},"picnic_table":{"role":"PicnicTable","zones":["Residential"],"src":"job","note":""},"pine_tree":{"role":"ParkTree","zones":[],"src":"job","note":""},"play_tower":{"role":"PlayTower","zones":[],"src":"job","note":""},"playground_slide":{"role":"Playground","zones":["Residential"],"src":"job","note":""},"playhouse":{"role":"Playhouse","zones":["Wealthy"],"src":"job","note":""},"police_car":{"role":"PoliceCar","zones":[],"src":"job","note":""},"residential_fire_hydrant":{"role":"Hydrant","zones":["Residential"],"src":"job","note":"в игре перекрашен"},"residential_park_bench":{"role":"Bench","zones":["Residential"],"src":"job","note":"в игре перекрашена"},"residential_trash_bin":{"role":"TrashBin","zones":["Residential"],"src":"job","note":"в игре перекрашен"},"residential_tree_oval":{"role":"StreetTree","zones":["Residential"],"src":"gpt","note":""},"residential_tree_round":{"role":"StreetTree","zones":["Residential"],"src":"gpt","note":""},"residential_tree_young":{"role":"StreetTree","zones":["Residential"],"src":"gpt","note":""},"road_barricade":{"role":"Barricade","zones":[],"src":"job","note":""},"rose_bed":{"role":"GardenBed","zones":["Wealthy"],"src":"job","note":""},"rose_pergola":{"role":"Pergola","zones":[],"src":"job","note":""},"round_bush":{"role":"Bush","zones":[],"src":"job","note":""},"scrap_pile":{"role":"ScrapPile","zones":["Slums","Industrial"],"src":"job","note":""},"sedan":{"role":"Car","zones":[],"src":"job","note":""},"seesaw":{"role":"Seesaw","zones":[],"src":"job","note":""},"slum_basins":{"role":"SlumJunk","zones":["Slums"],"src":"job","note":""},"slum_bench":{"role":"YardTable","zones":["Slums"],"src":"job","note":""},"slum_chair_stack":{"role":"YardTable","zones":["Slums"],"src":"job","note":""},"slum_cinder_blocks":{"role":"SlumJunk","zones":["Slums"],"src":"job","note":""},"slum_clothesline":{"role":"Clothesline","zones":["Slums"],"src":"job","note":""},"slum_clothesline_sheets":{"role":"Clothesline","zones":["Slums"],"src":"job","note":""},"slum_corrugated_fence":{"role":"SlumFence","zones":["Slums"],"src":"job","note":""},"slum_corrugated_sheets":{"role":"SlumJunk","zones":["Slums"],"src":"job","note":""},"slum_crate":{"role":"SlumJunk","zones":["Slums"],"src":"job","note":""},"slum_gas_cylinder":{"role":"SlumDrum","zones":["Slums"],"src":"job","note":""},"slum_goods_stall":{"role":"SlumStall","zones":["Slums"],"src":"job","note":""},"slum_jerrycan":{"role":"SlumDrum","zones":["Slums"],"src":"job","note":""},"slum_kitchen":{"role":"YardTable","zones":["Slums"],"src":"job","note":""},"slum_laundry_rack":{"role":"Clothesline","zones":["Slums"],"src":"job","note":""},"slum_oil_drum":{"role":"SlumDrum","zones":["Slums"],"src":"job","note":""},"slum_outhouse":{"role":"Outbuilding","zones":["Slums"],"src":"job","note":""},"slum_pallet":{"role":"SlumJunk","zones":["Slums"],"src":"job","note":""},"slum_pallet_fence":{"role":"SlumFence","zones":["Slums"],"src":"job","note":""},"slum_patchwork_fence":{"role":"SlumFence","zones":["Slums"],"src":"job","note":""},"slum_plank_fence":{"role":"SlumFence","zones":["Slums"],"src":"job","note":""},"slum_planks":{"role":"SlumJunk","zones":["Slums"],"src":"job","note":""},"slum_potted_plants":{"role":"YardTable","zones":["Slums"],"src":"job","note":""},"slum_rubble_crate":{"role":"SlumJunk","zones":["Slums"],"src":"job","note":""},"slum_rubble_drum":{"role":"SlumDrum","zones":["Slums"],"src":"job","note":""},"slum_shed":{"role":"Outbuilding","zones":["Slums"],"src":"job","note":""},"slum_tarp_lean_to":{"role":"TarpShelter","zones":["Slums"],"src":"job","note":""},"slum_tyre":{"role":"SlumJunk","zones":["Slums"],"src":"job","note":""},"slum_tyre_stack":{"role":"SlumJunk","zones":["Slums"],"src":"job","note":""},"slum_veg_stall":{"role":"SlumStall","zones":["Slums"],"src":"job","note":""},"slum_wash_table":{"role":"YardTable","zones":["Slums"],"src":"job","note":""},"slum_washer":{"role":"SlumDrum","zones":["Slums"],"src":"job","note":""},"slum_water_drum":{"role":"SlumDrum","zones":["Slums"],"src":"job","note":""},"slum_wheelbarrow":{"role":"YardTable","zones":["Slums"],"src":"job","note":""},"slum_wooden_barrel":{"role":"SlumDrum","zones":["Slums"],"src":"job","note":""},"sports_car":{"role":"Car","zones":["Wealthy"],"src":"job","note":""},"stone_fountain":{"role":"Fountain","zones":[],"src":"job","note":""},"stone_obelisk":{"role":"Monument","zones":[],"src":"job","note":""},"stone_urn":{"role":"Planter","zones":["Wealthy"],"src":"job","note":""},"stop_sign":{"role":"StopSign","zones":[],"src":"job","note":""},"street_lamp":{"role":"StreetLamp","zones":[],"src":"job","note":""},"street_tree":{"role":"StreetTree","zones":[],"src":"job","note":""},"sun_loungers":{"role":"Lounger","zones":["Wealthy"],"src":"job","note":""},"swimming_pool":{"role":"Pool","zones":["Wealthy"],"src":"job","note":""},"swing_bench":{"role":"SwingBench","zones":["Wealthy"],"src":"job","note":""},"swing_set":{"role":"PlayEquipment","zones":[],"src":"job","note":""},"tarp_shelter":{"role":"TarpShelter","zones":["Slums"],"src":"job","note":""},"taxi":{"role":"Taxi","zones":[],"src":"job","note":""},"tennis_court":{"role":"TennisCourt","zones":["Wealthy"],"src":"job","note":""},"topiary_spiral":{"role":"Topiary","zones":["Wealthy"],"src":"job","note":""},"traffic_cone":{"role":"Cone","zones":[],"src":"job","note":""},"traffic_light":{"role":"TrafficLight","zones":[],"src":"job","note":""},"trampoline":{"role":"Trampoline","zones":["Wealthy"],"src":"job","note":""},"trash_bin":{"role":"TrashBin","zones":[],"src":"job","note":""},"vending_machine":{"role":"Vending","zones":["Downtown","Residential"],"src":"job","note":""},"victorian_bench":{"role":"ParkBench","zones":[],"src":"job","note":""},"vine_pergola":{"role":"VinePergola","zones":["Wealthy"],"src":"job","note":""},"vintage_convertible":{"role":"Car","zones":["Wealthy"],"src":"job","note":""},"wicket_gate":{"role":"Wicket","zones":["Wealthy"],"src":"job","note":""}};
 
 function plural(n, one, few, many) {
   const m10 = n % 10, m100 = n % 100;
@@ -369,67 +624,99 @@ function plural(n, one, few, many) {
   return many;
 }
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const count = groups => groups.reduce((s, g) => s + g.items.length, 0);
+const KIND = {
+  houses: { label: "Здания", slug: id => "ref-" + id.replace(/_/g, "-"), thumb: id => "img/t/" + id + ".webp", views: id => VIEWS[id] || [] },
+  props: { label: "Пропсы", slug: id => "prop-" + id.replace(/_/g, "-"), thumb: id => "img/p/t/" + id + ".webp", views: id => PVIEWS[id] || [] },
+};
 
 const flat = [];
-const list = document.getElementById("district-list");
-const dnav = document.getElementById("dnav");
+const rows = document.getElementById("district-rows");
+const chipsEl = document.getElementById("dnav");
 const main = document.getElementById("districts");
+let totalH = 0, totalP = 0;
 
-for (const d of DISTRICTS) {
-  const n = d.groups.reduce((s, g) => s + g.houses.length, 0);
-  const li = el("li");
-  const a = el("a", null, d.name); a.href = "#" + d.id;
-  li.append(a, el("span", "dc", n + " " + plural(n, "дом", "дома", "домов")));
-  list.appendChild(li);
+for (const s of SECTIONS) {
+  const nh = count(s.houses), np = count(s.props);
+  totalH += nh; totalP += np;
+  const tr = el("tr");
+  const td = el("td"); const a = el("a", null, s.name); a.href = "#" + s.id; td.appendChild(a);
+  tr.append(td, el("td", null, nh ? String(nh) : "—"), el("td", null, np ? String(np) : "—"));
+  rows.appendChild(tr);
 
-  const chip = el("a", null, d.name + " "); chip.href = "#" + d.id; chip.dataset.d = d.id;
-  chip.appendChild(el("span", null, String(n)));
-  dnav.appendChild(chip);
+  const chip = el("a", null, s.name + " "); chip.href = "#" + s.id; chip.dataset.d = s.id;
+  const chipN = el("span"); chip.appendChild(chipN);
+  chip._n = { all: nh + np, houses: nh, props: np }; chip._num = chipN;
+  chipsEl.appendChild(chip);
 
-  const sec = el("section", "district"); sec.id = d.id;
+  const sec = el("section", "district"); sec.id = s.id;
+  sec._n = chip._n;
   const head = el("div", "district-head");
-  head.append(el("h2", null, d.name), el("p", null, d.blurb));
+  head.append(el("h2", null, s.name), el("p", null, s.blurb));
   sec.appendChild(head);
-  for (const g of d.groups) {
-    const gs = el("section", "group"); gs.id = g.id;
-    const h = el("h3", null, g.title + " ");
-    h.appendChild(el("span", null, String(g.houses.length)));
-    gs.appendChild(h);
-    const grid = el("div", "grid");
-    for (const [id, ru] of g.houses) {
-      const views = VIEWS[id] || [];
-      const i = flat.length;
-      flat.push({ id, ru, district: d.name, group: g.title, views });
-      const b = el("button", "card"); b.type = "button";
-      b.setAttribute("aria-label", ru + ", открыть крупно");
-      const tile = el("div", "tile");
-      const img = el("img"); img.loading = "lazy"; img.decoding = "async"; img.alt = ru;
-      img.src = "img/t/" + id + ".webp";
-      tile.appendChild(img);
-      if (views.length > 1) tile.appendChild(el("span", "badge", views.length + " " + plural(views.length, "вид", "вида", "видов")));
-      const cap = el("div", "cap");
-      cap.append(el("span", "ru", ru), el("code", null, id));
-      b.append(tile, cap);
-      b.addEventListener("click", () => open(i, 0, b));
-      grid.appendChild(b);
+  for (const kind of ["houses", "props"]) {
+    if (!s[kind].length) continue;
+    const K = KIND[kind];
+    const block = el("div", "kind"); block.dataset.kind = kind;
+    block.appendChild(el("p", "kind-label", K.label + " · " + count(s[kind])));
+    for (const g of s[kind]) {
+      const gs = el("section", "group"); gs.id = g.id;
+      const h = el("h3", null, g.title + " ");
+      h.appendChild(el("span", null, String(g.items.length)));
+      gs.appendChild(h);
+      const grid = el("div", "grid");
+      for (const [id, ru] of g.items) {
+        const views = K.views(id);
+        const item = { kind, id, ru, section: s, group: g.title, views };
+        flat.push(item);
+        const b = el("button", "card"); b.type = "button";
+        b.setAttribute("aria-label", ru + ", открыть крупно");
+        const tile = el("div", "tile");
+        const img = el("img"); img.loading = "lazy"; img.decoding = "async"; img.alt = ru; img.src = K.thumb(id);
+        tile.appendChild(img);
+        if (views.length > 1) tile.appendChild(el("span", "badge", views.length + " " + plural(views.length, "вид", "вида", "видов")));
+        const cap = el("div", "cap");
+        cap.append(el("span", "ru", ru), el("code", null, id));
+        b.append(tile, cap);
+        b.addEventListener("click", () => open(item, 0, b));
+        item.card = b;
+        grid.appendChild(b);
+      }
+      gs.appendChild(grid);
+      block.appendChild(gs);
     }
-    gs.appendChild(grid);
-    sec.appendChild(gs);
+    sec.appendChild(block);
   }
   main.appendChild(sec);
 }
-const totalLi = el("li", "total");
-totalLi.append(el("span", null, "Всего"), el("span", null, flat.length + " " + plural(flat.length, "дом", "дома", "домов")));
-list.appendChild(totalLi);
-document.getElementById("total-houses").textContent =
-  flat.length + " " + plural(flat.length, "дом", "дома", "домов") + " в " + DISTRICTS.length + " районах";
+const total = el("tr", "total");
+total.append(el("td", null, "Всего"), el("td", null, String(totalH)), el("td", null, String(totalP)));
+rows.appendChild(total);
+document.getElementById("total-line").textContent =
+  totalH + " " + plural(totalH, "здание", "здания", "зданий") + " и " + totalP + " " + plural(totalP, "пропс", "пропса", "пропсов");
+
+// Kind filter
+let mode = "all";
+let visible = flat;
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === m)));
+  document.querySelectorAll(".kind").forEach(k => { k.hidden = m !== "all" && k.dataset.kind !== m; });
+  document.querySelectorAll(".district").forEach(s => { s.hidden = s._n[m] === 0; });
+  [...chipsEl.children].forEach(c => { c.hidden = c._n[m] === 0; c._num.textContent = String(c._n[m]); });
+  visible = flat.filter(it => m === "all" || it.kind === m);
+  try { localStorage.setItem("metro-refs-mode", m); } catch (e) {}
+}
+document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click", () => setMode(b.dataset.mode)));
+let saved = "all";
+try { saved = localStorage.getItem("metro-refs-mode") || "all"; } catch (e) {}
+setMode(["all", "houses", "props"].includes(saved) ? saved : "all");
 
 // Highlight the district chip in view.
-const chips = [...dnav.querySelectorAll("a")];
 const spy = new IntersectionObserver(entries => {
   for (const e of entries) if (e.isIntersecting) {
-    chips.forEach(c => c.classList.toggle("on", c.dataset.d === e.target.id));
-    const on = chips.find(c => c.dataset.d === e.target.id);
+    [...chipsEl.children].forEach(c => c.classList.toggle("on", c.dataset.d === e.target.id));
+    const on = [...chipsEl.children].find(c => c.dataset.d === e.target.id);
     if (on) on.scrollIntoView({ block: "nearest", inline: "nearest" });
   }
 }, { rootMargin: "-45% 0px -50% 0px" });
@@ -439,49 +726,58 @@ document.querySelectorAll(".district").forEach(s => spy.observe(s));
 const lb = document.getElementById("lb");
 const lbImg = document.getElementById("lb-img");
 const lbViews = document.getElementById("lb-views");
-let cur = -1, curView = 0, opener = null;
-const slug = id => "ref-" + id.replace(/_/g, "-");
+let cur = null, curView = 0, opener = null;
 
-function source(h) {
-  if (h.views.length && h.views[0][0] === "34") {
-    const extra = h.views.length > 1 ? "; виды: SlopMachine" : "";
-    return "реф 3/4: Phantasm " + (SUPRA.has(h.id) ? "Supra" : "LanPaint") + extra;
+function source(it) {
+  if (it.kind === "props") {
+    const m = PMETA[it.id] || {};
+    const zones = m.zones && m.zones.length ? m.zones.join(", ") : "весь город";
+    const src = m.src === "gpt" ? "реф: GPT (GeneratedArt)" : "реф: SlopMachine";
+    return zones + " · " + it.group + " · роль " + m.role + " · " + src + (m.note ? "; " + m.note : "");
   }
-  return "реф: SlopMachine" + (PARK.has(h.id) ? "; в игре упрощённая модель" : "");
+  let src;
+  if (it.views.length && it.views[0][0] === "34") {
+    src = "реф 3/4: Phantasm " + (SUPRA.has(it.id) ? "Supra" : "LanPaint") + (it.views.length > 1 ? "; виды: SlopMachine" : "");
+  } else {
+    src = "реф: SlopMachine" + (PARK.has(it.id) ? "; в игре упрощённая модель" : "");
+  }
+  return (ZONES[it.id] || it.section.name) + " · " + it.group + " · " + src;
 }
 function showView(v) {
-  const h = flat[cur];
-  curView = Math.max(0, Math.min(v, h.views.length - 1));
-  const src = h.views.length ? h.views[curView][1] : "img/" + h.id + ".webp";
-  lbImg.src = src;
-  lbImg.alt = h.ru + (h.views.length ? ", " + VIEW_NAMES[h.views[curView][0]] : "");
+  curView = Math.max(0, Math.min(v, cur.views.length - 1));
+  lbImg.src = cur.views.length ? cur.views[curView][1] : KIND[cur.kind].thumb(cur.id);
+  lbImg.alt = cur.ru + (cur.views.length > 1 ? ", " + VIEW_NAMES[cur.views[curView][0]] : "");
   [...lbViews.children].forEach((b, k) => b.setAttribute("aria-pressed", String(k === curView)));
 }
-function show(i, v) {
-  cur = (i + flat.length) % flat.length;
-  const h = flat[cur];
+function show(it, v) {
+  cur = it;
   lbViews.replaceChildren();
-  if (h.views.length > 1) {
-    h.views.forEach(([key], k) => {
+  if (it.views.length > 1) {
+    it.views.forEach(([key], k) => {
       const b = el("button", null, VIEW_NAMES[key] || key); b.type = "button";
       b.addEventListener("click", () => showView(k));
       lbViews.appendChild(b);
     });
   }
-  lbViews.hidden = h.views.length < 2;
+  lbViews.hidden = it.views.length < 2;
   showView(v || 0);
-  document.getElementById("lb-name").textContent = h.ru;
-  document.getElementById("lb-id").textContent = h.id;
-  document.getElementById("lb-meta").textContent = (ZONES[h.id] || h.district) + " · " + h.group + " · " + source(h);
-  document.getElementById("lb-count").textContent = (cur + 1) + " / " + flat.length;
-  try { history.replaceState(null, "", "#" + slug(h.id)); } catch (e) {}
-  for (const [, p] of h.views.slice(1)) new Image().src = p;
-  const next = flat[(cur + 1) % flat.length].views[0];
-  if (next) new Image().src = next[1];
+  document.getElementById("lb-name").textContent = it.ru;
+  document.getElementById("lb-id").textContent = it.id;
+  document.getElementById("lb-meta").textContent = source(it);
+  const i = visible.indexOf(it);
+  document.getElementById("lb-count").textContent = (i + 1) + " / " + visible.length;
+  try { history.replaceState(null, "", "#" + KIND[it.kind].slug(it.id)); } catch (e) {}
+  for (const [, p] of it.views.slice(1)) new Image().src = p;
+  const next = visible[(i + 1) % visible.length];
+  if (next && next.views[0]) new Image().src = next.views[0][1];
 }
-function open(i, v, from) {
-  opener = from || null;
-  show(i, v);
+function step(d) {
+  const i = visible.indexOf(cur);
+  show(visible[(i + d + visible.length) % visible.length]);
+}
+function open(it, v, from) {
+  opener = from || it.card || null;
+  show(it, v);
   lb.hidden = false;
   document.body.style.overflow = "hidden";
   document.getElementById("lb-close").focus();
@@ -492,23 +788,25 @@ function close() {
   try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
   if (opener) opener.focus();
 }
-document.getElementById("lb-prev").addEventListener("click", () => show(cur - 1));
-document.getElementById("lb-next").addEventListener("click", () => show(cur + 1));
+document.getElementById("lb-prev").addEventListener("click", () => step(-1));
+document.getElementById("lb-next").addEventListener("click", () => step(1));
 document.getElementById("lb-close").addEventListener("click", close);
 lb.addEventListener("click", e => { if (e.target === lb || e.target.classList.contains("lb-stage")) close(); });
 document.addEventListener("keydown", e => {
   if (lb.hidden) return;
   if (e.key === "Escape") close();
-  else if (e.key === "ArrowLeft") show(cur - 1);
-  else if (e.key === "ArrowRight") show(cur + 1);
+  else if (e.key === "ArrowLeft") step(-1);
+  else if (e.key === "ArrowRight") step(1);
   else if (e.key === "ArrowUp") showView(curView - 1);
   else if (e.key === "ArrowDown") showView(curView + 1);
 });
 
 function fromHash() {
   const m = location.hash.slice(1);
-  const i = flat.findIndex(h => slug(h.id) === m);
-  if (i >= 0) open(i, 0);
+  const it = flat.find(x => KIND[x.kind].slug(x.id) === m);
+  if (!it) return;
+  if (mode !== "all" && mode !== it.kind) setMode("all");
+  open(it, 0);
 }
 window.addEventListener("hashchange", fromHash);
 fromHash();
