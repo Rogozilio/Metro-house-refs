@@ -279,10 +279,12 @@ Promise.all(V.map((v, i) => loader.loadAsync(BASE + "models/" + v.file + ".glb")
   const disc = new THREE.Mesh(new THREE.CircleGeometry(3.1, 48), floorMat);
   disc.rotation.x = -Math.PI / 2; disc.position.y = 0.002;
   holder.add(disc);
+  holder.visible = false;  // shown by layout() once every model is in; the camera is not placed before that
   scene.add(holder);
   const tag = document.createElement("div");
   tag.className = "tag";
   tag.innerHTML = `<b>${v.n}. ${v.name}</b><span>${v.tag}</span>`;
+  tag.hidden = true;
   labels.appendChild(tag);
   items[i] = { v, holder, lods, tag, height: box.max.y - box.min.y };
 }))).then(() => {
