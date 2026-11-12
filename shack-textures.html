@@ -93,6 +93,21 @@ h2 { font-family: var(--display); font-weight: 500; font-size: 20px; margin: 40p
 .lightbox { position: fixed; inset: 0; background: rgba(5, 8, 12, .94); display: grid; place-items: center; z-index: 50; padding: 16px; cursor: zoom-out; }
 .lightbox img { max-height: 92vh; width: auto; border-radius: 8px; }
 footer { margin: 40px 0 30px; font-size: 12px; color: var(--muted); }
+/* ?embed=1: inside the moodboard's viewer, only the 3D stage and its controls */
+body.embed { background: transparent; overflow: hidden; }
+body.embed .wrap { max-width: none; padding: 0; }
+body.embed .wrap > :not(.viewer) { display: none; }
+body.embed .viewer { height: 100vh; grid-template-columns: minmax(0, 1fr) 210px; gap: 0; }
+body.embed .stage { height: 100%; max-height: none; min-height: 0; border-radius: 16px 0 0 16px; }
+body.embed .side { background: var(--panel); border-radius: 0 16px 16px 0; padding: 10px; gap: 10px; overflow-y: auto; }
+body.embed .panel { border: 0; padding: 0; }
+body.embed .seg button { font-size: 12px; padding: 4px 9px; }
+@media (max-width: 900px) {
+  body.embed .viewer { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
+  body.embed .stage { border-radius: 16px 16px 0 0; }
+  body.embed .side { border-radius: 0 0 16px 16px; max-height: 40vh; }
+  body.embed .side .panel:first-child { display: none; }
+}
 </style>
 <script type="importmap">
 { "imports": {
@@ -102,6 +117,7 @@ footer { margin: 40px 0 30px; font-size: 12px; color: var(--muted); }
 </script>
 </head>
 <body>
+<script>if (new URLSearchParams(location.search).has("embed")) document.body.classList.add("embed");</script>
 <div class="wrap">
   <div class="top"><a class="back" href="./">← Мудборд</a></div>
   <p class="eyebrow">We Are Destroyers · лаборатория · 2026-11-12</p>
