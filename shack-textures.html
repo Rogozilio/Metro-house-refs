@@ -64,6 +64,18 @@ h2 { font-family: var(--display); font-weight: 500; font-size: 20px; margin: 40p
 .seg button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
 .seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .small { font-size: 12px; color: var(--muted); margin: 0; }
+.info { font-size: 13px; line-height: 1.5; }
+.info h3 { margin: 0 0 6px; }
+.info p { margin: 0 0 8px; }
+.info ol, .info ul { margin: 0 0 8px; padding-left: 18px; }
+.info li { margin: 3px 0; }
+.info .sub { margin: 10px 0 4px; font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.info .row { padding: 8px 0; border-top: 1px solid var(--line); cursor: pointer; }
+.info .row:first-of-type { border-top: 0; padding-top: 0; }
+.info .row:hover b { color: var(--accent); }
+.info .row span { display: block; color: var(--muted); }
+.info .facts { font-size: 12px; margin: 8px 0; }
+.info .zt { font-size: 12px; }
 
 .cards { display: grid; gap: 16px; }
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 18px; }
@@ -111,16 +123,17 @@ footer { margin: 40px 0 30px; font-size: 12px; color: var(--muted); }
 body.embed { background: transparent; overflow: hidden; }
 body.embed .wrap { max-width: none; padding: 0; }
 body.embed .wrap > :not(.viewer) { display: none; }
-body.embed .viewer { height: 100vh; grid-template-columns: minmax(0, 1fr) 210px; gap: 0; }
+body.embed .viewer { height: 100vh; grid-template-columns: minmax(0, 1fr) clamp(280px, 34%, 400px); gap: 0; }
 body.embed .stage { height: 100%; max-height: none; min-height: 0; border-radius: 16px 0 0 16px; }
 body.embed .side { background: var(--panel); border-radius: 0 16px 16px 0; padding: 10px; gap: 10px; overflow-y: auto; }
 body.embed .panel { border: 0; padding: 0; }
+/* the moodboard shows the reference on its own button: in the embed the side column is controls + description */
+body.embed .side .panel:first-child { display: none; }
 body.embed .seg button { font-size: 12px; padding: 4px 9px; }
-@media (max-width: 900px) {
+@media (max-width: 700px) {
   body.embed .viewer { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
   body.embed .stage { border-radius: 16px 16px 0 0; }
-  body.embed .side { border-radius: 0 0 16px 16px; max-height: 40vh; }
-  body.embed .side .panel:first-child { display: none; }
+  body.embed .side { border-radius: 0 0 16px 16px; max-height: 50vh; }
 }
 </style>
 <script type="importmap">
@@ -159,6 +172,7 @@ body.embed .seg button { font-size: 12px; padding: 4px 9px; }
         </div></div>
         <p class="small" id="tris"></p>
       </div>
+      <div class="panel info" id="info" aria-live="polite"></div>
     </div>
   </section>
 
@@ -452,9 +466,41 @@ const pick = document.getElementById("pick");
   b.type = "button"; b.dataset.pick = id; b.textContent = label; b.setAttribute("aria-pressed", id === "all");
   pick.appendChild(b);
 });
+function renderInfo() {
+  const box = document.getElementById("info");
+  const full = document.body.classList.contains("embed") ? "shack-textures.html" : "";
+  if (state.pick === "all") {
+    box.innerHTML = `<h3>Методы текстурирования</h3>` + V.map(v => `
+      <div class="row" data-goto="${v.id}"><b>${v.n}. ${v.name}</b> · <span class="badge ${v.paid ? "paid" : "free"}" style="display:inline">${v.cost}</span>
+      <span>${v.how.split(". ")[0]}.</span><span>Похоже на реф: ${v.like}; вблизи: ${v.close}; параметры: ${v.param}.</span></div>`).join("")
+      + `<p class="small" style="margin-top:8px">Выберите вариант — здесь появится полное описание.</p>`;
+    return;
+  }
+  const v = V.find(x => x.id === state.pick);
+  box.innerHTML = `
+    <h3>${v.n}. ${v.name}</h3>
+    <div class="badges"><span class="badge ${v.paid ? "paid" : "free"}">${v.cost}</span><span class="badge neutral">параметры: ${v.param}</span></div>
+    <p>${v.how}</p>
+    <div class="sub">Как сделано</div>
+    <ol>${v.steps.map(x => `<li>${x}</li>`).join("")}</ol>
+    <dl class="facts"><dt>Инструменты</dt><dd>${v.tools}</dd><dt>Время</dt><dd>${v.time}</dd><dt>Чёткость</dt><dd>${v.texel}</dd>
+      <dt>LOD</dt><dd class="meta">${v.lods.join(" / ")} (${v.lodsNote})</dd></dl>
+    <div class="sub">Плюсы</div><ul>${v.pros.map(x => `<li>${x}</li>`).join("")}</ul>
+    <div class="sub">Минусы</div><ul>${v.cons.map(x => `<li>${x}</li>`).join("")}</ul>
+    <div class="sub">Что можно улучшить</div><ul>${v.improve.map(x => `<li>${x}</li>`).join("")}</ul>
+    <div class="sub">Цвета по зонам против рефа</div>${zonesTable(v)}
+    ${full ? `<p><a href="${full}#v-${v.id}" target="_blank" rel="noopener">Карточка с картинками ↗</a></p>` : ""}`;
+}
+document.getElementById("info").addEventListener("click", e => {
+  const r = e.target.closest("[data-goto]");
+  if (r) setPick(r.dataset.goto);
+});
+
 function setPick(id) {
   state.pick = id;
   pick.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.pick === id));
+  renderInfo();
+  document.getElementById("info").scrollTop = 0;
   layout(true);
 }
 pick.addEventListener("click", e => { const b = e.target.closest("button"); if (b) setPick(b.dataset.pick); });
@@ -475,6 +521,8 @@ document.getElementById("spinseg").addEventListener("click", e => {
   controls.autoRotate = b.dataset.spin === "1";
   document.querySelectorAll("#spinseg button").forEach(x => x.setAttribute("aria-pressed", x === b));
 });
+
+renderInfo();
 
 function resize() {
   const w = stage.clientWidth, h = stage.clientHeight;
