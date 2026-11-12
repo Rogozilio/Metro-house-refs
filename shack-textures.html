@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-/* A comparison page for the moodboard: five texturing methods on one parametric house, viewed in 3D. */
+/* A comparison page for the moodboard: six texturing methods on one parametric house, viewed in 3D. */
 :root {
   color-scheme: light;
   --bg: #eef1f5; --panel: #ffffff; --fg: #17202b; --muted: #5a6575; --line: #d4dae3;
@@ -148,8 +148,8 @@ body.embed .seg button { font-size: 12px; padding: 4px 9px; }
 <div class="wrap">
   <div class="top"><a class="back" href="./">← Мудборд</a></div>
   <p class="eyebrow">We Are Destroyers · лаборатория · 2026-11-12</p>
-  <h1>Лачуга на сваях: 5 способов текстурирования</h1>
-  <p class="lead">Одна и та же процедурная модель из Houdini (4 × 4 м, 41 кусок для разрушения), пять способов затекстурировать её <b>по одному референсу</b>. Модели ниже — ровно то, что лежит в игре: скин LOD0/1/2 с текстурами, без освещения сцены (unlit), как его рисует город. Крутите, сравнивайте с референсом справа.</p>
+  <h1>Лачуга на сваях: 6 способов текстурирования</h1>
+  <p class="lead">Одна и та же процедурная модель из Houdini (4 × 4 м, 41 кусок для разрушения), шесть способов затекстурировать её <b>по одному референсу</b>. Модели ниже — ровно то, что лежит в игре: скин LOD0/1/2 с текстурами, без освещения сцены (unlit), как его рисует город. Крутите, сравнивайте с референсом справа.</p>
 
   <section class="viewer" aria-label="3D-просмотр">
     <div class="stage" id="stage">
@@ -194,8 +194,8 @@ body.embed .seg button { font-size: 12px; padding: 4px 9px; }
 
   <h2>Вид в Unity</h2>
   <div class="shots" style="grid-template-columns: 1fr 1fr;">
-    <figure style="margin:0"><img src="lab/stilt-shack/img/unity_row.webp" alt="Пять лачуг в Unity, спереди"><figcaption>Спереди, слева направо: 1 → 5 (за ними колониальный дом из Houdini)</figcaption></figure>
-    <figure style="margin:0"><img src="lab/stilt-shack/img/unity_row_back.webp" alt="Пять лачуг в Unity, сзади"><figcaption>Сзади, порядок обратный: 5 → 1. Задние стороны никто не видел на референсе</figcaption></figure>
+    <figure style="margin:0"><img src="lab/stilt-shack/img/unity_row.webp" alt="Шесть лачуг в Unity, спереди"><figcaption>Спереди, слева направо: 1 → 6 (за ними колониальный дом из Houdini)</figcaption></figure>
+    <figure style="margin:0"><img src="lab/stilt-shack/img/unity_row_back.webp" alt="Шесть лачуг в Unity, сзади"><figcaption>Сзади, порядок обратный: 6 → 1. Задние стороны никто не видел на референсе</figcaption></figure>
   </div>
 
   <h2>Вывод</h2>
@@ -317,6 +317,26 @@ const V = [
     improve: ["перенести текстуру Phantasm на авторские LOD-ы из Houdini", "дать Phantasm несколько ракурсов рефа или маску материалов"],
     files: ["Tools/HouseConstructor/out/shack_phantasm/ (job/ — логи задачи, scripts/)"],
     sheet: "sheet_phantasm.webp", sheetCap: "Реф · спереди · сзади-слева · фасад вблизи (плоский unlit-рендер)" },
+  { id: "masks", file: "houdini_stilt_shack_masks", n: 6, name: "Trim-листы + цвет вершин", tag: "бесплатно", cost: "бесплатно", paid: false,
+    like: "стиль и гармония цвета, стены темнее", close: "чётко: гвозди, трещины, швы", param: "да", lods: [4268, 2120, 754], lodsNote: "авторские",
+    how: "Итог всех предыдущих попыток и гайда по оптимизации для VR. Текстура несёт только форму: волокна, светлую кромку, шов, трещины, гвозди. Цвет несут вершины: у каждой доски свой пигмент. Поэтому текстур всего две, плотность одна на весь дом, а две доски с одной полоски текстуры выглядят по-разному.",
+    steps: [
+      "Два листа 2048 × 2048 покрывают 2 × 2 м: 1024 пикселя на метр (10.24 px/см) на всех деталях. Лист дерева — полоски по классам ширины (стена, настил, брус, рейки), лист металла — три полосы профлиста.",
+      "Скрипт <code>gen_masks.py</code> сначала рисует RGB-маску: R — волокна и сучки, G — свет (верхняя кромка, потёртости, блик гвоздя), B — тёмное (швы, трещины, вмятины, шляпки гвоздей). Цветной лист собирается из маски. Дерево остаётся бледным.",
+      "Python-нода <code>uv_masks.py</code> кладёт каждую доску на свою полоску и пишет в вершины цвет «tint»: пигмент доски, градиент вдоль неё, посерение у низа стен, тёмную комнату за дверью.",
+      "Гармония: всё дерево в одном оттенке (22° ± 2.5°, как на рефе). Доски различаются только насыщенностью и яркостью.",
+      "Гвозди стоят через 0.5 м. Островки UV сдвинуты до ±15 см и наполовину отзеркалены: гвозди не идут по линейке, пятна не повторяются на соседних досках.",
+      "Экспорт: свет и AO запекаются в вершины и умножаются на пигмент. Игра научилась читать цветной свет вершин (раньше читала одно серое значение)."],
+    tools: "Houdini 22 (VEX + Python SOP), numpy, Blender",
+    time: "текстуры — секунды; весь экспорт в игру — около 3 минут",
+    texel: "1008 texels/m в среднем (766–1337), цель 1024",
+    zones: { rust: [186, 93, 56], galv: [170, 162, 171], front: [151, 103, 76], side: [129, 89, 66], deck: [153, 106, 80], posts: [141, 88, 55] },
+    zonesNote: "рендер экспортированного скина в Blender, как в игре",
+    pros: ["2 текстуры вместо 5: около 5 МБ памяти против 12 МБ (расчёт для ASTC 6x6)", "плотность 10.24 px/см — примерно в 9 раз выше, чем у Phantasm", "цвет в вершинах: разнообразие без новых текстур и без видимых повторов", "параметрический, бесплатно, авторские LOD-ы", "листы можно сделать общими для многих домов"],
+    cons: ["стены темнее рефа на 20–25 из 255", "вмятины на досках крупные, вблизи заметны", "гвозди по сетке 0.5 м, не привязаны к концам досок и рейкам", "RGB-маски игра пока не читает: гвозди красятся пигментом вместе с доской", "не проверено в Play и на Quest"],
+    improve: ["чтение масок в шейдере SKToon: гвозди и швы сохранят свой цвет", "общие trim-листы на все деревянные дома", "живописные тени на доске, как у Phantasm"],
+    files: ["Tools/Houdini/stilt_shack_masks_src/ (gen_masks.py, uv_masks.py)", "Tools/Houdini/stilt_shack_masks_tex/ (листы и маски)", "Tools/HouseConstructor/out/shack_masks/", "Tools/Houdini/HOUSE_TEXTURING_CHECKLIST.md (правила и факт-чек)"],
+    sheet: "sheet_masks.webp", sheetCap: "Реф и рендер скина как в игре" },
 ];
 const SPACING = 6.2;
 
