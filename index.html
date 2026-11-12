@@ -73,6 +73,8 @@ body::before {
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
+.lablink { flex: none; font-size: 13px; font-weight: 500; white-space: nowrap; text-decoration: none; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 4px 11px; }
+.lablink:hover { background: var(--accent); color: #fff; }
 .brand { font-family: var(--display); font-weight: 700; font-size: 16px; letter-spacing: -0.01em; white-space: nowrap; margin-right: 4px; }
 .seg { flex: none; display: inline-flex; padding: 3px; border-radius: 999px; background: var(--panel); border: 1px solid var(--line); }
 .seg button {
@@ -254,6 +256,7 @@ h1 { font-family: var(--display); font-weight: 700; font-size: clamp(40px, 7vw, 
       <button type="button" data-mode="houses" aria-pressed="false">Здания</button>
       <button type="button" data-mode="props" aria-pressed="false">Пропсы</button>
     </div>
+    <a class="lablink" href="shack-textures.html">Лаба: текстуры лачуги</a>
     <nav class="chips" id="dnav" aria-label="Районы"></nav>
   </div>
 </header>
