@@ -94,6 +94,10 @@ h2 { font-family: var(--display); font-weight: 500; font-size: 20px; margin: 40p
 .shots { display: grid; gap: 10px; }
 .shots img { border-radius: 10px; border: 1px solid var(--line); cursor: zoom-in; }
 .shots figcaption { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.pbrgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: 4px 0 6px; }
+.pbrgrid figure { margin: 0; }
+.pbrgrid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; border: 1px solid var(--line); cursor: zoom-in; display: block; }
+.pbrgrid figcaption { font-size: 10px; color: var(--muted); line-height: 1.2; margin-top: 2px; }
 .show3d { font: inherit; font-size: 13px; margin-top: 4px; border: 1px solid var(--accent); color: var(--accent); background: transparent; border-radius: 999px; padding: 5px 12px; cursor: pointer; }
 .card h4.sub { margin: 14px 0 6px; font-size: 13px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
 .steps { margin: 0 0 6px; padding-left: 20px; }
@@ -170,6 +174,7 @@ body.embed .seg button { font-size: 12px; padding: 4px 9px; }
           <button type="button" data-light="game" aria-pressed="true">Как в игре</button>
           <button type="button" data-light="pbr" aria-pressed="false">PBR · солнце по рефу</button>
           <button type="button" data-light="baked" aria-pressed="false">Карта света</button>
+          <button type="button" data-light="normals" aria-pressed="false">Нормали</button>
         </div><p class="small" id="lightnote"></p></div>
         <div><h3>Вращение</h3><div class="seg" id="spinseg" role="group" aria-label="Автовращение">
           <button type="button" data-spin="1" aria-pressed="false">Авто</button>
@@ -359,6 +364,14 @@ function pbrFigures(v) {
   return v.pbr.sheets.map(([sheet, name]) => kinds.map(([suf, kind]) => fig(v.id + "_" + sheet + suf, name + ": " + kind)).join("")).join("")
     + fig(v.id + "_AO", "Запечённое AO (вторая развёртка LOD0)") + fig(v.id + "_Light", "Запечённый свет: AO × солнце × небо");
 }
+function pbrGrid(v) {
+  const cell = (file, cap) => `<figure><img loading="lazy" src="${BASE}img/pbr/${file}.webp" alt="${cap}"><figcaption>${cap}</figcaption></figure>`;
+  const kinds = [["", "цвет"], ["_Normal", "нормали"], ["_Roughness", "шерох."], ["_Metallic", "металл"]];
+  return `<div class="sub">Карты PBR</div><p class="small">Выведены из образцов GPT (не измерены). Свет — переключатель «Свет» выше.</p>`
+    + v.pbr.sheets.map(([sheet, nm]) => `<div class="small"><b>${nm}</b></div><div class="pbrgrid">`
+      + kinds.map(([suf, k]) => cell(v.id + "_" + sheet + suf, k)).join("") + `</div>`).join("")
+    + `<div class="small"><b>Запечённое</b></div><div class="pbrgrid">${cell(v.id + "_AO", "AO")}${cell(v.id + "_Light", "свет")}</div>`;
+}
 function zonesTable(v) {
   if (!v.zones) return `<p class="small">${v.zonesNote}</p>`;
   const rows = Object.keys(ZONE_NAMES).filter(k => v.zones[k]).map(k => {
@@ -409,7 +422,7 @@ for (const v of V) {
 // lightbox for every screenshot
 const lb = document.getElementById("lightbox");
 document.addEventListener("click", e => {
-  const img = e.target.closest(".shots img, .refimg");
+  const img = e.target.closest(".shots img, .refimg, .pbrgrid img");
   if (img) { lb.querySelector("img").src = img.src; lb.hidden = false; return; }
   if (e.target.closest("#lightbox")) lb.hidden = true;
 });
@@ -467,6 +480,9 @@ function unlit(root, v) {
       o.userData.mats.pbr = src;
       o.userData.mats.baked = second ? new THREE.MeshBasicMaterial({ map: src.map || null, lightMap: maps.light, lightMapIntensity: Math.PI, color: 0x000000 }) : m;
       if (second) o.userData.mats.baked.color.set(0xffffff);
+      // the normal map itself as the colour, unlit: shows what the PBR mode gets from the maps
+      o.userData.mats.normals = new THREE.MeshBasicMaterial({ map: src.normalMap ? src.normalMap.clone() : null, color: 0xffffff });
+      if (o.userData.mats.normals.map) o.userData.mats.normals.map.colorSpace = THREE.NoColorSpace;
     }
     o.material = m;
   });
@@ -546,6 +562,7 @@ function applyLight(shown) {
   note.textContent = !withPbr.length ? "PBR-карты есть только у варианта 4: выберите его."
     : mode === "pbr" ? withPbr[0].v.pbr.note
     : mode === "baked" ? "Цвет × карта света (AO + солнце + небо), без источников в сцене. Карта лежит на LOD0."
+    : mode === "normals" ? "Карты нормалей на модели, без света: швы, гребни профлиста, рамы окон."
     : "Цвет × свет в вершинах: так дом рисует игра.";
   document.querySelectorAll("#lightseg button").forEach(b => { b.disabled = !withPbr.length && b.dataset.light !== "game"; });
 }
@@ -585,6 +602,7 @@ function renderInfo() {
     <div class="sub">Плюсы</div><ul>${v.pros.map(x => `<li>${x}</li>`).join("")}</ul>
     <div class="sub">Минусы</div><ul>${v.cons.map(x => `<li>${x}</li>`).join("")}</ul>
     <div class="sub">Что можно улучшить</div><ul>${v.improve.map(x => `<li>${x}</li>`).join("")}</ul>
+    ${v.pbr ? pbrGrid(v) : ""}
     <div class="sub">Цвета по зонам против рефа</div>${zonesTable(v)}
     ${full ? `<p><a href="${full}#v-${v.id}" target="_blank" rel="noopener">Карточка с картинками ↗</a></p>` : ""}`;
 }
