@@ -166,6 +166,11 @@ body.embed .seg button { font-size: 12px; padding: 4px 9px; }
           <button type="button" data-lod="1" aria-pressed="false">LOD1 · 15–25 м</button>
           <button type="button" data-lod="2" aria-pressed="false">LOD2 · &gt;25 м</button>
         </div></div>
+        <div><h3>Свет</h3><div class="seg" id="lightseg" role="group" aria-label="Свет">
+          <button type="button" data-light="game" aria-pressed="true">Как в игре</button>
+          <button type="button" data-light="pbr" aria-pressed="false">PBR · солнце по рефу</button>
+          <button type="button" data-light="baked" aria-pressed="false">Карта света</button>
+        </div><p class="small" id="lightnote"></p></div>
         <div><h3>Вращение</h3><div class="seg" id="spinseg" role="group" aria-label="Автовращение">
           <button type="button" data-spin="1" aria-pressed="false">Авто</button>
           <button type="button" data-spin="0" aria-pressed="true">Стоп</button>
@@ -215,6 +220,7 @@ body.embed .seg button { font-size: 12px; padding: 4px 9px; }
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
 const BASE = "lab/stilt-shack/";
 const REF = { rust: [200, 101, 69], galv: [178, 179, 193], front: [169, 130, 100], side: [184, 133, 101], deck: [142, 104, 84], posts: [155, 93, 54] };
@@ -297,7 +303,9 @@ const V = [
     cons: ["на стенах больше серо-коричневых досок, чем на рефе", "гвоздей нет: их не было на образцах", "доски образца шириной 17 см, на рефе они крупнее", "цвет равен образцу, а не рефу: неточный образец нужно перерисовать в GPT", "не проверено в Play и на Quest"],
     improve: ["новый образец тёплых досок: шире, с гвоздями", "отдельный образец для настила", "третий металл: полосатый лист"],
     files: ["Tools/HouseConstructor/swatch_maps.py, swatch_fidelity.py", "Tools/Houdini/stilt_shack_gpt_src/ (swatch_spec.json, uv_trim.py)", "Tools/Houdini/stilt_shack_gpt_tex/", "Tools/HouseConstructor/out/shack_gpt/ (gpt/ — картинки и промпты)"],
-    sheet: "sheet_gpt.webp", sheetCap: "Образцы GPT и полоски в игре из каждого, в одном масштабе" },
+    sheet: "sheet_gpt.webp", sheetCap: "Образцы GPT и полоски в игре из каждого, в одном масштабе",
+    pbr: { sun: [310, 50], share: 0.59, sheets: [["wood", "Дерево"], ["metal", "Металл"]],
+      note: "Солнце найдено по рефу: спереди-справа, 50° над горизонтом; стены в 0.85 от яркости верхних граней (на рефе 0.85–0.87)." } },
   { id: "phantasm", file: "houdini_stilt_shack_phantasm", n: 5, name: "Phantasm", tag: "платно · 1 покраска", cost: "1 задача, 20.5 мин", paid: true,
     like: "цельный рисованный вид", close: "чисто, без швов", param: "нет", lods: [4290, 2144, 805], lodsNote: "прорежены, LOD2 сломан",
     how: "Нейросеть красит модель целиком. В Phantasm уходят готовая модель домика (одно тело, без текстур и UV) и картинка рефа с вырезанным фоном. Phantasm сам разворачивает UV и рисует весь домик, включая стороны, которых на рефе нет. Наша часть — только подготовка и стандартный экспорт.",
@@ -344,6 +352,13 @@ const SPACING = 6.2;
 const sum = document.getElementById("summary");
 const cards = document.getElementById("cards");
 function sw(c) { return `<span class="sw" style="background: rgb(${c.join(",")})"></span>`; }
+// the PBR maps of a variant: per sheet colour / normal / roughness / metallic, then the two baked maps
+function pbrFigures(v) {
+  const kinds = [["", "цвет"], ["_Normal", "нормали"], ["_Roughness", "шероховатость"], ["_Metallic", "металл"]];
+  const fig = (file, cap) => `<figure style="margin:0"><img loading="lazy" src="${BASE}img/pbr/${file}.webp" alt="${cap}"><figcaption>${cap}</figcaption></figure>`;
+  return v.pbr.sheets.map(([sheet, name]) => kinds.map(([suf, kind]) => fig(v.id + "_" + sheet + suf, name + ": " + kind)).join("")).join("")
+    + fig(v.id + "_AO", "Запечённое AO (вторая развёртка LOD0)") + fig(v.id + "_Light", "Запечённый свет: AO × солнце × небо");
+}
 function zonesTable(v) {
   if (!v.zones) return `<p class="small">${v.zonesNote}</p>`;
   const rows = Object.keys(ZONE_NAMES).filter(k => v.zones[k]).map(k => {
@@ -386,6 +401,7 @@ for (const v of V) {
     <div class="shots">
       <figure style="margin:0"><img loading="lazy" src="${BASE}img/${v.sheet}" alt="${v.sheetCap}"><figcaption>${v.sheetCap}</figcaption></figure>
       <figure style="margin:0"><img loading="lazy" src="${BASE}img/unity_close_${v.id}.webp" alt="Вблизи в Unity"><figcaption>Вблизи в Unity</figcaption></figure>
+      ${v.pbr ? pbrFigures(v) : ""}
     </div>`;
   cards.appendChild(c);
 }
@@ -418,21 +434,47 @@ const floorMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: tru
 
 const loader = new GLTFLoader();
 const items = [];
-let state = { pick: "all", lod: 0 };
+let state = { pick: "all", lod: 0, light: "game" };
+// PBR mode: a sun where the reference has it (fit_ref_light.py) and a soft room for the reflections
+const pmrem = new THREE.PMREMGenerator(renderer);
+const roomEnv = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+const sunLight = new THREE.DirectionalLight(0xfff4e6, 0);
+scene.add(sunLight, sunLight.target);
+const texLoader = new THREE.TextureLoader();
+function bakedMap(url, srgb) {
+  const t = texLoader.load(url);
+  t.flipY = false; t.channel = 1;      // glTF's second UV set
+  // The light map multiplies the colour the way the game's vertex light does, in display (sRGB) values:
+  // 0.79 on a shaded wall means 0.79 of the lit wall on screen. The AO map is plain data for the PBR light.
+  if (srgb) t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
 
-function unlit(root) {
+function unlit(root, v) {
+  const maps = v.pbr ? { ao: bakedMap(BASE + "models/" + v.file + "_AO.png"), light: bakedMap(BASE + "models/" + v.file + "_Light.png", true) } : null;
   root.traverse(o => {
     if (!o.isMesh) return;
     const src = o.material;
     const m = new THREE.MeshBasicMaterial({ map: src.map || null, color: 0xffffff, vertexColors: !!o.geometry.attributes.color });
     if (m.map) m.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    o.userData.mats = { game: m };
+    if (maps) {
+      // the GLB's own material: base colour, normal, roughness-metallic (pbr_maps.py). A basic material divides
+      // its light map by pi: the baked one gets that back in lightMapIntensity.
+      src.vertexColors = false; src.envMapIntensity = 0.55;
+      const second = !!o.geometry.attributes.uv1;        // only LOD0 has the unique UV set of the baked maps
+      if (second) { src.aoMap = maps.ao; src.aoMapIntensity = 1.0; }
+      o.userData.mats.pbr = src;
+      o.userData.mats.baked = second ? new THREE.MeshBasicMaterial({ map: src.map || null, lightMap: maps.light, lightMapIntensity: Math.PI, color: 0x000000 }) : m;
+      if (second) o.userData.mats.baked.color.set(0xffffff);
+    }
     o.material = m;
   });
 }
 
 Promise.all(V.map((v, i) => loader.loadAsync(BASE + "models/" + v.file + ".glb").then(g => {
   const root = g.scene;
-  unlit(root);
+  unlit(root, v);
   const lods = [0, 1, 2].map(l => root.getObjectByName("LOD" + l));
   // centre the house on its footprint, base on y = 0
   const box = new THREE.Box3().setFromObject(lods[0]);
@@ -465,6 +507,7 @@ function layout(resetCamera) {
   items.forEach(it => { it.holder.visible = shown.includes(it); it.tag.hidden = !shown.includes(it); });
   shown.forEach((it, k) => { it.holder.position.set((k - (shown.length - 1) / 2) * SPACING, 0, 0); });
   items.forEach(it => it.lods.forEach((m, l) => { if (m) m.visible = l === state.lod; }));
+  applyLight(shown);
   const tris = shown.map(it => `${it.v.n}: ${it.v.lods[state.lod]}`).join(" · ");
   document.getElementById("tris").textContent = "Треугольники LOD" + state.lod + " — " + tris;
   if (resetCamera) {
@@ -478,6 +521,40 @@ function layout(resetCamera) {
     controls.update();
   }
 }
+
+// Three ways to light a house: the game's (colour x vertex light), PBR (the GLB's materials under a sun),
+// baked (colour x the light map: a basic material takes its light map as its only light).
+function applyLight(shown) {
+  const withPbr = shown.filter(it => it.v.pbr);
+  const mode = withPbr.length ? state.light : "game";
+  items.forEach(it => it.holder.traverse(o => {
+    if (!o.isMesh || !o.userData.mats) return;
+    o.material = o.userData.mats[it.v.pbr ? mode : "game"] || o.userData.mats.game;
+  }));
+  const pbr = mode === "pbr";
+  scene.environment = pbr ? roomEnv : null;
+  sunLight.intensity = pbr ? 2.6 : 0;
+  if (pbr) {
+    // the exporters' sun: yaw 270 = in front of the facade, 0 = at its right side, in Blender's frame (Z up);
+    // the GLB is Y up with the facade on +Z
+    const [yaw, pitch] = withPbr[0].v.pbr.sun.map(THREE.MathUtils.degToRad);
+    const dir = new THREE.Vector3(Math.cos(yaw) * Math.cos(pitch), Math.sin(pitch), -Math.sin(yaw) * Math.cos(pitch));
+    sunLight.target.position.copy(withPbr[0].holder.position);
+    sunLight.position.copy(withPbr[0].holder.position).addScaledVector(dir, 200);
+  }
+  const note = document.getElementById("lightnote");
+  note.textContent = !withPbr.length ? "PBR-карты есть только у варианта 4: выберите его."
+    : mode === "pbr" ? withPbr[0].v.pbr.note
+    : mode === "baked" ? "Цвет × карта света (AO + солнце + небо), без источников в сцене. Карта лежит на LOD0."
+    : "Цвет × свет в вершинах: так дом рисует игра.";
+  document.querySelectorAll("#lightseg button").forEach(b => { b.disabled = !withPbr.length && b.dataset.light !== "game"; });
+}
+document.getElementById("lightseg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b || b.disabled) return;
+  state.light = b.dataset.light;
+  document.querySelectorAll("#lightseg button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  layout(false);
+});
 
 // picker
 const pick = document.getElementById("pick");
