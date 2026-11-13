@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 15 16 5l12 10v13H4z' fill='%231c6c87'/%3E%3C/svg%3E">
+<title>Сужающаяся башня</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* The moodboard's 3D page of the tapered glass tower: one parametric Houdini model, viewed in 3D. */
+:root {
+  color-scheme: light;
+  --bg: #eef1f5; --panel: #ffffff; --fg: #17202b; --muted: #5a6575; --line: #d4dae3;
+  --accent: #1c6c87; --shade: rgba(23, 32, 43, 0.14);
+  --stage: #e3e8ee; --stage-ink: #1b2531;
+  --free: #2f7d4f; --paid: #a3561c;
+  --display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --body: "Golos Text", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #10151c; --panel: #171e27; --fg: #e5eaf1; --muted: #93a0b1; --line: #263140;
+    --accent: #62b8d2; --shade: rgba(0, 0, 0, 0.35); --stage: #2a313b; --stage-ink: #eef2f6;
+    --free: #6cc493; --paid: #e29a5f;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+img { max-width: 100%; display: block; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.55; }
+a { color: var(--accent); }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 max(16px, env(safe-area-inset-left, 0px)); }
+.top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 14px 0 6px; }
+.back { font-size: 13px; text-decoration: none; color: var(--muted); border: 1px solid var(--line); padding: 4px 10px; border-radius: 999px; }
+.back:hover { color: var(--fg); }
+.eyebrow { margin: 18px 0 4px; font-family: var(--mono); font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+h1 { font-family: var(--display); font-weight: 700; font-size: clamp(22px, 3.4vw, 34px); line-height: 1.15; margin: 0 0 10px; }
+h2 { font-family: var(--display); font-weight: 500; font-size: 20px; margin: 40px 0 12px; }
+.lead { max-width: 760px; color: var(--muted); margin: 0 0 22px; }
+.lead b { color: var(--fg); font-weight: 600; }
+
+.viewer { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 14px; align-items: stretch; }
+@media (max-width: 900px) { .viewer { grid-template-columns: 1fr; } }
+.stage { position: relative; background: var(--stage); border-radius: 14px; overflow: hidden; min-height: 460px; height: 64vh; max-height: 720px; touch-action: none; }
+.stage canvas { display: block; width: 100%; height: 100%; }
+.labels { position: absolute; inset: 0; pointer-events: none; }
+.tag { position: absolute; transform: translate(-50%, -100%); background: rgba(16, 20, 27, .86); color: #fff; font-size: 12px; line-height: 1.25; padding: 5px 9px; border-radius: 7px; white-space: nowrap; text-align: center; }
+.tag b { font-weight: 600; }
+.tag span { display: block; font-size: 11px; opacity: .75; }
+.hint { position: absolute; left: 12px; bottom: 10px; font-size: 12px; color: var(--stage-ink); opacity: .65; pointer-events: none; }
+.loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--stage-ink); font-size: 14px; }
+.side { display: flex; flex-direction: column; gap: 12px; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
+.panel h3 { margin: 0 0 8px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.refimg { border-radius: 9px; background: #eef1f5; }
+.ctl { display: flex; flex-direction: column; gap: 10px; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button { font: inherit; font-size: 13px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); padding: 5px 10px; border-radius: 999px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.small { font-size: 12px; color: var(--muted); margin: 0; }
+.info { font-size: 13px; line-height: 1.5; }
+.info h3 { margin: 0 0 6px; }
+.info p { margin: 0 0 8px; }
+.info ol, .info ul { margin: 0 0 8px; padding-left: 18px; }
+.info li { margin: 3px 0; }
+.info .sub { margin: 10px 0 4px; font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.info .row { padding: 8px 0; border-top: 1px solid var(--line); cursor: pointer; }
+.info .row:first-of-type { border-top: 0; padding-top: 0; }
+.info .row:hover b { color: var(--accent); }
+.info .row span { display: block; color: var(--muted); }
+.info .facts { font-size: 12px; margin: 8px 0; }
+.info .zt { font-size: 12px; }
+
+.cards { display: grid; gap: 16px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 18px; }
+@media (max-width: 900px) { .card { grid-template-columns: 1fr; } }
+.card h3 { font-family: var(--display); font-weight: 500; font-size: 18px; margin: 0 0 6px; }
+.badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.badge { font-size: 12px; padding: 2px 9px; border-radius: 999px; border: 1px solid currentColor; }
+.badge.free { color: var(--free); } .badge.paid { color: var(--paid); } .badge.neutral { color: var(--muted); }
+.card p { margin: 0 0 10px; }
+.pc { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 6px 0 10px; }
+@media (max-width: 560px) { .pc { grid-template-columns: 1fr; } }
+.pc h4 { margin: 0 0 4px; font-size: 13px; }
+.pc ul { margin: 0; padding-left: 18px; }
+.pc li { margin: 2px 0; }
+.meta { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.shots { display: grid; gap: 10px; }
+.shots img { border-radius: 10px; border: 1px solid var(--line); cursor: zoom-in; }
+.shots figcaption { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.show3d { font: inherit; font-size: 13px; margin-top: 4px; border: 1px solid var(--accent); color: var(--accent); background: transparent; border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+.card h4.sub { margin: 14px 0 6px; font-size: 13px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.steps { margin: 0 0 6px; padding-left: 20px; }
+.steps li { margin: 4px 0; }
+.plain { margin: 0; padding-left: 18px; }
+.plain li { margin: 2px 0; }
+.facts { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; margin: 12px 0; font-size: 14px; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; }
+.zt { border-collapse: collapse; font-size: 13px; width: 100%; }
+.zt th, .zt td { text-align: left; padding: 4px 8px 4px 0; border-bottom: 1px solid var(--line); }
+.zt th { font-size: 12px; color: var(--muted); font-weight: 600; }
+.zt .far { color: var(--paid); font-weight: 600; }
+.sw { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 6px; border: 1px solid var(--line); }
+code { font-family: var(--mono); font-size: .92em; }
+.table { width: 100%; border-collapse: collapse; font-size: 14px; background: var(--panel); border-radius: 14px; overflow: hidden; }
+.table th, .table td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.table th { font-size: 12px; color: var(--muted); font-weight: 600; }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
+.verdict { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 12px; padding: 14px 18px; max-width: 860px; }
+.verdict p { margin: 0 0 8px; }
+.verdict p:last-child { margin: 0; }
+.lightbox { position: fixed; inset: 0; background: rgba(5, 8, 12, .94); display: grid; place-items: center; z-index: 50; padding: 16px; cursor: zoom-out; }
+.lightbox img { max-height: 92vh; width: auto; border-radius: 8px; }
+footer { margin: 40px 0 30px; font-size: 12px; color: var(--muted); }
+/* ?embed=1: inside the moodboard's viewer, only the 3D stage and its controls */
+body.embed { background: transparent; overflow: hidden; }
+body.embed .wrap { max-width: none; padding: 0; }
+body.embed .wrap > :not(.viewer) { display: none; }
+body.embed .viewer { height: 100vh; grid-template-columns: minmax(0, 1fr) clamp(280px, 34%, 400px); gap: 0; }
+body.embed .stage { height: 100%; max-height: none; min-height: 0; border-radius: 16px 0 0 16px; }
+body.embed .side { background: var(--panel); border-radius: 0 16px 16px 0; padding: 10px; gap: 10px; overflow-y: auto; }
+body.embed .panel { border: 0; padding: 0; }
+/* the moodboard shows the reference on its own button: in the embed the side column is controls + description */
+body.embed .side .panel:first-child { display: none; }
+body.embed .seg button { font-size: 12px; padding: 4px 9px; }
+@media (max-width: 700px) {
+  body.embed .viewer { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
+  body.embed .stage { border-radius: 16px 16px 0 0; }
+  body.embed .side { border-radius: 0 0 16px 16px; max-height: 50vh; }
+}
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<script>if (new URLSearchParams(location.search).has("embed")) document.body.classList.add("embed");</script>
+<div class="wrap">
+  <div class="top"><a class="back" href="./">← Мудборд</a></div>
+  <p class="eyebrow">We Are Destroyers · лаборатория · 2026-11-13</p>
+  <h1>Сужающаяся башня: модель из Houdini</h1>
+  <p class="lead">Процедурная модель из Houdini по стилизованному рефу: 20 этажей по 2.9 м (как у всех домов из Houdini), 64.5 м в высоту, 136 кусков для разрушения. Текстуры — четыре образца GPT Image, перенесённые в игру без перекраски. Модель ниже — ровно то, что лежит в игре: скин LOD0/1/2 с текстурами, без освещения сцены (unlit), как его рисует город.</p>
+
+  <section class="viewer" aria-label="3D-просмотр">
+    <div class="stage" id="stage">
+      <div class="labels" id="labels"></div>
+      <div class="loading" id="loading">Загрузка модели…</div>
+      <div class="hint">Тяните — вращать · колесо или щипок — зум · правой кнопкой — сдвиг</div>
+    </div>
+    <div class="side">
+      <div class="panel"><h3>Референс</h3><img class="refimg" src="lab/tapered-tower/img/reference.webp" alt="Стилизованный референс сужающейся башни"></div>
+      <div class="panel ctl">
+        <div hidden><div class="seg" id="pick" role="group" aria-label="Вариант"></div></div>
+        <div><h3>LOD</h3><div class="seg" id="lodseg" role="group" aria-label="LOD">
+          <button type="button" data-lod="0" aria-pressed="true">LOD0 · &lt;15 м</button>
+          <button type="button" data-lod="1" aria-pressed="false">LOD1 · 15–25 м</button>
+          <button type="button" data-lod="2" aria-pressed="false">LOD2 · &gt;25 м</button>
+        </div></div>
+        <div><h3>Вращение</h3><div class="seg" id="spinseg" role="group" aria-label="Автовращение">
+          <button type="button" data-spin="1" aria-pressed="false">Авто</button>
+          <button type="button" data-spin="0" aria-pressed="true">Стоп</button>
+        </div></div>
+        <p class="small" id="tris"></p>
+      </div>
+      <div class="panel info" id="info" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <h2>Как сделана</h2>
+  <div class="cards" id="cards"></div>
+
+  <h2>Образцы GPT</h2>
+  <div class="shots" style="grid-template-columns: 1fr;">
+    <figure style="margin:0"><img src="lab/tapered-tower/img/swatches.webp" alt="Референс и четыре образца GPT"><figcaption>Референс и четыре образца: панели, стекло, тёмный металл, кровля. Стекло и металл перерисованы второй раз: в первый GPT нарисовал целые сетки окон.</figcaption></figure>
+  </div>
+
+  <h2>Вид в Unity</h2>
+  <div class="shots" style="grid-template-columns: 1fr 1fr;">
+    <figure style="margin:0"><img src="lab/tapered-tower/img/unity_ref.webp" alt="Башня в Unity, издалека"><figcaption>Издалека, с ракурса рефа</figcaption></figure>
+    <figure style="margin:0"><img src="lab/tapered-tower/img/unity_street.webp" alt="Башня в Unity, с земли"><figcaption>С земли</figcaption></figure>
+    <figure style="margin:0"><img src="lab/tapered-tower/img/unity_close_tower.webp" alt="Башня в Unity, вблизи"><figcaption>Вблизи: стекло и полки этажей</figcaption></figure>
+    <figure style="margin:0"><img src="lab/tapered-tower/img/unity_top.webp" alt="Башня в Unity, крыша"><figcaption>Шапка и площадка на крыше</figcaption></figure>
+  </div>
+
+  <footer>Модель: Houdini → Blender → разрушение SlopMachine → FBX игры, сюда — тот же скин в GLB (текстуры ужаты до 1024 JPEG). Цвета зон — медианы рендера экспортированного скина в Blender против медиан тех же зон рефа.</footer>
+</div>
+
+<div class="lightbox" id="lightbox" hidden><img alt=""></div>
+
+<script type="module">
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+const BASE = "lab/tapered-tower/";
+const REF = { panel: [240, 236, 240], glass: [81, 174, 228], metal: [82, 92, 104], cap: [130, 149, 167] };
+const ZONE_NAMES = { panel: "Белые панели", glass: "Стекло", metal: "Тёмные полки и цоколь", cap: "Шапка" };
+const V = [
+  { id: "tower", file: "houdini_glass_tower", n: 1, name: "Сужающаяся башня", tag: "Houdini · образцы GPT", cost: "6 картинок GPT", paid: true,
+    like: "форма и цвета близко", close: "чётко: панели, стекло", param: "да", lods: [2520, 948, 418], lodsNote: "авторские",
+    how: "Башня построена в Houdini параметрической сетью: этажи, высота этажа, ширина у земли, сужение, срез угла, доля окон, глубина стекла. Массы подогнаны скриптом по силуэту рефа (совпадение 0.983). Текстуры — образцы GPT Image, перенесённые в игру без перекраски и без растяжения.",
+    steps: [
+      "Реф измерен: 20 этажей, сужение кверху 0.846, срез угла 1 м, цвета зон. Высота этажа 2.9 м — общая для всех домов из Houdini.",
+      "Houdini: на каждой стороне два белых пилона со скосом, утопленная полоса окон, тёмная полка на каждом этаже, тёмная полоса на срезанных углах; цоколь, белые плечи, шапка с площадкой.",
+      "Скрипт fit_masses.py перебрал 14 000 вариантов масс и камеры и сравнил силуэт с рефом.",
+      "GPT Image нарисовал 4 образца: панели, стекло, тёмный металл, кровлю. Стекло и металл перерисованы: в первый раз GPT скопировал вырезку с окнами.",
+      "swatch_maps.py переносит образцы в карты 2048: панели — от шва до шва, стекло — полоса на один этаж, металл и кровля — образец и его зеркала. Один масштаб, без перекраски.",
+      "Экспорт с авторскими LOD-ами; проверка swatch_fidelity.py: насыщенность и оттенок рендера равны образцам, свет съедает 5–19% яркости."],
+    tools: "Houdini 22 (VEX + Python SOP), GPT Image (через fal.ai), numpy, Blender, SlopMachine fracture",
+    time: "6 генераций; пересборка и экспорт — около 3 минут",
+    texel: "панели 353 px/м (5.8 м на повтор), стекло — одна полоса окон на этаж",
+    zones: {panel:  [216, 216, 218], glass:  [80, 176, 218], metal:  [77, 83, 93], cap:  [145, 164, 185]},
+    zonesNote: "рендер экспортированного скина в Blender, как в игре",
+    pros: ["параметрическая: этажность, ширина, сужение и окна меняются в Houdini", "текстуры выглядят как утверждённые образцы GPT", "136 кусков, все держатся на 9 опорах", "LOD0 2520 треугольников на 64-метровую башню"],
+    cons: ["на дальних LOD нет тёмных полок между этажами: сплошные полосы стекла", "плотность панелей вдвое ниже процедурного варианта (353 против 706 px/м)", "в окнах нет горизонтальных перемычек; блики повторяются на каждом этаже", "шапка проще рефа: нет выступов по бокам и рисунка площадки", "кровля светлее и голубее рефа: цвет взят у образца"],
+    improve: ["образец стекла с полкой этажа для дальних LOD", "образец панелей 1 × 1 для чёткости", "детали шапки по рефу"],
+    files: ["Tools/Houdini/glass_tower_src/ (build.py, body.vfl, ends.vfl, uv_tower.py, swatch_spec.json)", "Tools/Houdini/glass_tower_tex/", "Tools/HouseConstructor/out/glass_tower/ (export_all.sh, render_all.sh, fit_masses.py, gpt/)"],
+    sheet: "sheet.webp", sheetCap: "Реф и рендер скина как в игре" },
+];
+const SPACING = 6.2;
+
+// ---------- tables and cards ----------
+const sum = document.getElementById("summary");
+const cards = document.getElementById("cards");
+function sw(c) { return `<span class="sw" style="background: rgb(${c.join(",")})"></span>`; }
+function zonesTable(v) {
+  if (!v.zones) return `<p class="small">${v.zonesNote}</p>`;
+  const rows = Object.keys(ZONE_NAMES).filter(k => v.zones[k]).map(k => {
+    const a = v.zones[k], r = REF[k];
+    const d = Math.round(Math.hypot(a[0] - r[0], a[1] - r[1], a[2] - r[2]));
+    return `<tr><td>${ZONE_NAMES[k]}</td><td>${sw(a)}<span class="meta">${a.join(", ")}</span></td><td>${sw(r)}<span class="meta">${r.join(", ")}</span></td><td class="meta ${d > 30 ? "far" : ""}">${d}</td></tr>`;
+  }).join("");
+  return `<table class="zt"><thead><tr><th>Зона</th><th>Этот вариант</th><th>Реф</th><th>Разница</th></tr></thead><tbody>${rows}</tbody></table><p class="small">Медианы sRGB; разница — расстояние в RGB (0–441). Источник: ${v.zonesNote}.</p>`;
+}
+for (const v of V) {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `<td>${v.n}</td><td><b>${v.name}</b></td><td>${v.cost}</td><td>${v.like}</td><td>${v.close}</td><td>${v.param}</td><td class="meta">${v.lods.join(" / ")}<br>${v.lodsNote}</td>`;
+  if (sum) sum.appendChild(tr);   // one model: no summary table
+  const c = document.createElement("article");
+  c.className = "card"; c.id = "v-" + v.id;
+  c.innerHTML = `
+    <div>
+      <h3>${v.name}</h3>
+      <div class="badges"><span class="badge ${v.paid ? "paid" : "free"}">${v.cost}</span><span class="badge neutral">параметры: ${v.param}</span><span class="badge neutral">LOD ${v.lodsNote}</span></div>
+      <p>${v.how}</p>
+      <h4 class="sub">Как сделано</h4>
+      <ol class="steps">${v.steps.map(x => `<li>${x}</li>`).join("")}</ol>
+      <dl class="facts">
+        <dt>Инструменты</dt><dd>${v.tools}</dd>
+        <dt>Время</dt><dd>${v.time}</dd>
+        <dt>Чёткость</dt><dd>${v.texel}</dd>
+        <dt>Треугольники</dt><dd class="meta">LOD0 / LOD1 / LOD2: ${v.lods.join(" / ")} · 41 кусок для разрушения</dd>
+      </dl>
+      <div class="pc"><div><h4>Плюсы</h4><ul>${v.pros.map(x => `<li>${x}</li>`).join("")}</ul></div>
+      <div><h4>Минусы</h4><ul>${v.cons.map(x => `<li>${x}</li>`).join("")}</ul></div></div>
+      <h4 class="sub">Что можно улучшить</h4>
+      <ul class="plain">${v.improve.map(x => `<li>${x}</li>`).join("")}</ul>
+      <h4 class="sub">Цвета по зонам против рефа</h4>
+      ${zonesTable(v)}
+      <h4 class="sub">Файлы в проекте</h4>
+      <ul class="plain meta">${v.files.map(x => `<li>${x}</li>`).join("")}</ul>
+      <p class="meta">Ассет в игре: <code>Resources/Houses/${v.file}</code></p>
+      <button type="button" class="show3d" data-show="${v.id}">Смотреть в 3D ↑</button>
+    </div>
+    <div class="shots">
+      <figure style="margin:0"><img loading="lazy" src="${BASE}img/${v.sheet}" alt="${v.sheetCap}"><figcaption>${v.sheetCap}</figcaption></figure>
+      <figure style="margin:0"><img loading="lazy" src="${BASE}img/unity_close_${v.id}.webp" alt="Вблизи в Unity"><figcaption>Вблизи в Unity</figcaption></figure>
+    </div>`;
+  cards.appendChild(c);
+}
+
+// lightbox for every screenshot
+const lb = document.getElementById("lightbox");
+document.addEventListener("click", e => {
+  const img = e.target.closest(".shots img, .refimg");
+  if (img) { lb.querySelector("img").src = img.src; lb.hidden = false; return; }
+  if (e.target.closest("#lightbox")) lb.hidden = true;
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") lb.hidden = true; });
+
+// ---------- 3D ----------
+const stage = document.getElementById("stage");
+const labels = document.getElementById("labels");
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+stage.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 1, 0.2, 1500);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.autoRotateSpeed = 1.2;
+controls.minDistance = 4; controls.maxDistance = 400;
+
+// a soft floor disc under every house, so they read as standing
+const floorMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.08, depthWrite: false });
+
+const loader = new GLTFLoader();
+const items = [];
+let state = { pick: "tower", lod: 0 };
+
+function unlit(root) {
+  root.traverse(o => {
+    if (!o.isMesh) return;
+    const src = o.material;
+    const m = new THREE.MeshBasicMaterial({ map: src.map || null, color: 0xffffff, vertexColors: !!o.geometry.attributes.color });
+    if (m.map) m.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    o.material = m;
+  });
+}
+
+Promise.all(V.map((v, i) => loader.loadAsync(BASE + "models/" + v.file + ".glb").then(g => {
+  const root = g.scene;
+  unlit(root);
+  const lods = [0, 1, 2].map(l => root.getObjectByName("LOD" + l));
+  // centre the house on its footprint, base on y = 0
+  const box = new THREE.Box3().setFromObject(lods[0]);
+  const c = box.getCenter(new THREE.Vector3());
+  const holder = new THREE.Group();
+  root.position.set(-c.x, -box.min.y, -c.z);
+  holder.add(root);
+  const disc = new THREE.Mesh(new THREE.CircleGeometry(Math.max(box.max.x - box.min.x, box.max.z - box.min.z) * 0.62, 48), floorMat);
+  disc.rotation.x = -Math.PI / 2; disc.position.y = 0.002;
+  holder.add(disc);
+  holder.visible = false;  // shown by layout() once every model is in; the camera is not placed before that
+  scene.add(holder);
+  const tag = document.createElement("div");
+  tag.className = "tag";
+  tag.innerHTML = `<b>${v.n}. ${v.name}</b><span>${v.tag}</span>`;
+  tag.hidden = true;
+  labels.appendChild(tag);
+  items[i] = { v, holder, lods, tag, height: box.max.y - box.min.y };
+}))).then(() => {
+  document.getElementById("loading").remove();
+  layout(true);
+}).catch(err => { document.getElementById("loading").textContent = "Не удалось загрузить модель: " + err.message; });
+
+// the door wall faces +Z in the GLBs; one house is seen front-right like the reference, the row from the front
+const VIEW_ONE = new THREE.Vector3(0.62, 0.34, 0.72).normalize();
+const VIEW_ALL = new THREE.Vector3(0.22, 0.3, 0.93).normalize();
+
+function layout(resetCamera) {
+  const shown = items.filter(it => state.pick === "all" || it.v.id === state.pick);
+  items.forEach(it => { it.holder.visible = shown.includes(it); it.tag.hidden = true; });   // one model: no caption over it
+  shown.forEach((it, k) => { it.holder.position.set((k - (shown.length - 1) / 2) * SPACING, 0, 0); });
+  items.forEach(it => it.lods.forEach((m, l) => { if (m) m.visible = l === state.lod; }));
+  const tris = shown.map(it => `${it.v.n}: ${it.v.lods[state.lod]}`).join(" · ");
+  document.getElementById("tris").textContent = "Треугольники LOD" + state.lod + ": " + shown.map(it => it.v.lods[state.lod]).join("");
+  if (resetCamera) {
+    // fit the tower's height into the vertical field of view
+    const h = shown[0].height;
+    const dist = (h * 0.62) / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+    controls.target.set(0, h * 0.5, 0);
+    camera.position.copy(controls.target).addScaledVector(VIEW_ONE, dist);
+    controls.update();
+  }
+}
+
+// picker
+const pick = document.getElementById("pick");
+V.map(v => [v.id, v.name]).forEach(([id, label]) => {
+  const b = document.createElement("button");
+  b.type = "button"; b.dataset.pick = id; b.textContent = label; b.setAttribute("aria-pressed", id === "all");
+  pick.appendChild(b);
+});
+function renderInfo() {
+  const box = document.getElementById("info");
+  const full = document.body.classList.contains("embed") ? "tower-3d.html" : "";
+  if (state.pick === "all") {
+    box.innerHTML = `<h3>Методы текстурирования</h3>` + V.map(v => `
+      <div class="row" data-goto="${v.id}"><b>${v.n}. ${v.name}</b> · <span class="badge ${v.paid ? "paid" : "free"}" style="display:inline">${v.cost}</span>
+      <span>${v.how.split(". ")[0]}.</span><span>Похоже на реф: ${v.like}; вблизи: ${v.close}; параметры: ${v.param}.</span></div>`).join("")
+      + `<p class="small" style="margin-top:8px">Выберите вариант — здесь появится полное описание.</p>`;
+    return;
+  }
+  const v = V.find(x => x.id === state.pick);
+  box.innerHTML = `
+    <h3>${v.name}</h3>
+    <div class="badges"><span class="badge ${v.paid ? "paid" : "free"}">${v.cost}</span><span class="badge neutral">параметры: ${v.param}</span></div>
+    <p>${v.how}</p>
+    <div class="sub">Как сделано</div>
+    <ol>${v.steps.map(x => `<li>${x}</li>`).join("")}</ol>
+    <dl class="facts"><dt>Инструменты</dt><dd>${v.tools}</dd><dt>Время</dt><dd>${v.time}</dd><dt>Чёткость</dt><dd>${v.texel}</dd>
+      <dt>LOD</dt><dd class="meta">${v.lods.join(" / ")} (${v.lodsNote})</dd></dl>
+    <div class="sub">Плюсы</div><ul>${v.pros.map(x => `<li>${x}</li>`).join("")}</ul>
+    <div class="sub">Минусы</div><ul>${v.cons.map(x => `<li>${x}</li>`).join("")}</ul>
+    <div class="sub">Что можно улучшить</div><ul>${v.improve.map(x => `<li>${x}</li>`).join("")}</ul>
+    <div class="sub">Цвета по зонам против рефа</div>${zonesTable(v)}
+    ${full ? `<p><a href="${full}#v-${v.id}" target="_blank" rel="noopener">Карточка с картинками ↗</a></p>` : ""}`;
+}
+document.getElementById("info").addEventListener("click", e => {
+  const r = e.target.closest("[data-goto]");
+  if (r) setPick(r.dataset.goto);
+});
+
+function setPick(id) {
+  state.pick = id;
+  pick.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.pick === id));
+  renderInfo();
+  document.getElementById("info").scrollTop = 0;
+  layout(true);
+}
+pick.addEventListener("click", e => { const b = e.target.closest("button"); if (b) setPick(b.dataset.pick); });
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-show]");
+  if (!b) return;
+  setPick(b.dataset.show);
+  stage.scrollIntoView({ behavior: "smooth", block: "center" });
+});
+document.getElementById("lodseg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  state.lod = +b.dataset.lod;
+  document.querySelectorAll("#lodseg button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  layout(false);
+});
+document.getElementById("spinseg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  controls.autoRotate = b.dataset.spin === "1";
+  document.querySelectorAll("#spinseg button").forEach(x => x.setAttribute("aria-pressed", x === b));
+});
+
+renderInfo();
+
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage);
+resize();
+
+const tmp = new THREE.Vector3();
+function frame() {
+  controls.update();
+  renderer.render(scene, camera);
+  const w = stage.clientWidth, h = stage.clientHeight;
+  for (const it of items) {
+    if (!it || !it.holder.visible) continue;
+    tmp.set(0, it.height + 0.35, 0).add(it.holder.position).project(camera);
+    const behind = tmp.z > 1;
+    it.tag.style.display = behind ? "none" : "";
+    it.tag.style.left = ((tmp.x + 1) / 2 * w) + "px";
+    it.tag.style.top = ((1 - tmp.y) / 2 * h) + "px";
+  }
+  requestAnimationFrame(frame);
+}
+frame();
+</script>
+</body>
+</html>
