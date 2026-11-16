@@ -304,7 +304,9 @@ const V = [
     cons: ["блики литья слабее рефа: 93 против 109 в самых светлых местах", "нарисованный свет не двигается со светом сцены", "свет в вершинах лежит треугольниками: у стоек на досках видны клинья тени", "узор проще рефа: арки мельче и бледнее"],
     improve: ["блики литья: маска G для металла или своя шероховатость в шейдере", "больше вершин на досках у стоек, чтобы тень шла ровнее"],
     files: ["Tools/Houdini/park_bench_masks_src/ (gen_masks.py, uv_masks.py, gains.json)", "Tools/Houdini/park_bench_masks_tex/ (листы и маски)", "Tools/HouseConstructor/out/park_bench_masks/ (export_all.sh, render_all.sh)", "Assets/Destruction/Resources/Houses/houdini_park_bench_masks.*"],
-    sheet: "sheet_masks.webp", sheetCap: "Реф и скамейка как в игре: с камеры рефа, сбоку, сзади" },
+    sheet: "sheet_masks.webp", sheetCap: "Реф и скамейка как в игре: с камеры рефа, сбоку, сзади",
+    pbr: { tint: true, sun: [215, 60], share: 0.5, sheets: [["wood", "Доски"], ["iron", "Краска по литью"]],
+      note: "Блик и отражения считает просмотрщик: шероховатость литья 0.4, досок 0.6–0.9. Цвет берётся из вершин, как в игре. Запечённый свет вершин и солнце сцены складываются, поэтому картинка темнее рефа." } },
 ];
 const SPACING = 6.2;
 
@@ -429,7 +431,7 @@ function unlit(root, v) {
     if (maps) {
       // the GLB's own material: base colour, normal, roughness-metallic (pbr_maps.py). A basic material divides
       // its light map by pi: the baked one gets that back in lightMapIntensity.
-      src.vertexColors = false; src.envMapIntensity = 0.55;
+      src.vertexColors = !!v.pbr.tint; src.envMapIntensity = 0.55;
       const second = !!o.geometry.attributes.uv1;        // only LOD0 has the unique UV set of the baked maps
       if (second) { src.aoMap = maps.ao; src.aoMapIntensity = 1.0; }
       o.userData.mats.pbr = src;
@@ -512,7 +514,7 @@ function applyLight(shown) {
     sunLight.position.copy(withPbr[0].holder.position).addScaledVector(dir, 200);
   }
   const note = document.getElementById("lightnote");
-  note.textContent = !withPbr.length ? "PBR-карты есть только у варианта 1. У Sketch свет нарисован в текстуре, у варианта 3 он в цвете вершин."
+  note.textContent = !withPbr.length ? "PBR-карты есть у вариантов 1 и 3. У Sketch свет нарисован в текстуре."
     : mode === "pbr" ? withPbr[0].v.pbr.note
     : mode === "baked" ? "Цвет × карта света (AO + солнце + небо), без источников в сцене. Карта лежит на LOD0."
     : mode === "normals" ? "Карты нормалей на модели, без света: швы, гребни профлиста, рамы окон."
