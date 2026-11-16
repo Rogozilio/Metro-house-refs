@@ -153,7 +153,7 @@ body.embed .seg button { font-size: 12px; padding: 4px 9px; }
   <div class="top"><a class="back" href="./">← Мудборд</a></div>
   <p class="eyebrow">We Are Destroyers · лаборатория · 2026-11-16</p>
   <h1>Парковая скамейка: модель из Houdini</h1>
-  <p class="lead">Проверка пайплайна домов на мелком предмете: литые боковины под порошковой краской и деревянные доски по стилизованному рефу. Длина 1.44 м, высота 1.05 м, 97 кусков для разрушения. Три варианта текстур на одной модели: 1 — два образца GPT Image по замерам рефа, свет запекается в вершины; 2 — проекция рефа через Phantasm Sketch с подгонкой цвета, свет нарисован в самой текстуре; 3 — метод хижины из чеклиста: светлые листы из масок, цвет и свет в вершинах. В игре под именем houdini_park_bench стоит вариант 2, вариант 3 лежит рядом как houdini_park_bench_masks. Модели ниже — те же скины, что в игре: LOD0/1/2 с текстурами, режим «Как в игре» показывает их без освещения сцены. В каталог игры скамейка не добавлена.</p>
+  <p class="lead">Проверка пайплайна домов на мелком предмете: литые боковины под порошковой краской и деревянные доски по стилизованному рефу. Длина 1.44 м, высота 1.05 м, 97 кусков для разрушения. Четыре варианта текстур на одной модели (4 — метод пропса: правила PROP_TEXTURING_RULES.md, в текстурах нет света с направлением, потому что скамейка разрушается; его обломки видны по кнопке «Обломки»). Первые три: 1 — два образца GPT Image по замерам рефа, свет запекается в вершины; 2 — проекция рефа через Phantasm Sketch с подгонкой цвета, свет нарисован в самой текстуре; 3 — метод хижины из чеклиста: светлые листы из масок, цвет и свет в вершинах. В игре под именем houdini_park_bench стоит вариант 2, вариант 3 лежит рядом как houdini_park_bench_masks. Модели ниже — те же скины, что в игре: LOD0/1/2 с текстурами, режим «Как в игре» показывает их без освещения сцены. В каталог игры скамейка не добавлена.</p>
 
   <section class="viewer" aria-label="3D-просмотр">
     <div class="stage" id="stage">
@@ -170,6 +170,10 @@ body.embed .seg button { font-size: 12px; padding: 4px 9px; }
           <button type="button" data-lod="1" aria-pressed="false">LOD1 · 15–25 м</button>
           <button type="button" data-lod="2" aria-pressed="false">LOD2 · &gt;25 м</button>
         </div></div>
+        <div><h3>Состояние</h3><div class="seg" id="stateseg" role="group" aria-label="Состояние">
+          <button type="button" data-broken="0" aria-pressed="true">Целая</button>
+          <button type="button" data-broken="1" aria-pressed="false">Обломки</button>
+        </div><p class="small" id="statenote"></p></div>
         <div><h3>Свет</h3><div class="seg" id="lightseg" role="group" aria-label="Свет">
           <button type="button" data-light="game" aria-pressed="true">Как в игре</button>
           <button type="button" data-light="pbr" aria-pressed="false">PBR · солнце по рефу</button>
@@ -308,6 +312,29 @@ const V = [
     sheet: "sheet_masks.webp", sheetCap: "Реф и скамейка как в игре: с камеры рефа, сбоку, сзади",
     pbr: { tint: true, sun: [215, 60], share: 0.5, sheets: [["wood", "Доски"], ["iron", "Краска по литью"]],
       note: "Свет считает просмотрщик: солнце по рефу с тенями, ровный заполняющий свет, блик (шероховатость литья 0.4, досок 0.6–0.9) и отражения комнаты. Из вершин берётся только пигмент; запечённый свет игры здесь выключен, вместо него карта AO." } },
+  { id: "prop", file: "houdini_park_bench_prop", broken: "houdini_park_bench_prop_pieces", unity: false, n: 4, name: "Метод пропса", tag: "Houdini · правила для пропсов", cost: "бесплатно", paid: false,
+    like: "цвет дерева и металла по замерам рефа", close: "одинаковая светлая линия по обеим кромкам; обломки без света с направлением", param: "да: узор, цвет и свет — параметры", lods: [7020, 1650, 748], lodsNote: "авторские",
+    how: "Вариант 3, переделанный по Tools/Houdini/PROP_TEXTURING_RULES.md. Главное правило: в игре всё разрушается, и после поломки ничего не должно противоречить само себе. Обломок летит, вращается и ложится как угодно, а текстура у него та же, что у целой скамейки. Поэтому в текстурах нет света с направлением: у доски одинаковая светлая линия по обеим длинным кромкам, у литья одинаковая линия по всему контуру, листы не светлеют к верху и не темнеют к земле. Свет с направлением (солнце, тень под сиденьем) лежит только в вершинах целой скамейки; обломки берут чистый пигмент.",
+    steps: [
+      "Замер рефа тот же, что у варианта 3: дерево 204,115,64 / 190,103,54 / 177,92,48, металл 73,73,81 / 61,58,62 / 50,46,48.",
+      "Лист дерева: 8 полос по 84 px, по одной на доску. В маске G — светлая линия 4–5 мм по ОБЕИМ кромкам, в маске B ничего: у доски нет своей впадины. Отступ полос 8 px цветом самой кромки.",
+      "Лист литья: вид боковины сбоку в натуральном масштабе, читается из дампа модели. Светлая линия и мягкая полоса идут одинаково по всему контуру. Исправлена ошибка генератора, из-за которой вид боковины в варианте 3 выходил пустым серым.",
+      "Грязь к земле — в вершинах, а не в текстуре: литьё у ноги темнее на 6 %, к 30 см пропадает.",
+      "Геометрия: головки болтов стоят над доской с зазором 3 мм (были утоплены на 2 мм); мелкие круглые детали (болты, бобышки, лепестки розетки, завитки орнамента) гранятся так, чтобы хорда отходила от дуги не больше 0,6 мм.",
+      "Свет в вершинах слабее, чем у варианта 3: сила солнца 0.6 вместо 0.81, тени 0.3 вместо 0.4, сглаживание запекания 35°. Причина: обломки берут чистый пигмент и выходят светлее целой скамейки ровно на подгонку пигмента. Со старым светом скачок был 19 % у дерева и 12 % у литья, сейчас 14 % и 6 %.",
+      "Подгонка пигмента по рендеру с камеры рефа: шесть проходов."],
+    tools: "Houdini 22 (hython, без окна), numpy, Blender (запекание света, экспорт), SlopMachine fracture",
+    time: "сборка, экспорт и рендер — ~3 мин на проход, 6 проходов",
+    texel: "в среднем 1038 px/m (642–2855); листы 2 × 2048",
+    zones: {wood: [190, 101, 53], iron: [59, 56, 60]},
+    zonesNote: "рендер как в игре (текстура × цвет вершин, без света сцены), камера рефа",
+    pros: ["обломок верен в любом положении: в текстуре нет света с направлением", "цвет дерева и металла в 1 уровне от рефа", "скачок тона при разрушении меньше, чем у варианта 3", "бесплатно и параметрично"],
+    cons: ["нет нарисованной пары «светлый верх, тёмный низ» с рефа: доски чуть площе", "блики литья слабее рефа: 90 против 109 в самых светлых местах", "LOD0 7020 треугольников против 6098 у варианта 3: круглые мелкие детали", "листы всё ещё свои у скамейки, не общие для семейства пропсов", "в Unity, в игре и на Quest не проверялся"],
+    improve: ["общий лист дерева и краски для парковой мебели", "проверить обломки в игре: как движок красит открытые разломом грани"],
+    files: ["Tools/Houdini/PROP_TEXTURING_RULES.md (правила)", "Tools/Houdini/park_bench_prop_src/ (gen_masks.py, uv_masks.py, gains.json, export_all.sh, web_all.sh)", "Tools/Houdini/park_bench_prop_tex/ (листы и маски)", "Tools/HouseConstructor/web_pieces_glb.py (модель обломков)"],
+    sheet: "sheet_prop.webp", sheetCap: "Реф и скамейка как в игре, с камеры рефа",
+    pbr: { tint: true, sun: [215, 60], share: 0.5, sheets: [["wood", "Доски"], ["iron", "Краска по литью"]],
+      note: "Свет считает просмотрщик: солнце по рефу с тенями, ровный заполняющий свет, блик и отражения комнаты. Из вершин берётся только пигмент. Обломки всегда показаны как в игре: текстура × пигмент." } },
 ];
 const SPACING = 6.2;
 
@@ -371,7 +398,7 @@ for (const v of V) {
     </div>
     <div class="shots">
       <figure style="margin:0"><img loading="lazy" src="${BASE}img/${v.sheet}" alt="${v.sheetCap}"><figcaption>${v.sheetCap}</figcaption></figure>
-      <figure style="margin:0"><img loading="lazy" src="${BASE}img/unity_close_${v.id}.webp" alt="Вблизи в Unity"><figcaption>Вблизи в Unity</figcaption></figure>
+      ${v.unity === false ? "" : `<figure style="margin:0"><img loading="lazy" src="${BASE}img/unity_close_${v.id}.webp" alt="Вблизи в Unity"><figcaption>Вблизи в Unity</figcaption></figure>`}
       ${v.pbr ? pbrFigures(v) : ""}
     </div>`;
   cards.appendChild(c);
@@ -407,7 +434,7 @@ const floorMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: tru
 
 const loader = new GLTFLoader();
 const items = [];
-let state = { pick: "bench", lod: 0, light: "game" };
+let state = { pick: "bench", lod: 0, light: "game", broken: false };
 // PBR mode: a sun where the reference has it (fit_ref_light.py) and a soft room for the reflections
 const pmrem = new THREE.PMREMGenerator(renderer);
 const roomEnv = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
@@ -444,8 +471,19 @@ function unlit(root, v) {
     // A tinted variant keeps two colours per vertex: COLOR_0 = pigment x baked light (what the game shows) and
     // _PIGMENT = the pigment alone (web_pbr_glb.py --tint). The PBR mode lights the model itself, so it takes
     // the pigment: with COLOR_0 the baked sun was counted twice and its per-vertex steps showed under the sun.
+    // Two geometries that share every buffer but the colour. (Swapping the "color" attribute on one geometry
+    // left a stale vertex array behind in some orders of the modes: whole -> broken -> whole -> PBR -> game drew
+    // the model black.)
     const g = o.geometry;
-    o.userData.cols = { game: g.attributes.color, pbr: (v.pbr && v.pbr.tint && g.attributes._pigment) || g.attributes.color };
+    let gp = g;
+    if (v.pbr && v.pbr.tint && g.attributes._pigment) {
+      gp = new THREE.BufferGeometry();
+      for (const k in g.attributes) gp.setAttribute(k, g.attributes[k]);
+      gp.setAttribute("color", g.attributes._pigment);
+      gp.setIndex(g.index);
+      g.groups.forEach(x => gp.addGroup(x.start, x.count, x.materialIndex));
+    }
+    o.userData.geos = { game: g, pbr: gp };
     o.castShadow = o.receiveShadow = true;
     const m = new THREE.MeshBasicMaterial({ map: src.map || null, color: 0xffffff, vertexColors: !!o.geometry.attributes.color });
     if (m.map) m.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
@@ -490,7 +528,7 @@ Promise.all(V.map((v, i) => loader.loadAsync(BASE + "models/" + v.file + ".glb")
   tag.innerHTML = `<b>${v.n}. ${v.name}</b><span>${v.tag}</span>`;
   tag.hidden = true;
   labels.appendChild(tag);
-  items[i] = { v, holder, lods, tag, disc, catcher, height: box.max.y - box.min.y, reach: box.getSize(new THREE.Vector3()).length() * 0.5 };
+  items[i] = { v, holder, root, lods, tag, disc, catcher, height: box.max.y - box.min.y, reach: box.getSize(new THREE.Vector3()).length() * 0.5 };
 }))).then(() => {
   document.getElementById("loading").remove();
   layout(true);
@@ -505,6 +543,17 @@ function layout(resetCamera) {
   items.forEach(it => { it.holder.visible = shown.includes(it); it.tag.hidden = true; });   // one model: no caption over it
   shown.forEach((it, k) => { it.holder.position.set((k - (shown.length - 1) / 2) * SPACING, 0, 0); });
   items.forEach(it => it.lods.forEach((m, l) => { if (m) m.visible = l === state.lod; }));
+  // the broken model: the fracture's pieces alone, tumbled (web_pieces_glb.py), in place of the standing LODs
+  const canBreak = shown.some(it => it.v.broken);
+  items.forEach(it => {
+    const on = state.broken && !!it.brokenRoot;
+    if (it.brokenRoot) it.brokenRoot.visible = on;
+    if (on) it.lods.forEach(m => { if (m) m.visible = false; });
+  });
+  document.querySelectorAll("#stateseg button").forEach(b => { b.disabled = !canBreak; });
+  document.getElementById("statenote").textContent = !canBreak ? "Обломки есть у варианта 4."
+    : state.broken ? "113 кусков разрушения, каждый повёрнут случайно и положен на землю. Текстура × пигмент, без запечённого света: так игра рисует обломки. Граней разлома в файле нет: у куска только внешние грани."
+    : "Целая скамейка: пигмент × запечённый свет.";
   applyLight(shown);
   const tris = shown.map(it => `${it.v.n}: ${it.v.lods[state.lod]}`).join(" · ");
   document.getElementById("tris").textContent = "Треугольники LOD" + state.lod + ": " + shown.map(it => it.v.lods[state.lod]).join("");
@@ -528,8 +577,8 @@ function applyLight(shown) {
     o.material = o.userData.mats[it.v.pbr ? mode : "game"] || o.userData.mats.game;
     // the light map is a light of its own too: it takes the pigment, not pigment x baked vertex light
     const lit = mode === "pbr" || (mode === "baked" && o.material !== o.userData.mats.game);
-    const col = o.userData.cols[it.v.pbr && lit ? "pbr" : "game"];
-    if (col && o.geometry.attributes.color !== col) o.geometry.setAttribute("color", col);
+    const geo = o.userData.geos[it.v.pbr && lit ? "pbr" : "game"];
+    if (o.geometry !== geo) o.geometry = geo;
   }));
   const pbr = mode === "pbr";
   scene.environment = pbr ? roomEnv : null;
@@ -617,6 +666,25 @@ document.addEventListener("click", e => {
   if (!b) return;
   setPick(b.dataset.show);
   stage.scrollIntoView({ behavior: "smooth", block: "center" });
+});
+document.getElementById("stateseg").addEventListener("click", async e => {
+  const b = e.target.closest("button"); if (!b || b.disabled) return;
+  state.broken = b.dataset.broken === "1";
+  document.querySelectorAll("#stateseg button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  if (state.broken) {
+    for (const it of items) {
+      if (!it.v.broken || it.brokenRoot) continue;
+      const g = await loader.loadAsync(BASE + "models/" + it.v.broken + ".glb");
+      unlit(g.scene, { id: it.v.id });            // pieces have the game look only
+      // the fracture's files hold a piece's outer faces only, not the faces the break opens: both sides are
+      // drawn, so a piece is not seen through from behind
+      g.scene.traverse(o => { if (o.isMesh) o.material.side = THREE.DoubleSide; });
+      g.scene.position.copy(it.root.position);
+      it.holder.add(g.scene);
+      it.brokenRoot = g.scene;
+    }
+  }
+  layout(false);
 });
 document.getElementById("lodseg").addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
