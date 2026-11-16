@@ -781,6 +781,10 @@ const OWNER_STYLISED = new Set(["stilt_shack", "tapered_ivory_tower_mcp"]);
 // refs with a 3D lab page: the viewer gets an extra view that embeds it, and a link to the full page
 const LAB3D = { stilt_shack: { page: "shack-textures.html", label: "3D · варианты текстур" },
   tapered_ivory_tower_mcp: { page: "tower-3d.html", label: "3D · модель из Houdini" } };
+// props with a 3D lab page (a new model of that catalogue prop, not yet in the game's catalogue)
+const LAB3D_PROPS = { fire_hydrant: { page: "hydrant-3d.html", label: "3D · новая модель из Houdini" },
+  residential_fire_hydrant: { page: "hydrant-3d.html", label: "3D · новая модель из Houdini" } };
+function labOf(it) { return (it.kind === "props" ? LAB3D_PROPS : LAB3D)[it.id]; }
 // The refs each district's collage is built around: drawn larger and packed first.
 const HERO = new Set([
   "brownstone_row", "panel9_four_entrance", "corner_deli_row",
@@ -1266,10 +1270,10 @@ function source(it) {
 }
 const lb3d = document.getElementById("lb-3d");
 const lbLab = document.getElementById("lb-lab");
-function viewCount(it) { return it.views.length + (it.kind !== "props" && LAB3D[it.id] ? 1 : 0); }
+function viewCount(it) { return it.views.length + (labOf(it) ? 1 : 0); }
 function showView(v) {
   curView = clamp(v, 0, Math.max(0, viewCount(cur) - 1));
-  const lab = cur.kind !== "props" && LAB3D[cur.id];
+  const lab = labOf(cur);
   const is3d = !!lab && curView === cur.views.length;
   lbImg.hidden = is3d;
   lbImg.parentElement.classList.toggle("is3d", is3d);
@@ -1298,7 +1302,7 @@ function show(it, v) {
       lbViews.appendChild(b);
     });
   }
-  const lab = it.kind !== "props" && LAB3D[it.id];
+  const lab = labOf(it);
   if (lab) {
     if (it.views.length < 2) it.views.forEach(([key], k) => {
       const b = el("button", null, VIEW_NAMES[key] || key); b.type = "button";
