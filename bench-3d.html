@@ -307,7 +307,7 @@ const V = [
     files: ["Tools/Houdini/park_bench_masks_src/ (gen_masks.py, uv_masks.py, gains.json)", "Tools/Houdini/park_bench_masks_tex/ (листы и маски)", "Tools/HouseConstructor/out/park_bench_masks/ (export_all.sh, render_all.sh)", "Assets/Destruction/Resources/Houses/houdini_park_bench_masks.*"],
     sheet: "sheet_masks.webp", sheetCap: "Реф и скамейка как в игре: с камеры рефа, сбоку, сзади",
     pbr: { tint: true, sun: [215, 60], share: 0.5, sheets: [["wood", "Доски"], ["iron", "Краска по литью"]],
-      note: "Свет считает просмотрщик: солнце по рефу с тенями, блик (шероховатость литья 0.4, досок 0.6–0.9) и отражения комнаты. Из вершин берётся только пигмент; запечённый свет игры здесь выключен, вместо него карта AO." } },
+      note: "Свет считает просмотрщик: солнце по рефу с тенями, ровный заполняющий свет, блик (шероховатость литья 0.4, досок 0.6–0.9) и отражения комнаты. Из вершин берётся только пигмент; запечённый свет игры здесь выключен, вместо него карта AO." } },
 ];
 const SPACING = 6.2;
 
@@ -416,7 +416,8 @@ sunLight.shadow.mapSize.set(4096, 4096);
 sunLight.shadow.bias = -0.0002;
 sunLight.shadow.normalBias = 0.006;
 sunLight.shadow.radius = 2.5;
-scene.add(sunLight, sunLight.target);
+const fillLight = new THREE.AmbientLight(0xffffff, 0);
+scene.add(sunLight, sunLight.target, fillLight);
 // PBR mode: the model's shadow on the ground
 const shadowMat = new THREE.ShadowMaterial({ opacity: 0.28 });
 const texLoader = new THREE.TextureLoader();
@@ -429,7 +430,12 @@ function bakedMap(url, srgb) {
   return t;
 }
 
-const ENV_FILL = 1.25;      // the room's share: what the faces turned from the sun get
+// The room lights from above: at full strength the slats' tops burnt out (255,167,103 against the reference's
+// 190,103,54) while the castings' sides stayed dark. So the room only gives the reflections, and an even
+// fill light gives what the faces turned from the sun get. Measured on the masks bench from the reference's
+// side: wood 175 / 210 / 243, iron 44 / 46 / 80 (dark / middle / light).
+const ENV_FILL = 0.18;
+const SUN = 1.4, FILL = 1.3;
 function unlit(root, v) {
   const maps = v.pbr ? { ao: bakedMap(BASE + "models/" + v.file + "_AO.png"), light: bakedMap(BASE + "models/" + v.file + "_Light.png", true) } : null;
   root.traverse(o => {
@@ -527,7 +533,8 @@ function applyLight(shown) {
   }));
   const pbr = mode === "pbr";
   scene.environment = pbr ? roomEnv : null;
-  sunLight.intensity = pbr ? 2.2 : 0;
+  sunLight.intensity = pbr ? SUN : 0;
+  fillLight.intensity = pbr ? FILL : 0;
   sunLight.castShadow = pbr;
   items.forEach(it => { it.catcher.visible = pbr && !!it.v.pbr && shown.includes(it); it.disc.visible = !it.catcher.visible; });
   if (pbr) {
