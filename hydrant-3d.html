@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-/* The moodboard's 3D page of the fire hydrant: one parametric Houdini model, viewed in 3D. */
+/* The moodboard's 3D page of the fire hydrant: one parametric Houdini model, two ways of texturing it, in 3D. */
 :root {
   color-scheme: light;
   --bg: #eef1f5; --panel: #ffffff; --fg: #17202b; --muted: #5a6575; --line: #d4dae3;
@@ -151,9 +151,10 @@ body.embed .seg button { font-size: 12px; padding: 4px 9px; }
 <script>if (new URLSearchParams(location.search).has("embed")) document.body.classList.add("embed");</script>
 <div class="wrap">
   <div class="top"><a class="back" href="./">← Мудборд</a></div>
-  <p class="eyebrow">We Are Destroyers · лаборатория · 2026-11-16</p>
+  <p class="eyebrow">We Are Destroyers · лаборатория · 2026-11-16 · 2026-11-17</p>
   <h1>Пожарный гидрант: модель из Houdini</h1>
   <p class="lead">Пропс по стилизованному рефу через пайплайн домов: красный чугун под краской, стальные болты и цепи. Высота 0.80 м, 63 куска для разрушения. Цвета — плоские, замерены на рефе (рисунка у краски и стали нет, картинки GPT не понадобились, 0 платных вызовов). Свет запечён в вершины, солнце подобрано по рефу. Модель ниже — тот же скин, что в игре: LOD0/1/2, режим «Как в игре» показывает его без освещения сцены. В каталог игры гидрант не добавлен.</p>
+  <p class="lead"><b>Вариант 2 «Метод пропса»</b> (2026-11-17): та же геометрия, текстура по правилам пропсов. Красный лежит в вершинах, светлый лист несёт только форму: пятна литья, светлые линии на фасках, канавки ствола. Всё в игре разрушается, поэтому в текстуре нет света с направлением: обломки (переключатель «Состояние») верны в любом положении.</p>
 
   <section class="viewer" aria-label="3D-просмотр">
     <div class="stage" id="stage">
@@ -170,6 +171,10 @@ body.embed .seg button { font-size: 12px; padding: 4px 9px; }
           <button type="button" data-lod="1" aria-pressed="false">LOD1 · 15–25 м</button>
           <button type="button" data-lod="2" aria-pressed="false">LOD2 · &gt;25 м</button>
         </div></div>
+        <div><h3>Состояние</h3><div class="seg" id="stateseg" role="group" aria-label="Состояние">
+          <button type="button" data-broken="0" aria-pressed="true">Целый</button>
+          <button type="button" data-broken="1" aria-pressed="false">Обломки</button>
+        </div><p class="small" id="statenote"></p></div>
         <div><h3>Свет</h3><div class="seg" id="lightseg" role="group" aria-label="Свет">
           <button type="button" data-light="game" aria-pressed="true">Как в игре</button>
           <button type="button" data-light="pbr" aria-pressed="false">PBR · солнце по рефу</button>
@@ -189,13 +194,13 @@ body.embed .seg button { font-size: 12px; padding: 4px 9px; }
   <h2>Как сделана</h2>
   <div class="cards" id="cards"></div>
 
-  <h2>Детали против рефа</h2>
+  <h2>Вариант 1: детали против рефа</h2>
   <div class="shots" style="grid-template-columns: 1fr;">
     <figure style="margin:0"><img src="lab/fire-hydrant/img/compare.webp" alt="Реф, рендер экспорта, Unity"><figcaption>Реф; рендер экспортированного скина, как в игре (цвет × запечённый свет); Unity с игровым шейдером; Unity вблизи</figcaption></figure>
     <figure style="margin:0"><img src="lab/fire-hydrant/img/crops.webp" alt="Кропы деталей: реф слева, модель справа"><figcaption>Кропы деталей с камеры рефа, в каждой паре слева реф, справа модель: купол и фланцы, передний патрубок, боковые патрубки, основание, ствол</figcaption></figure>
   </div>
 
-  <h2>Вид в Unity</h2>
+  <h2>Вариант 1 в Unity</h2>
   <div class="shots" style="grid-template-columns: 1fr 1fr 1fr;">
     <figure style="margin:0"><img src="lab/fire-hydrant/img/unity_ref.webp" alt="Гидрант в Unity, с ракурса рефа"><figcaption>С ракурса рефа</figcaption></figure>
     <figure style="margin:0"><img src="lab/fire-hydrant/img/unity_low.webp" alt="Гидрант в Unity, снизу спереди"><figcaption>Снизу спереди</figcaption></figure>
@@ -222,7 +227,7 @@ const BASE = "lab/fire-hydrant/";
 const REF = { red: [170, 30, 24], steel: [111, 108, 110] };
 const ZONE_NAMES = { red: "Краска по чугуну", steel: "Сталь: болты и цепи" };
 const V = [
-  { id: "hydrant", file: "houdini_fire_hydrant", n: 1, name: "Пожарный гидрант", tag: "Houdini · плоские цвета по рефу", cost: "0 платных вызовов", paid: false,
+  { id: "hydrant", file: "houdini_fire_hydrant", n: 1, name: "Плоские цвета", tag: "Houdini · плоские цвета по рефу", cost: "0 платных вызовов", paid: false,
     like: "силуэт совпадает на 0.94", close: "чётко: лепестки купола, болты, звенья цепей", param: "да", lods: [8024, 3174, 1468], lodsNote: "авторские", pieces: 63,
     how: "Гидрант построен в Houdini параметрической сетью: каждый размер рефа — параметр (радиусы ствола и фланцев, высоты, число лепестков, канавок, болтов и звеньев). Все основные детали — тела вращения; цепи висят по цепной линии.",
     steps: [
@@ -249,6 +254,31 @@ const V = [
     pbr: { sun: [335, 60], share: 0.61, sheets: [["red", "Краска"]],
       derived: "Краска — плоский замеренный цвет; карты выведены из него (не измерены): гладкая, шероховатость 0.40, не металл. Сталь — плоский цвет без своих карт.",
       note: "Солнце справа-спереди, 60° над горизонтом (fit_ref_light.py): тень/свет на боках ствола 0.772, на рефе 0.776." } },
+  { id: "prop", file: "houdini_fire_hydrant_prop", broken: "houdini_fire_hydrant_prop_pieces", unity: false, n: 2, name: "Метод пропса", tag: "Houdini · правила для пропсов", cost: "0 платных вызовов", paid: false,
+    like: "цвет краски и стали в 1 уровне от рефа", close: "светлые линии на фасках, тёмные канавки ствола; обломки без света с направлением", param: "да", lods: [8024, 3174, 1468], lodsNote: "авторские", pieces: 63,
+    how: "Та же модель, текстура по Tools/Houdini/PROP_TEXTURING_RULES.md. Красный лежит в вершинах, лист текстуры светлый и несёт только форму: пятна литья, светлую линию на фасках и тёмную канавку между панелями ствола. Линии принадлежат самой геометрии: сборка в Houdini помечает каждую фаску и канавку, и обломок уносит их с собой. Света с направлением в текстуре нет: солнце и AO лежат только в вершинах целого гидранта, обломки берут чистый пигмент.",
+    steps: [
+      "Замер рефа: краска 170,30,24 (медиана), светлая полоса 197,54,49, тёмные 10 % 115,14,9; сталь 111,108,110. Блики рефа (229,125,123) — глянец студийного света, игра без света сцены их не покажет.",
+      "Лист краски 2048 px на 2 м: поле литья (мягкие пятна около 2 см и редкие поры 5–8 мм, маска R), полоса светлой линии (G) и полоса канавки (B). Лист светлый, но слегка розовый (205,130,118): на нейтральном листе светлая линия упиралась бы в 255 и не бледнила бы красный.",
+      "Сборка в Houdini помечает грани тел вращения: фаска — короткий (до 10,5 мм) отрезок профиля с выпуклым поворотом не меньше 30° с обеих сторон; ступени лепестков купола — тоже линии; грани канавок уже 6 мм — впадина.",
+      "Развёртка: поле — дуга вокруг оси на радиусе угла × расстояние вдоль профиля, в натуральном масштабе; шов дуги сзади (у патрубков снизу). Фаски и канавки берут срез своей полосы. Плотность 1028 px/m (1011–1308).",
+      "Пигмент: один красный на все детали (это краска), сталь — ровный цвет.",
+      "Свет в вершинах ослаблен до 0,35 / 0,18 (у варианта 1 0,95 / 0,3): обломок показывает пигмент без света и должен быть светлее целого гидранта не больше чем на 15 %. При свете скамейки (0,6 / 0,3) скачок был 25 % у краски и 29 % у стали, сейчас 13 % и 15 %.",
+      "Подгонка пигмента по рендеру с камеры рефа (fit_gains.py): четыре прохода."],
+    tools: "Houdini 22 (hython, без окна, VEX), numpy, Blender (запекание света, экспорт), SlopMachine fracture",
+    time: "сборка, экспорт и рендер ~3 мин на проход, 4 прохода",
+    texel: "в среднем 1028 px/m (1011–1308); один лист 2048",
+    zones: { red: [170, 29, 23], steel: [111, 108, 111] },
+    zonesNote: "рендер как в игре (текстура × цвет вершин, без света сцены), камера рефа",
+    pros: ["обломок верен в любом положении: линии на фасках и канавки — часть геометрии, света с направлением в текстуре нет", "цвет краски и стали в 1 уровне от рефа", "скачок тона при разрушении 13 % у краски и 15 % у стали; у варианта 1 около 30 %", "параметрично и бесплатно: после правки в Houdini пересборка за минуты"],
+    cons: ["целый гидрант площе рефа: красный от тёмного к светлому 150–189 против 130–209 у рефа — цена слабого света", "нет глянца рефа", "обломки чуть сдвигают оттенок: тёмные каналы красного растут сильнее яркости", "в Unity, в игре и на Quest не проверялся"],
+    improve: ["проверить обломки в игре: как движок красит открытые разломом грани", "общий лист краски для уличных пропсов"],
+    files: ["Tools/Houdini/PROP_TEXTURING_RULES.md (правила, раздел 14)", "Tools/Houdini/fire_hydrant_prop_src/ (hyd_lib.vfl, gen_masks.py, uv_masks.py, gains.json, fit_gains.py, export_all.sh, render_all.sh, web_all.sh)", "Tools/Houdini/fire_hydrant_prop_tex/ (лист и маска)", "Tools/HouseConstructor/render_pieces.py (рендер обломков)"],
+    sheet: "sheet_prop.webp", sheetCap: "Реф и гидрант как в игре, с камеры рефа",
+    extra: [["close_prop.webp", "Вблизи как в игре: ствол и канавки, купол и фланцы, сзади; обломки — чистый пигмент, линии и канавки на месте"]],
+    pbr: { tint: true, sun: [335, 60], share: 0.61, sheets: [["red", "Краска"]],
+      derived: "Карты выведены из листа краски (не измерены): шероховатость краски, не металл. Сталь — ровный цвет без своих карт.",
+      note: "Свет считает просмотрщик: солнце по рефу с тенями, ровный заполняющий свет, блик и отражения комнаты. Из вершин берётся только пигмент. Обломки всегда показаны как в игре: текстура × пигмент." } },
 ];
 const SPACING = 6.2;
 
@@ -312,7 +342,8 @@ for (const v of V) {
     </div>
     <div class="shots">
       <figure style="margin:0"><img loading="lazy" src="${BASE}img/${v.sheet}" alt="${v.sheetCap}"><figcaption>${v.sheetCap}</figcaption></figure>
-      <figure style="margin:0"><img loading="lazy" src="${BASE}img/unity_close_${v.id}.webp" alt="Вблизи в Unity"><figcaption>Вблизи в Unity</figcaption></figure>
+      ${v.unity === false ? "" : `<figure style="margin:0"><img loading="lazy" src="${BASE}img/unity_close_${v.id}.webp" alt="Вблизи в Unity"><figcaption>Вблизи в Unity</figcaption></figure>`}
+      ${(v.extra || []).map(([f, cap]) => `<figure style="margin:0"><img loading="lazy" src="${BASE}img/${f}" alt="${cap}"><figcaption>${cap}</figcaption></figure>`).join("")}
       ${v.pbr ? pbrFigures(v) : ""}
     </div>`;
   cards.appendChild(c);
@@ -333,6 +364,8 @@ const labels = document.getElementById("labels");
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;            // only the PBR mode's sun casts; the unlit modes ignore shadows
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 stage.prepend(renderer.domElement);
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(35, 1, 0.05, 200);
@@ -341,17 +374,25 @@ controls.enableDamping = true;
 controls.autoRotateSpeed = 1.2;
 controls.minDistance = 0.25; controls.maxDistance = 12;
 
-// a soft floor disc under every house, so they read as standing
+// a soft floor disc under every model, so it reads as standing
 const floorMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.08, depthWrite: false });
 
 const loader = new GLTFLoader();
 const items = [];
-let state = { pick: "hydrant", lod: 0, light: "game" };
-// PBR mode: a sun where the reference has it (fit_ref_light.py) and a soft room for the reflections
+let state = { pick: "prop", lod: 0, light: "game", broken: false };
+// PBR mode: a sun where the reference has it (fit_ref_light.py), an even fill and a dim room for the reflections
+// (the bench page's light: at full strength the room burnt the tops out)
 const pmrem = new THREE.PMREMGenerator(renderer);
 const roomEnv = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 const sunLight = new THREE.DirectionalLight(0xfff4e6, 0);
-scene.add(sunLight, sunLight.target);
+sunLight.shadow.mapSize.set(4096, 4096);
+sunLight.shadow.bias = -0.0002;
+sunLight.shadow.normalBias = 0.004;
+sunLight.shadow.radius = 2.5;
+const fillLight = new THREE.AmbientLight(0xffffff, 0);
+scene.add(sunLight, sunLight.target, fillLight);
+// PBR mode: the model's shadow on the ground
+const shadowMat = new THREE.ShadowMaterial({ opacity: 0.28 });
 const texLoader = new THREE.TextureLoader();
 function bakedMap(url, srgb) {
   const t = texLoader.load(url);
@@ -362,22 +403,39 @@ function bakedMap(url, srgb) {
   return t;
 }
 
+const ENV_FILL = 0.18;
+const SUN = 1.4, FILL = 1.3;
 function unlit(root, v) {
   const maps = v.pbr ? { ao: bakedMap(BASE + "models/" + v.file + "_AO.png"), light: bakedMap(BASE + "models/" + v.file + "_Light.png", true) } : null;
   root.traverse(o => {
     if (!o.isMesh) return;
     const src = o.material;
+    // A tinted variant keeps two colours per vertex: COLOR_0 = pigment x baked light (what the game shows) and
+    // _PIGMENT = the pigment alone (web_pbr_glb.py --tint). The PBR mode lights the model itself, so it takes
+    // the pigment. Two geometries share every buffer but the colour (swapping the "color" attribute on one
+    // geometry left a stale vertex array behind in some orders of the modes and drew the model black).
+    const g = o.geometry;
+    let gp = g;
+    if (v.pbr && v.pbr.tint && g.attributes._pigment) {
+      gp = new THREE.BufferGeometry();
+      for (const k in g.attributes) gp.setAttribute(k, g.attributes[k]);
+      gp.setAttribute("color", g.attributes._pigment);
+      gp.setIndex(g.index);
+      g.groups.forEach(x => gp.addGroup(x.start, x.count, x.materialIndex));
+    }
+    o.userData.geos = { game: g, pbr: gp };
+    o.castShadow = o.receiveShadow = true;
     const m = new THREE.MeshBasicMaterial({ map: src.map || null, color: 0xffffff, vertexColors: !!o.geometry.attributes.color });
     if (m.map) m.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
     o.userData.mats = { game: m };
     if (maps) {
       // the GLB's own material: base colour, normal, roughness-metallic (pbr_maps.py). A basic material divides
       // its light map by pi: the baked one gets that back in lightMapIntensity.
-      src.vertexColors = false; src.envMapIntensity = 0.55;
+      src.vertexColors = !!v.pbr.tint; src.envMapIntensity = ENV_FILL;
       const second = !!o.geometry.attributes.uv1;        // only LOD0 has the unique UV set of the baked maps
       if (second) { src.aoMap = maps.ao; src.aoMapIntensity = 1.0; }
       o.userData.mats.pbr = src;
-      o.userData.mats.baked = second ? new THREE.MeshBasicMaterial({ map: src.map || null, lightMap: maps.light, lightMapIntensity: Math.PI, color: 0x000000 }) : m;
+      o.userData.mats.baked = second ? new THREE.MeshBasicMaterial({ map: src.map || null, lightMap: maps.light, lightMapIntensity: Math.PI, color: 0x000000, vertexColors: !!v.pbr.tint }) : m;
       if (second) o.userData.mats.baked.color.set(0xffffff);
       // the normal map itself as the colour, unlit: shows what the PBR mode gets from the maps
       o.userData.mats.normals = new THREE.MeshBasicMaterial({ map: src.normalMap ? src.normalMap.clone() : null, color: 0xffffff });
@@ -391,7 +449,7 @@ Promise.all(V.map((v, i) => loader.loadAsync(BASE + "models/" + v.file + ".glb")
   const root = g.scene;
   unlit(root, v);
   const lods = [0, 1, 2].map(l => root.getObjectByName("LOD" + l));
-  // centre the house on its footprint, base on y = 0
+  // centre the model on its footprint, base on y = 0
   const box = new THREE.Box3().setFromObject(lods[0]);
   const c = box.getCenter(new THREE.Vector3());
   const holder = new THREE.Group();
@@ -400,6 +458,9 @@ Promise.all(V.map((v, i) => loader.loadAsync(BASE + "models/" + v.file + ".glb")
   const disc = new THREE.Mesh(new THREE.CircleGeometry(Math.max(box.max.x - box.min.x, box.max.z - box.min.z) * 0.62, 48), floorMat);
   disc.rotation.x = -Math.PI / 2; disc.position.y = 0.002;
   holder.add(disc);
+  const catcher = new THREE.Mesh(new THREE.CircleGeometry(Math.max(box.max.x - box.min.x, box.max.z - box.min.z) * 4, 64), shadowMat);
+  catcher.rotation.x = -Math.PI / 2; catcher.position.y = 0.001; catcher.receiveShadow = true; catcher.visible = false;
+  holder.add(catcher);
   holder.visible = false;  // shown by layout() once every model is in; the camera is not placed before that
   scene.add(holder);
   const tag = document.createElement("div");
@@ -407,7 +468,7 @@ Promise.all(V.map((v, i) => loader.loadAsync(BASE + "models/" + v.file + ".glb")
   tag.innerHTML = `<b>${v.n}. ${v.name}</b><span>${v.tag}</span>`;
   tag.hidden = true;
   labels.appendChild(tag);
-  items[i] = { v, holder, lods, tag, height: box.max.y - box.min.y };
+  items[i] = { v, holder, root, lods, tag, disc, catcher, height: box.max.y - box.min.y, reach: box.getSize(new THREE.Vector3()).length() * 0.5 };
 }))).then(() => {
   document.getElementById("loading").remove();
   layout(true);
@@ -415,45 +476,76 @@ Promise.all(V.map((v, i) => loader.loadAsync(BASE + "models/" + v.file + ".glb")
 
 // the pumper nozzle faces +Z in the GLB; seen as the reference shows it: 12 degrees to the right, 20 above
 const VIEW_ONE = new THREE.Vector3(0.195, 0.342, 0.919).normalize();
-const VIEW_ALL = new THREE.Vector3(0.22, 0.3, 0.93).normalize();
+// the pieces lie on the ground: seen from higher up, the whole heap in view
+const VIEW_BROKEN = new THREE.Vector3(0.3, 0.75, 0.6).normalize();
 
 function layout(resetCamera) {
-  const shown = items.filter(it => state.pick === "all" || it.v.id === state.pick);
+  const shown = items.filter(it => it.v.id === state.pick);
   items.forEach(it => { it.holder.visible = shown.includes(it); it.tag.hidden = true; });   // one model: no caption over it
   shown.forEach((it, k) => { it.holder.position.set((k - (shown.length - 1) / 2) * SPACING, 0, 0); });
   items.forEach(it => it.lods.forEach((m, l) => { if (m) m.visible = l === state.lod; }));
+  // the broken model: the fracture's pieces alone, tumbled (web_pieces_glb.py), in place of the standing LODs
+  const canBreak = shown.some(it => it.v.broken);
+  items.forEach(it => {
+    const on = state.broken && !!it.brokenRoot;
+    if (it.brokenRoot) it.brokenRoot.visible = on;
+    if (on) it.lods.forEach(m => { if (m) m.visible = false; });
+  });
+  document.querySelectorAll("#stateseg button").forEach(b => { b.disabled = !canBreak; });
+  document.getElementById("statenote").textContent = !canBreak ? "Обломки есть у варианта 2."
+    : state.broken ? "63 куска разрушения, каждый повёрнут случайно и положен на землю. Текстура × пигмент, без запечённого света: так игра рисует обломки. Граней разлома в файле нет: у куска только внешние грани."
+    : "Целый гидрант: пигмент × запечённый свет.";
   applyLight(shown);
-  const tris = shown.map(it => `${it.v.n}: ${it.v.lods[state.lod]}`).join(" · ");
   document.getElementById("tris").textContent = "Треугольники LOD" + state.lod + ": " + shown.map(it => it.v.lods[state.lod]).join("");
   if (resetCamera) {
-    // fit the tower's height into the vertical field of view
-    const h = shown[0].height;
-    const dist = (h * 0.7) / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));    // taller than wide: fit the height
-    controls.target.set(0, h * 0.5, 0);
-    camera.position.copy(controls.target).addScaledVector(VIEW_ONE, dist);
+    const it = shown[0];
+    if (state.broken && it.brokenRoot) {
+      const b = new THREE.Box3().setFromObject(it.brokenRoot);
+      const r = b.getSize(new THREE.Vector3()).length() * 0.5;
+      controls.target.copy(b.getCenter(new THREE.Vector3()));
+      camera.position.copy(controls.target).addScaledVector(VIEW_BROKEN, r / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * 0.85);
+    } else {
+      const h = it.height;
+      const dist = (h * 0.7) / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));    // taller than wide: fit the height
+      controls.target.set(0, h * 0.5, 0);
+      camera.position.copy(controls.target).addScaledVector(VIEW_ONE, dist);
+    }
     controls.update();
   }
 }
 
-// Three ways to light a house: the game's (colour x vertex light), PBR (the GLB's materials under a sun),
-// baked (colour x the light map: a basic material takes its light map as its only light).
+// Ways to light a model: the game's (colour x vertex light), PBR (the GLB's materials under a sun), baked
+// (colour x the light map: a basic material takes its light map as its only light), the normal map.
 function applyLight(shown) {
   const withPbr = shown.filter(it => it.v.pbr);
   const mode = withPbr.length ? state.light : "game";
   items.forEach(it => it.holder.traverse(o => {
     if (!o.isMesh || !o.userData.mats) return;
     o.material = o.userData.mats[it.v.pbr ? mode : "game"] || o.userData.mats.game;
+    // the light map is a light of its own too: it takes the pigment, not pigment x baked vertex light
+    const lit = mode === "pbr" || (mode === "baked" && o.material !== o.userData.mats.game);
+    const geo = o.userData.geos[it.v.pbr && lit ? "pbr" : "game"];
+    if (o.geometry !== geo) o.geometry = geo;
   }));
   const pbr = mode === "pbr";
   scene.environment = pbr ? roomEnv : null;
-  sunLight.intensity = pbr ? 2.6 : 0;
+  sunLight.intensity = pbr ? SUN : 0;
+  fillLight.intensity = pbr ? FILL : 0;
+  sunLight.castShadow = pbr;
+  items.forEach(it => { it.catcher.visible = pbr && !!it.v.pbr && shown.includes(it); it.disc.visible = !it.catcher.visible; });
   if (pbr) {
-    // the exporters' sun: yaw 270 = in front of the facade, 0 = at its right side, in Blender's frame (Z up);
-    // the GLB is Y up with the facade on +Z
+    // the exporters' sun: yaw 270 = in front of the model, 0 = at its right side, in Blender's frame (Z up);
+    // the GLB is Y up with the front on +Z
     const [yaw, pitch] = withPbr[0].v.pbr.sun.map(THREE.MathUtils.degToRad);
     const dir = new THREE.Vector3(Math.cos(yaw) * Math.cos(pitch), Math.sin(pitch), -Math.sin(yaw) * Math.cos(pitch));
-    sunLight.target.position.copy(withPbr[0].holder.position);
-    sunLight.position.copy(withPbr[0].holder.position).addScaledVector(dir, 200);
+    // the shadow map covers the lit model shown, and no more
+    const mid = withPbr[0].holder.position.clone();
+    const half = withPbr[0].reach * 1.08;
+    sunLight.target.position.copy(mid);
+    sunLight.position.copy(mid).addScaledVector(dir, 200);
+    const sc = sunLight.shadow.camera;
+    sc.left = sc.bottom = -half; sc.right = sc.top = half; sc.near = 200 - half * 1.5; sc.far = 200 + half * 1.5;
+    sc.updateProjectionMatrix();
   }
   const note = document.getElementById("lightnote");
   note.textContent = !withPbr.length ? "Нет PBR-карт."
@@ -521,6 +613,25 @@ document.addEventListener("click", e => {
   if (!b) return;
   setPick(b.dataset.show);
   stage.scrollIntoView({ behavior: "smooth", block: "center" });
+});
+document.getElementById("stateseg").addEventListener("click", async e => {
+  const b = e.target.closest("button"); if (!b || b.disabled) return;
+  state.broken = b.dataset.broken === "1";
+  document.querySelectorAll("#stateseg button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  if (state.broken) {
+    for (const it of items) {
+      if (!it.v.broken || it.brokenRoot) continue;
+      const g = await loader.loadAsync(BASE + "models/" + it.v.broken + ".glb");
+      unlit(g.scene, { id: it.v.id });            // pieces have the game look only
+      // the fracture's files hold a piece's outer faces only, not the faces the break opens: both sides are
+      // drawn, so a piece is not seen through from behind
+      g.scene.traverse(o => { if (o.isMesh) o.material.side = THREE.DoubleSide; });
+      g.scene.position.copy(it.root.position);
+      it.holder.add(g.scene);
+      it.brokenRoot = g.scene;
+    }
+  }
+  layout(true);
 });
 document.getElementById("lodseg").addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
