@@ -298,7 +298,7 @@ h1 { font-family: var(--display); font-weight: 700; font-size: clamp(40px, 7vw, 
   <footer class="wrap foot">
     <p>Здания жилого района: 23 рефа ушли в Phantasm 4–5 ноября 2026, по ним перекрашены текстуры. Остальные виды зданий и рефы пропсов взяты из заданий SlopMachine (сентябрь–ноябрь 2026), по ним строились модели. Рефы трёх уличных деревьев жилого района и трёх ковров барахолки — GPT-картинки из <code>GeneratedArt</code>.</p>
     <p>Пять парковых зданий в игре стоят в упрощённой версии. Моховые камни, парковый дуб и пропсы жилого района с перекраской показаны по рефу исходной модели.</p>
-    <p>Ракурс 3/4 с меткой «рендер» — снимок игровой модели в Blender с её текстурой: у зданий вне жилого района и у плоских пропсов он идёт сразу после стилизованного рефа. Рефы Phantasm помечены «стилизовано».</p>
+    <p>Ракурс 3/4 с меткой «рендер» — снимок игровой модели в Blender с её текстурой: у зданий вне жилого района и у плоских пропсов он идёт сразу после стилизованного рефа.</p>
     <p>Здания вне жилого района стилизованы в GPT Image 17 ноября 2026 одним промптом: лачуги трущоб — по рефам SlopMachine, остальные — по рендеру игровой модели; исходник — следующий вид. У лачуги на сваях третий вид — её прежняя стилизация.</p>
     <p>Все пропсы стилизованы в GPT Image 17 ноября 2026 отдельным промптом для пропсов, по своему прежнему главному виду, который теперь идёт вторым.</p>
     <p>58 пропсов каталога без рефа стилизованы по рендеру игровой модели: 22 секции заборов Wealthy, 20 камней хенджа, 9 машин I Am Bird, 3 сухих дерева трущоб, скамья летней сцены, приствольная решётка, стол и стул кафе. Рефа для них не нашлось ни в SlopMachine, ни в GeneratedArt.</p>
@@ -901,8 +901,7 @@ for (const s of SECTIONS) {
         tile.appendChild(img);
         if (views.length > 1) tile.appendChild(el("span", "badge", views.length + " " + plural(views.length, "вид", "вида", "видов")));
         const mainKey = views.length ? views[0][0] : "";
-        if (mainKey === "34") tile.appendChild(el("span", "tag stylised", "стилизовано"));
-        else if (mainKey === "r34") tile.appendChild(el("span", "tag", "рендер"));
+        if (mainKey === "r34") tile.appendChild(el("span", "tag", "рендер"));
         const cap = el("div", "cap");
         cap.append(el("span", "ru", ru), el("code", null, id));
         b.append(tile, cap);
@@ -914,10 +913,7 @@ for (const s of SECTIONS) {
         bi.setAttribute("aria-label", ru + ", открыть крупно");
         const bimg = el("img"); bimg.alt = ""; bimg.decoding = "async"; bimg.draggable = false; bimg.src = thumbOf(it, "b");
         bi.appendChild(bimg);
-        if (mainKey === "34") {
-          bi.appendChild(el("span", "btag", "стилизовано"));
-          if (it.kind === "houses" && !OWNER_STYLISED.has(id)) s.stylised = true;
-        }
+        if (mainKey === "34" && it.kind === "houses" && !OWNER_STYLISED.has(id)) s.stylised = true;
         // Pointer clicks are resolved by the board (a drag must not open the viewer); this is the keyboard path.
         bi.addEventListener("click", e => { if (e.detail === 0) open(it, 0, bi); });
         it.bi = bi; it.bimg = bimg;
@@ -1144,7 +1140,7 @@ board.addEventListener("pointermove", e => {
     if (!bi) { hideTip(); return; }
     const it = byBi.get(bi);
     const key = it.views.length ? it.views[0][0] : "";
-    tip.replaceChildren(document.createTextNode(it.ru + (key === "34" ? " · стилизовано" : key === "r34" ? " · рендер" : "")), el("code", null, it.id));
+    tip.replaceChildren(document.createTextNode(it.ru + (key === "r34" ? " · рендер" : "")), el("code", null, it.id));
     tip.hidden = false;
     const tw = tip.offsetWidth, th = tip.offsetHeight;
     tip.style.left = Math.min(e.clientX + 14, innerWidth - tw - 8) + "px";
