@@ -127,12 +127,15 @@ body::before {
 .bi .bready svg { width: 62%; height: 62%; }
 .bi:hover .bready { opacity: 0; transform: translate(30%, -30%) scale(0.6); }
 .blabel .bready-n { color: #1d9a50; font-weight: 500; }
+.blabel .bready-n.polish { color: #a87700; }
 .bhint .bready-key {
   display: inline-grid; place-items: center; width: 16px; height: 16px; margin-right: 4px; vertical-align: -3px;
   border-radius: 50%; color: #fff; background: #1d9a50;
 }
 .bhint .bready-key svg { width: 11px; height: 11px; }
 .cap .ready { justify-self: start; margin-top: 2px; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; color: #fff; background: #1d9a50; }
+/* Yellow = the model is generated but still needs polish; a dark check, since white on yellow does not read. */
+.bi .bready.polish, .bhint .bready-key.polish, .cap .ready.polish { color: #3a2a00; background: #f4c20d; }
 .blabel .bnote {
   display: inline-block; margin-top: 16px; padding: 6px 16px; border-radius: 999px; font-family: var(--mono); font-size: 24px;
   color: #7a4a0c; background: rgba(253, 233, 200, 0.95);
@@ -289,7 +292,7 @@ h1 { font-family: var(--display); font-weight: 700; font-size: clamp(40px, 7vw, 
 
 <div class="board" id="board" aria-label="Мудборд. Перетаскивайте холст, колесо или щипок меняет масштаб.">
   <div class="world" id="world"></div>
-  <div class="bhint"><span><span class="bready-key"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>модель готова</span> · Тяните холст · колесо или щипок — масштаб · клик — реф крупно</div>
+  <div class="bhint"><span><span class="bready-key"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>модель готова</span> · <span><span class="bready-key polish"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>сгенерирована, нужна шлифовка</span> ·Тяните холст · колесо или щипок — масштаб · клик — реф крупно</div>
   <div class="bctl">
     <button type="button" id="z-out" aria-label="Уменьшить">−</button>
     <span id="z-val">100%</span>
@@ -829,6 +832,11 @@ const READY = new Set(["h:stilt_shack", "h:cinderblock_hut", "h:stacked_shack", 
   "h:fire_station", "h:police_station", "h:stone_church", "h:red_brick_four_storey_townhouse_clean", "h:strip_mall",
   "h:federal_painted_row", "p:residential_mailbox", "h:amber-bay-building-2", "p:residential_trash_bin", "h:gas_station", "h:supermarket"]);
 const isReady = it => READY.has(KIND[it.kind].key + it.id);
+// Ready refs whose model is generated but still needs polish: the mark is yellow, not green. A newly generated
+// model goes into READY and here; take it out of here once it is polished.
+const POLISH = new Set(["h:federal_painted_row", "h:red_brick_four_storey_townhouse_clean", "h:amber-bay-building-2",
+  "h:strip_mall", "h:gas_station", "h:supermarket", "h:fire_station", "h:stone_church", "h:police_station"]);
+const isPolish = it => POLISH.has(KIND[it.kind].key + it.id);
 const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 // The refs each district's collage is built around: drawn larger and packed first.
 const HERO = new Set([
@@ -940,7 +948,7 @@ for (const s of SECTIONS) {
         if (mainKey === "r34") tile.appendChild(el("span", "tag", "рендер"));
         const cap = el("div", "cap");
         cap.append(el("span", "ru", ru), el("code", null, id));
-        if (isReady(it)) cap.appendChild(el("span", "ready", "✓ модель готова"));
+        if (isReady(it)) cap.appendChild(isPolish(it) ? el("span", "ready polish", "✓ нужна шлифовка") : el("span", "ready", "✓ модель готова"));
         b.append(tile, cap);
         b.addEventListener("click", () => open(it, 0, b));
         it.card = b;
@@ -951,10 +959,10 @@ for (const s of SECTIONS) {
         const bimg = el("img"); bimg.alt = ""; bimg.decoding = "async"; bimg.draggable = false; bimg.src = thumbOf(it, "b");
         bi.appendChild(bimg);
         if (isReady(it)) {
-          const mark = el("span", it.kind === "props" ? "bready small" : "bready");
+          const mark = el("span", "bready" + (it.kind === "props" ? " small" : "") + (isPolish(it) ? " polish" : ""));
           mark.innerHTML = CHECK_SVG;
           bi.appendChild(mark);
-          bi.setAttribute("aria-label", ru + ", модель готова, открыть крупно");
+          bi.setAttribute("aria-label", ru + (isPolish(it) ? ", модель сгенерирована, нужна шлифовка" : ", модель готова") + ", открыть крупно");
         }
         if (mainKey === "34" && it.kind === "houses" && !OWNER_STYLISED.has(id) && !NEW_STYLE.has(id)) s.stylised = true;
         // Pointer clicks are resolved by the board (a drag must not open the viewer); this is the keyboard path.
@@ -1028,8 +1036,10 @@ function layout() {
     if (!items.length) continue;
     const nh = items.filter(it => it.kind === "houses").length, np = items.length - nh;
     s.countEl.textContent = [nh ? nh + " " + plural(nh, "здание", "здания", "зданий") : "", np ? np + " " + plural(np, "пропс", "пропса", "пропсов") : ""].filter(Boolean).join(" · ");
-    const nr = items.filter(isReady).length;
+    const nr = items.filter(it => isReady(it) && !isPolish(it)).length;
+    const np2 = items.filter(it => isReady(it) && isPolish(it)).length;
     if (nr) s.countEl.append(" · ", el("span", "bready-n", "✓ готово " + nr));
+    if (np2) s.countEl.append(" · ", el("span", "bready-n polish", "✓ нужна шлифовка " + np2));
     const box = packCluster(items);
     clusters.push({ s, items, w: box.w, h: box.h + B.labelH });
   }
