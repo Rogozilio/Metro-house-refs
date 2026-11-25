@@ -829,9 +829,11 @@ const LAB3D_PROPS = { fire_hydrant: { page: "hydrant-3d.html", label: "3D · н�
 function labOf(it) { return (it.kind === "props" ? LAB3D_PROPS : LAB3D)[it.id]; }
 // Ready refs: the Houdini model is built from the card's CURRENT main picture. Not derived from LAB3D on purpose:
 // the Houdini hydrant was built from an older picture than both hydrant cards show now.
+// Also ready: a model the game already shows as accepted, whatever its source (the I Am Bird cars, owner 2026-11-25).
 const READY = new Set(["h:stilt_shack", "h:cinderblock_hut", "h:stacked_shack", "h:tapered_ivory_tower_mcp",
   "h:fire_station", "h:police_station", "h:stone_church", "h:red_brick_four_storey_townhouse_clean", "h:strip_mall",
-  "h:federal_painted_row", "p:residential_mailbox", "h:amber-bay-building-2", "p:residential_trash_bin", "h:gas_station", "h:supermarket", "p:residential_fire_hydrant", "h:hospital"]);
+  "h:federal_painted_row", "p:residential_mailbox", "h:amber-bay-building-2", "p:residential_trash_bin", "h:gas_station", "h:supermarket", "p:residential_fire_hydrant", "h:hospital",
+  "p:iambird_hatchback_blue", "p:iambird_hatchback_pink", "p:iambird_wagon_green", "p:iambird_wagon_purple", "p:iambird_police_car", "p:iambird_taxi", "p:iambird_ice_cream_van", "p:iambird_van_blue", "p:iambird_van_orange"]);
 const isReady = it => READY.has(KIND[it.kind].key + it.id);
 // Ready refs whose model is generated but still needs polish: the mark is yellow, not green. A newly generated
 // model goes into READY and here; take it out of here once it is polished.
