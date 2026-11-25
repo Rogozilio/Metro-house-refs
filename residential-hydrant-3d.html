@@ -375,7 +375,10 @@ function unlit(root, v) {
       g.groups.forEach(x => gp.addGroup(x.start, x.count, x.materialIndex));
     }
     o.userData.geos = { game: g, pbr: gp };
-    o.castShadow = o.receiveShadow = true;
+    // the hydrant casts its shadow on the ground but takes none: the sun at 45 degrees laid the pumper's shadow, ragged
+    // by its lugs, across the barrel as smudges (owner 2026-11-25); the baked AO map still darkens the crevices
+    o.castShadow = true;
+    o.receiveShadow = false;
     const m = new THREE.MeshBasicMaterial({ map: src.map || null, color: 0xffffff, vertexColors: !!o.geometry.attributes.color });
     if (m.map) m.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
     o.userData.mats = { game: m };
