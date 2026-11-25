@@ -841,8 +841,7 @@ const isReady = it => READY.has(KIND[it.kind].key + it.id);
 // Ready refs whose model is generated but still needs polish: the mark is yellow, not green. A newly generated
 // model goes into READY and here; take it out of here once it is polished.
 const POLISH = new Set(["h:federal_painted_row", "h:red_brick_four_storey_townhouse_clean", "h:amber-bay-building-2",
-  "h:strip_mall", "h:gas_station", "h:supermarket", "h:stone_church",
-  "p:residential_fire_hydrant", "h:hospital", "h:yellow_three_storey_shop_mcp"]);
+  "h:strip_mall", "h:gas_station", "h:supermarket", "h:stone_church", "h:hospital", "h:yellow_three_storey_shop_mcp"]);
 const isPolish = it => POLISH.has(KIND[it.kind].key + it.id);
 const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 // The refs each district's collage is built around: drawn larger and packed first.
