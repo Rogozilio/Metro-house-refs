@@ -151,10 +151,10 @@ body.embed .seg button { font-size: 12px; padding: 4px 9px; }
 <script>if (new URLSearchParams(location.search).has("embed")) document.body.classList.add("embed");</script>
 <div class="wrap">
   <div class="top"><a class="back" href="./">← Мудборд</a></div>
-  <p class="eyebrow">We Are Destroyers · лаборатория · 2026-11-24</p>
+  <p class="eyebrow">We Are Destroyers · лаборатория · 2026-11-26</p>
   <h1>Угловой дом с эркером: модель из Houdini</h1>
-  <p class="lead">Новая модель для карточки «Янтарный дом с эркерами» по её рефу: четыре этажа оранжевой штукатурки с кремовым камнем, круглый эркер на дальнем углу, руст на прямых углах, пояса и карниз, окна с наличниками и замковыми камнями, витрины и вход с остеклёнными дверями на первом этаже, тёмный парапет из блоков с тумбами. 8.6 × 8.6 м, карниз 11.45 м. Камера рефа восстановлена по трём точкам схода, размеры сняты с рефа через неё; невидимые стороны — по модели Tripo. Рендер совпадает с рефом кадр в кадр, совпадение силуэта 0.980. Текстура — методом хижины. 2 платных вызова (модели-опоры). Время: ≈2 ч 12 мин от старта до этой версии. В каталог игры и в Unity модель не добавлена.</p>
-  <p class="lead">Тыл и левый бок на рефе не видны: сняты с модели Tripo (на левом боку — окна в те же колонки и длинная витрина). Каждая деталь держится за опору: раздельные детали — стык 2 мм, деталь «в» другую — с перекрытием (gap_check.py).</p>
+  <p class="lead">Модель для карточки «Янтарный дом с эркерами» по её новому рефу (26.11.2026): четыре этажа оранжевой штукатурки с кремовым камнем, круглый эркер на ближнем углу с гнутыми окнами и тремя кольцами на каждом поясе, руст на трёх прямых углах, пояса и глубокий карниз, окна с наличниками и замковыми камнями, внизу пилястры, две витрины и вход с двустворчатой дверью, тёмный парапет из блоков с тумбами и две вентиляции. 9.1 × 7.3 м, карниз 14.05 м. Камера рефа восстановлена по двум точкам схода, размеры сняты с рефа через неё, выносы деталей — с модели Hunyuan. Рендер совпадает с рефом кадр в кадр, совпадение силуэта 0.982. Текстура — методом хижины. 1 платный вызов (модель-опора). Время: 1 ч 39 мин от старта до этой версии. В каталог игры и в Unity модель не добавлена.</p>
+  <p class="lead">Тыл и левый бок на рефе не видны: придуманы (на левом боку два ряда окон, тыл глухой, как у модели Hunyuan). Крыша на рефе нарисована круче стен: карниз над эркером на картинке на 11 px выше, чем допускает выступ эркера; задние тумбы опущены по картинке. Каждая деталь держится за опору: раздельные детали — стык 2 мм, деталь «в» другую — с перекрытием (gap_check.py).</p>
 
   <section class="viewer" aria-label="3D-просмотр">
     <div class="stage" id="stage">
@@ -163,7 +163,7 @@ body.embed .seg button { font-size: 12px; padding: 4px 9px; }
       <div class="hint">Тяните — вращать · колесо или щипок — зум · правой кнопкой — сдвиг</div>
     </div>
     <div class="side">
-      <div class="panel"><h3>Референс</h3><img class="refimg" src="lab/orange-corner/img/reference.webp" alt="Референс углового дома с эркером"></div>
+      <div class="panel"><h3>Референс</h3><img class="refimg" src="lab/orange-corner/img/reference.webp?v=t4" alt="Референс углового дома с эркером"></div>
       <div class="panel ctl">
         <div><h3>Вариант</h3><div class="seg" id="pick" role="group" aria-label="Вариант"></div></div>
         <div><h3>LOD</h3><div class="seg" id="lodseg" role="group" aria-label="LOD">
@@ -196,22 +196,22 @@ body.embed .seg button { font-size: 12px; padding: 4px 9px; }
 
   <h2>Детали против рефа</h2>
   <div class="shots" style="grid-template-columns: 1fr;">
-    <figure style="margin:0"><img src="lab/orange-corner/img/compare.webp" alt="Реф и рендер экспорта"><figcaption>Реф и рендер экспортированного скина, как в игре (цвет × запечённый свет), с камеры рефа</figcaption></figure>
-    <figure style="margin:0"><img src="lab/orange-corner/img/crops.webp" alt="Кропы деталей: реф слева, модель справа"><figcaption>Кропы деталей с камеры рефа в тех же пикселях, в каждой паре слева реф, справа модель: вход, крыша, эркер, ближний угол</figcaption></figure>
+    <figure style="margin:0"><img src="lab/orange-corner/img/compare.webp?v=t4" alt="Реф и рендер экспорта"><figcaption>Реф и рендер экспортированного скина, как в игре (цвет × запечённый свет), с камеры рефа</figcaption></figure>
+    <figure style="margin:0"><img src="lab/orange-corner/img/crops.webp?v=t4" alt="Кропы деталей: реф слева, модель справа"><figcaption>Кропы деталей с камеры рефа в тех же пикселях, в каждой паре слева реф, справа модель: вход, крыша, эркер, ближний угол</figcaption></figure>
   </div>
 
   <h2>Со всех сторон</h2>
   <div class="shots" style="grid-template-columns: 1fr 1fr 1fr;">
-    <figure style="margin:0"><img src="lab/orange-corner/img/view_side_y000.webp" alt="Фасад со входом"><figcaption>Фасад со входом</figcaption></figure>
-    <figure style="margin:0"><img src="lab/orange-corner/img/view_side_y045.webp" alt="Угол: фасад и правый бок"><figcaption>Угол: фасад и правый бок</figcaption></figure>
-    <figure style="margin:0"><img src="lab/orange-corner/img/view_side_y090.webp" alt="Правый бок"><figcaption>Правый бок</figcaption></figure>
-    <figure style="margin:0"><img src="lab/orange-corner/img/view_side_y135.webp" alt="Угол: правый бок и тыл"><figcaption>Угол: правый бок и тыл (тыл по модели Tripo)</figcaption></figure>
-    <figure style="margin:0"><img src="lab/orange-corner/img/view_side_y180.webp" alt="Тыл (по модели Tripo)"><figcaption>Тыл (по модели Tripo)</figcaption></figure>
-    <figure style="margin:0"><img src="lab/orange-corner/img/view_side_y270.webp" alt="Левый бок с эркером (по модели Tripo)"><figcaption>Левый бок с эркером (по модели Tripo)</figcaption></figure>
-    <figure style="margin:0"><img src="lab/orange-corner/img/view_above.webp" alt="Сверху"><figcaption>Сверху</figcaption></figure>
-    <figure style="margin:0"><img src="lab/orange-corner/img/view_low.webp" alt="Снизу"><figcaption>Снизу</figcaption></figure>
-    <figure style="margin:0"><img src="lab/orange-corner/img/view_lod1_y030.webp" alt="LOD1"><figcaption>LOD1</figcaption></figure>
-    <figure style="margin:0"><img src="lab/orange-corner/img/view_lod2_y030.webp" alt="LOD2"><figcaption>LOD2</figcaption></figure>
+    <figure style="margin:0"><img src="lab/orange-corner/img/view_side_y000.webp?v=t4" alt="Фасад со входом"><figcaption>Фасад со входом</figcaption></figure>
+    <figure style="margin:0"><img src="lab/orange-corner/img/view_side_y045.webp?v=t4" alt="Угол: фасад и правый бок"><figcaption>Угол: фасад и правый бок</figcaption></figure>
+    <figure style="margin:0"><img src="lab/orange-corner/img/view_side_y090.webp?v=t4" alt="Правый бок"><figcaption>Правый бок</figcaption></figure>
+    <figure style="margin:0"><img src="lab/orange-corner/img/view_side_y135.webp?v=t4" alt="Угол: правый бок и тыл"><figcaption>Угол: правый бок и тыл (тыл придуман)</figcaption></figure>
+    <figure style="margin:0"><img src="lab/orange-corner/img/view_side_y180.webp?v=t4" alt="Тыл (придуман)"><figcaption>Тыл (придуман)</figcaption></figure>
+    <figure style="margin:0"><img src="lab/orange-corner/img/view_side_y270.webp?v=t4" alt="Левый бок (придуман)"><figcaption>Левый бок (придуман)</figcaption></figure>
+    <figure style="margin:0"><img src="lab/orange-corner/img/view_above.webp?v=t4" alt="Сверху"><figcaption>Сверху</figcaption></figure>
+    <figure style="margin:0"><img src="lab/orange-corner/img/view_low.webp?v=t4" alt="Снизу"><figcaption>Снизу</figcaption></figure>
+    <figure style="margin:0"><img src="lab/orange-corner/img/view_lod1_y030.webp?v=t4" alt="LOD1"><figcaption>LOD1</figcaption></figure>
+    <figure style="margin:0"><img src="lab/orange-corner/img/view_lod2_y030.webp?v=t4" alt="LOD2"><figcaption>LOD2</figcaption></figure>
   </div>
 
   <footer>Модель: Houdini → Blender → разрушение SlopMachine → FBX, сюда — тот же скин в GLB. Цвета зон — медианы рендера экспортированного скина в Blender против медиан тех же зон рефа; рендер снят камерой рефа, зоны совпадают пиксель в пиксель.</footer>
@@ -226,10 +226,11 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
 const BASE = "lab/orange-corner/";
-const REF = {"orange_front": [253, 154, 92], "orange_side": [243, 144, 87], "trim": [252, 212, 168], "glass": [25, 69, 93], "door": [44, 81, 82], "parapet": [95, 86, 91], "deck": [227, 185, 153]};
-const ZONE_NAMES = {"orange_front": "Штукатурка, фасад", "orange_side": "Штукатурка, бок", "trim": "Камень (руст)", "glass": "Стекло", "door": "Дверь", "parapet": "Парапет", "deck": "Кровля"};
+const VER = "?v=t4";   // Pages caches files 10 min
+const REF = {"orange_front": [252, 151, 88], "orange_side": [236, 138, 80], "trim": [251, 208, 163], "glass": [24, 82, 102], "door": [49, 92, 87], "parapet": [91, 84, 85], "deck": [85, 79, 85]};
+const ZONE_NAMES = {"orange_front": "Штукатурка, фасад", "orange_side": "Штукатурка, бок", "trim": "Камень (пояса)", "glass": "Стекло", "door": "Дверь", "parapet": "Парапет", "deck": "Кровля"};
 const V = [
-  {"id": "shack", "file": "houdini_orange_corner", "broken": null, "n": 1, "name": "Метод хижины", "tag": "Houdini · штукатурка, камень, краска, блоки парапета: trim-листы + цвет вершин", "cost": "2 платных вызова (модели-опоры Meshy и Tripo; в работу пошла Tripo)", "paid": true, "unity": false, "like": "кадр совпадает с рефом (силуэт 0.980); эркер, витрины, вход и крыша как на рефе", "close": "четырёхэтажный угловой дом: оранжевая штукатурка, кремовый камень; круглый эркер на дальнем углу с окном на каждом этаже, кольцами поясов и своим парапетом-барабаном; руст на трёх прямых углах; пояса между этажами и карниз; окна с наличниками, ушками, замковым камнем и подоконником, переплёт на 4 стекла; внизу витрина на выпуклой тумбе, вход с остеклёнными дверями, боковыми окнами и фрамугой, изогнутая витрина эркера; пилястры с двухступенчатыми базами и капителями; тёмный парапет из блоков, тумбы с тёмными шапками, кондиционер и блок на эркере", "param": "да", "lods": [18678, 8372, 8520], "lodsNote": "LOD1 и LOD2 авторские: без переплётов окон и фасок камня; LOD2 почти не легче LOD1 (у дуг эркера то же число сегментов)", "how": "Камера рефа восстановлена по трём точкам схода (вид сверху: вертикали сходятся внизу), масштаб — створки двери 2.2 м. Размеры фасадов сняты с рефа через эту камеру; план эркера (круг 1.5 м, центр в 1.2 м от обеих стен) подобран так, чтобы совпали и левый край силуэта, и пилон у фасада. Невидимые стороны (тыл, левый бок с витриной) — по модели Tripo. Четыре модуля Houdini: стены (тело, пояса и карниз одним сечением вокруг плана, руст, пилоны и кремовая обшивка эркера), окна, первый этаж, крыша. Каждый размер — параметр CTRL, в подсказке записано, откуда снято число.", "steps": ["Две модели-опоры за деньги: Meshy (отвергнута) и Tripo. Tripo повернула дом на 90° — учтено при снятии рельефа.", "Камера рефа — трёхточечная перспектива (фокус 1364 px, главная точка — ортоцентр точек схода). Рендер снимается этой же камерой: кадр совпадает с рефом.", "13 проходов по форме: силуэт сошёлся до 0-6 px почти на всей высоте. По ходу найдена и исправлена ошибка общей функции колец (solid_shapes.vfl): пояса, цоколь и карниз выходили вывернутыми внутрь стены.", "Четыре проверки кропов деталей субагентами (вход, эркер, крыша, ближний угол); их правки проверены по силуэту, две отклонены (силуэт их опроверг).", "Текстура методом хижины: штукатурка (гладкое поле), камень полосами, краска (рамы, двери, стекло), блоки парапета в размере рефа (0.86 м, замер pattern_scale.py). 12 проходов с текстурой; цвета подобраны по зонам рефа.", "Проверки на LOD 0/1/2: стыки (gap_check), UV (uv_check) и размер блоков — без провалов."], "tools": "Houdini 22 (hython без окна, VEX), numpy, Blender (экспорт, свет, рендеры), fal.ai Meshy и Tripo (модели-опоры), SlopMachine fracture", "time": "≈2 ч 12 мин (17:55-20:08), включая две модели-опоры", "texel": "1024 px/m на листах; стёкла и полотна дверей — картинка целиком; четыре листа 2048", "zones": {"orange_front": [225, 136, 79], "orange_side": [218, 131, 77], "trim": [247, 215, 169], "glass": [20, 59, 80], "door": [40, 78, 78], "parapet": [89, 80, 85], "deck": [215, 175, 145]}, "zonesNote": "рендер экспортированного скина в Blender, как в игре (текстура × цвет вершин), с камеры рефа", "pros": ["параметрическая: этажи, окна, эркер, витрины, пилястры и крыша меняются в Houdini", "силуэт совпадает с рефом почти по всей высоте; эркер подобран по двум признакам сразу", "невидимые стороны не придуманы с нуля, а сняты с модели Tripo", "блоки парапета в размере рефа, проверяется на каждом проходе"], "cons": ["стены на ~11% темнее рефа (запечённые тени под карнизом и поясами)", "кольца эркера на рефе круглее, кондиционер на рефе с фаской и жалюзи крупнее", "в Unity не импортирована, в игре не проверена"], "improve": ["импорт в Unity", "облегчить LOD2 (меньше сегментов на дугах эркера)"], "files": ["Tools/Houdini/orange_corner_src/ (build.py, oc_lib.vfl, walls/windows/ground/roof.vfl, cam.py, gen_masks_v6.py, uv_masks.py)", "Tools/Houdini/orange_corner_tex/", "Tools/Houdini/solid_shapes.vfl"], "sheet": "sheet.webp", "sheetCap": "Реф, рендер скина как в игре и наложение силуэтов (красное — только у рефа, синее — только у нас)", "extra": [["sheets.webp", "Листы: штукатурка, камень, краска, блоки парапета (светлые листы окрашивает пигмент в вершинах)"]], "pbr": {"tint": true, "sun": [290, 40], "share": 0.55, "sheets": [["render", "Штукатурка"], ["trim", "Камень"], ["paint", "Рамы, двери, стекло"], ["roof", "Блоки парапета"]], "derived": "Карты выведены из светлых листов (не измерены): швы блоков и края камней — канавки, штукатурка и краска — диэлектрик.", "note": "Свет считает просмотрщик: солнце (290°, 40°) с тенями, ровный заполняющий свет и отражения комнаты. Из вершин берётся только пигмент."}}
+  {"id": "shack", "file": "houdini_orange_corner", "broken": null, "n": 1, "name": "Метод хижины", "tag": "Houdini · штукатурка, камень, краска, блоки парапета: trim-листы + цвет вершин", "cost": "1 платный вызов (модель-опора Hunyuan 3D 3.1 Pro, ≈$0.38)", "paid": true, "unity": false, "like": "кадр совпадает с рефом (силуэт 0.982); эркер, окна, витрины, вход и крыша как на рефе", "close": "четырёхэтажный угловой дом: оранжевая штукатурка, кремовый камень; круглый эркер на ближнем углу (эллиптическая дуга, касается бокового фасада) с гнутым окном на каждом этаже, двумя импостами и фрамугой; на каждом поясе три кольца (над окном, пояс, подоконное); руст на трёх прямых углах; пояса и глубокий карниз; окна с наличниками, ушками, замковым камнем и подоконником, переплёт на 4 стекла; внизу пилястры с двухступенчатыми базами и капителями, две витрины на цоколях, вход с двустворчатой дверью, боковыми стёклами и фрамугой, гнутая витрина эркера на цокольном кольце; тёмный парапет из блоков, тумбы с тёмными шапками, две вентиляции с жалюзи", "param": "да", "lods": [20122, 11926, 7964], "lodsNote": "LOD1 и LOD2 авторские: без переплётов окон, фасок камня и жалюзи; на LOD2 дуги эркера реже", "how": "Камера рефа восстановлена по двум точкам схода (вертикали параллельны, объектив почти ортографический), масштаб — створки двери 2.1 м. Размеры по фасадам сняты с рефа через эту камеру; выносы поясов, карниза, цоколя и эркера — с модели Hunyuan, посаженной в ту же камеру (IoU 0.96). Эркер — эллиптическая дуга: круг не ложился сразу на края стекла и простенков рефа. Четыре модуля Houdini: стены (тело, пояса и карниз одним сечением вокруг плана, кольца эркера, руст, простенки), окна, первый этаж, крыша. Каждый размер — параметр CTRL, в подсказке записано, откуда снято число.", "steps": ["Модель-опора за деньги: Hunyuan 3D 3.1 Pro по рефу; посажена в камеру рефа, с неё сняты выносы деталей и план эркера.", "Камера рефа — двухточечная перспектива по линиям поясов (rms 0.78 px). Рендер снимается этой же камерой: кадр совпадает с рефом.", "Проходы по форме: эркер перебран трижды (круг → эллипс, касательный к боку), стекло эркера задано углами по картинке; окна эркера сошлись до 2-4 px.", "Шесть проверок кропов субагентами (вход, крыша, эркер, низ эркера, бок, дальний угол); их правки сверены с картинкой.", "Текстура методом хижины: пигменты по зонам нового рефа, стекло перерисовано (светлее сверху, одна мягкая полоса блика), рамы зеленее, блоки парапета 1.15 м (замер pattern_scale.py). Свет: солнце спереди сверху, тени мягче: стены 0.94 от рефа.", "Проверки на LOD 0/1/2: стыки (gap_check), UV (uv_check), размер блоков, полосы листов — без провалов; разлом 86 осколков, одна щепка в 4 треугольника (лучший из трёх seed)."], "tools": "Houdini 22 (hython без окна, VEX), numpy, Blender (экспорт, свет, рендеры), fal.ai Hunyuan 3D (модель-опора), SlopMachine fracture", "time": "1 ч 39 мин (21:36-23:15)", "texel": "1024 px/m на листах; стёкла и полотна дверей — картинка целиком; четыре листа 2048", "zones": {"orange_front": [236, 142, 83], "orange_side": [222, 133, 78], "trim": [244, 202, 158], "glass": [25, 87, 108], "door": [47, 89, 84], "parapet": [86, 80, 80], "deck": [82, 76, 83]}, "zonesNote": "рендер экспортированного скина в Blender, как в игре (текстура × цвет вершин), с камеры рефа", "pros": ["параметрическая: этажи, окна, эркер, витрины, пилястры и крыша меняются в Houdini", "кадр совпадает с рефом: окна эркера в пределах 2-4 px", "выносы деталей сняты с модели Hunyuan, а не на глаз", "блоки парапета в размере рефа, проверяется на каждом проходе"], "cons": ["лепнина площе рефа: свет запечён в вершины, мягкие блики и тени картинки так не передать без потемнения стен", "крыша на рефе нарисована круче стен: карниз над эркером на картинке на 11 px выше", "тыл и левый бок придуманы", "в Unity не импортирована, в игре не проверена"], "improve": ["импорт в Unity", "облегчить LOD2"], "files": ["Tools/Houdini/orange_corner_src/ (build.py, oc_lib.vfl, walls/windows/ground/roof.vfl, cam.py, fit_vp.py, construction.md, gen_masks_v6.py, uv_masks.py, zones.py)", "Tools/Houdini/orange_corner_tex/", "Tools/Houdini/solid_shapes.vfl"], "sheet": "sheet.webp", "sheetCap": "Реф, рендер скина как в игре и наложение силуэтов (красное — только у рефа, синее — только у нас)", "extra": [["sheets.webp", "Листы: штукатурка, камень, краска, блоки парапета (светлые листы окрашивает пигмент в вершинах)"]], "pbr": {"tint": true, "sun": [270, 50], "share": 0.55, "sheets": [["render", "Штукатурка"], ["trim", "Камень"], ["paint", "Рамы, двери, стекло"], ["roof", "Блоки парапета"]], "derived": "Карты выведены из светлых листов (не измерены): швы блоков и края камней — канавки, штукатурка и краска — диэлектрик.", "note": "Свет считает просмотрщик: солнце (270°, 50°) с тенями, ровный заполняющий свет и отражения комнаты. Из вершин берётся только пигмент."}}
 ];
 const SPACING = 17;
 
@@ -240,12 +241,12 @@ function sw(c) { return `<span class="sw" style="background: rgb(${c.join(",")})
 // the PBR maps of a variant: per sheet colour / normal / roughness / metallic, then the two baked maps
 function pbrFigures(v) {
   const kinds = [["", "цвет"], ["_Normal", "нормали"], ["_Roughness", "шероховатость"], ["_Metallic", "металл"]];
-  const fig = (file, cap) => `<figure style="margin:0"><img loading="lazy" src="${BASE}img/pbr/${file}.webp" alt="${cap}"><figcaption>${cap}</figcaption></figure>`;
+  const fig = (file, cap) => `<figure style="margin:0"><img loading="lazy" src="${BASE}img/pbr/${file}.webp${VER}" alt="${cap}"><figcaption>${cap}</figcaption></figure>`;
   return v.pbr.sheets.map(([sheet, name]) => kinds.map(([suf, kind]) => fig(v.id + "_" + sheet + suf, name + ": " + kind)).join("")).join("")
     + fig(v.id + "_AO", "Запечённое AO (вторая развёртка LOD0)") + fig(v.id + "_Light", "Запечённый свет: AO × солнце × небо");
 }
 function pbrGrid(v) {
-  const cell = (file, cap) => `<figure><img loading="lazy" src="${BASE}img/pbr/${file}.webp" alt="${cap}"><figcaption>${cap}</figcaption></figure>`;
+  const cell = (file, cap) => `<figure><img loading="lazy" src="${BASE}img/pbr/${file}.webp${VER}" alt="${cap}"><figcaption>${cap}</figcaption></figure>`;
   const kinds = [["", "цвет"], ["_Normal", "нормали"], ["_Roughness", "шерох."], ["_Metallic", "металл"]];
   return `<div class="sub">Карты PBR</div><p class="small">${v.pbr.derived} Свет — переключатель «Свет» выше.</p>`
     + v.pbr.sheets.map(([sheet, nm]) => `<div class="small"><b>${nm}</b></div><div class="pbrgrid">`
@@ -292,9 +293,9 @@ for (const v of V) {
       <button type="button" class="show3d" data-show="${v.id}">Смотреть в 3D ↑</button>
     </div>
     <div class="shots">
-      <figure style="margin:0"><img loading="lazy" src="${BASE}img/${v.sheet}" alt="${v.sheetCap}"><figcaption>${v.sheetCap}</figcaption></figure>
+      <figure style="margin:0"><img loading="lazy" src="${BASE}img/${v.sheet}${VER}" alt="${v.sheetCap}"><figcaption>${v.sheetCap}</figcaption></figure>
       ${v.unity === false ? "" : `<figure style="margin:0"><img loading="lazy" src="${BASE}img/unity_close_${v.id}.webp" alt="Вблизи в Unity"><figcaption>Вблизи в Unity</figcaption></figure>`}
-      ${(v.extra || []).map(([f, cap]) => `<figure style="margin:0"><img loading="lazy" src="${BASE}img/${f}" alt="${cap}"><figcaption>${cap}</figcaption></figure>`).join("")}
+      ${(v.extra || []).map(([f, cap]) => `<figure style="margin:0"><img loading="lazy" src="${BASE}img/${f}${VER}" alt="${cap}"><figcaption>${cap}</figcaption></figure>`).join("")}
       ${v.pbr ? pbrFigures(v) : ""}
     </div>`;
   cards.appendChild(c);
@@ -357,7 +358,7 @@ function bakedMap(url, srgb) {
 const ENV_FILL = 0.18;
 const SUN = 1.4, FILL = 1.3;
 function unlit(root, v) {
-  const maps = v.pbr ? { ao: bakedMap(BASE + "models/" + v.file + "_AO.png"), light: bakedMap(BASE + "models/" + v.file + "_Light.png", true) } : null;
+  const maps = v.pbr ? { ao: bakedMap(BASE + "models/" + v.file + "_AO.png" + VER), light: bakedMap(BASE + "models/" + v.file + "_Light.png" + VER, true) } : null;
   root.traverse(o => {
     if (!o.isMesh) return;
     const src = o.material;
@@ -396,7 +397,7 @@ function unlit(root, v) {
   });
 }
 
-Promise.all(V.map((v, i) => loader.loadAsync(BASE + "models/" + v.file + ".glb").then(g => {
+Promise.all(V.map((v, i) => loader.loadAsync(BASE + "models/" + v.file + ".glb" + VER).then(g => {
   const root = g.scene;
   unlit(root, v);
   const lods = [0, 1, 2].map(l => root.getObjectByName("LOD" + l));
@@ -427,7 +428,7 @@ Promise.all(V.map((v, i) => loader.loadAsync(BASE + "models/" + v.file + ".glb")
 
 // the door faces +Z in the GLB; seen as the reference shows it: from the left, 41 degrees off the front, at the
 // deck's height (cam.py: the camera at (-6.3, 2.9, 8.4) against the house's centre)
-const VIEW_ONE = new THREE.Vector3(0.608, 0.31, 0.732).normalize();   // the reference camera: front-right (40 deg), from above (cam.py)
+const VIEW_ONE = new THREE.Vector3(0.429, 0.207, 0.879).normalize();   // the reference camera: front-right (26 deg), from above (cam.py v2)
 // the pieces lie on the ground: seen from higher up, the whole heap in view
 const VIEW_BROKEN = new THREE.Vector3(0.3, 0.75, 0.6).normalize();
 
@@ -573,7 +574,7 @@ document.getElementById("stateseg").addEventListener("click", async e => {
   if (state.broken) {
     for (const it of items) {
       if (!it.v.broken || it.brokenRoot) continue;
-      const g = await loader.loadAsync(BASE + "models/" + it.v.broken + ".glb");
+      const g = await loader.loadAsync(BASE + "models/" + it.v.broken + ".glb" + VER);
       unlit(g.scene, { id: it.v.id });            // pieces have the game look only
       // the fracture's files hold a piece's outer faces only, not the faces the break opens: both sides are
       // drawn, so a piece is not seen through from behind
