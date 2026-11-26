@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 15 16 5l12 10v13H4z' fill='%231c6c87'/%3E%3C/svg%3E">
+<title>Браунстоуны · Houdini</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* The moodboard's 3D page of the block shed (cinderblock_hut): one parametric Houdini model, in 3D. */
+:root {
+  color-scheme: light;
+  --bg: #eef1f5; --panel: #ffffff; --fg: #17202b; --muted: #5a6575; --line: #d4dae3;
+  --accent: #1c6c87; --shade: rgba(23, 32, 43, 0.14);
+  --stage: #e3e8ee; --stage-ink: #1b2531;
+  --free: #2f7d4f; --paid: #a3561c;
+  --display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --body: "Golos Text", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #10151c; --panel: #171e27; --fg: #e5eaf1; --muted: #93a0b1; --line: #263140;
+    --accent: #62b8d2; --shade: rgba(0, 0, 0, 0.35); --stage: #2a313b; --stage-ink: #eef2f6;
+    --free: #6cc493; --paid: #e29a5f;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+img { max-width: 100%; display: block; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.55; }
+a { color: var(--accent); }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 max(16px, env(safe-area-inset-left, 0px)); }
+.top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 14px 0 6px; }
+.back { font-size: 13px; text-decoration: none; color: var(--muted); border: 1px solid var(--line); padding: 4px 10px; border-radius: 999px; }
+.back:hover { color: var(--fg); }
+.eyebrow { margin: 18px 0 4px; font-family: var(--mono); font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+h1 { font-family: var(--display); font-weight: 700; font-size: clamp(22px, 3.4vw, 34px); line-height: 1.15; margin: 0 0 10px; }
+h2 { font-family: var(--display); font-weight: 500; font-size: 20px; margin: 40px 0 12px; }
+.lead { max-width: 760px; color: var(--muted); margin: 0 0 22px; }
+.lead b { color: var(--fg); font-weight: 600; }
+
+.viewer { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 14px; align-items: stretch; }
+@media (max-width: 900px) { .viewer { grid-template-columns: 1fr; } }
+.stage { position: relative; background: var(--stage); border-radius: 14px; overflow: hidden; min-height: 460px; height: 64vh; max-height: 720px; touch-action: none; }
+.stage canvas { display: block; width: 100%; height: 100%; }
+.labels { position: absolute; inset: 0; pointer-events: none; }
+.tag { position: absolute; transform: translate(-50%, -100%); background: rgba(16, 20, 27, .86); color: #fff; font-size: 12px; line-height: 1.25; padding: 5px 9px; border-radius: 7px; white-space: nowrap; text-align: center; }
+.tag b { font-weight: 600; }
+.tag span { display: block; font-size: 11px; opacity: .75; }
+.hint { position: absolute; left: 12px; bottom: 10px; font-size: 12px; color: var(--stage-ink); opacity: .65; pointer-events: none; }
+.loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--stage-ink); font-size: 14px; }
+.side { display: flex; flex-direction: column; gap: 12px; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
+.panel h3 { margin: 0 0 8px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.refimg { border-radius: 9px; background: #eef1f5; }
+.ctl { display: flex; flex-direction: column; gap: 10px; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button { font: inherit; font-size: 13px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); padding: 5px 10px; border-radius: 999px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.small { font-size: 12px; color: var(--muted); margin: 0; }
+.info { font-size: 13px; line-height: 1.5; }
+.info h3 { margin: 0 0 6px; }
+.info p { margin: 0 0 8px; }
+.info ol, .info ul { margin: 0 0 8px; padding-left: 18px; }
+.info li { margin: 3px 0; }
+.info .sub { margin: 10px 0 4px; font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.info .row { padding: 8px 0; border-top: 1px solid var(--line); cursor: pointer; }
+.info .row:first-of-type { border-top: 0; padding-top: 0; }
+.info .row:hover b { color: var(--accent); }
+.info .row span { display: block; color: var(--muted); }
+.info .facts { font-size: 12px; margin: 8px 0; }
+.info .zt { font-size: 12px; }
+
+.cards { display: grid; gap: 16px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 18px; }
+@media (max-width: 900px) { .card { grid-template-columns: 1fr; } }
+.card h3 { font-family: var(--display); font-weight: 500; font-size: 18px; margin: 0 0 6px; }
+.badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.badge { font-size: 12px; padding: 2px 9px; border-radius: 999px; border: 1px solid currentColor; }
+.badge.free { color: var(--free); } .badge.paid { color: var(--paid); } .badge.neutral { color: var(--muted); }
+.card p { margin: 0 0 10px; }
+.pc { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 6px 0 10px; }
+@media (max-width: 560px) { .pc { grid-template-columns: 1fr; } }
+.pc h4 { margin: 0 0 4px; font-size: 13px; }
+.pc ul { margin: 0; padding-left: 18px; }
+.pc li { margin: 2px 0; }
+.meta { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.shots { display: grid; gap: 10px; }
+.shots img { border-radius: 10px; border: 1px solid var(--line); cursor: zoom-in; }
+.shots figcaption { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.pbrgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: 4px 0 6px; }
+.pbrgrid figure { margin: 0; }
+.pbrgrid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; border: 1px solid var(--line); cursor: zoom-in; display: block; }
+.pbrgrid figcaption { font-size: 10px; color: var(--muted); line-height: 1.2; margin-top: 2px; }
+.show3d { font: inherit; font-size: 13px; margin-top: 4px; border: 1px solid var(--accent); color: var(--accent); background: transparent; border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+.card h4.sub { margin: 14px 0 6px; font-size: 13px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.steps { margin: 0 0 6px; padding-left: 20px; }
+.steps li { margin: 4px 0; }
+.plain { margin: 0; padding-left: 18px; }
+.plain li { margin: 2px 0; }
+.facts { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; margin: 12px 0; font-size: 14px; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; }
+.zt { border-collapse: collapse; font-size: 13px; width: 100%; }
+.zt th, .zt td { text-align: left; padding: 4px 8px 4px 0; border-bottom: 1px solid var(--line); }
+.zt th { font-size: 12px; color: var(--muted); font-weight: 600; }
+.zt .far { color: var(--paid); font-weight: 600; }
+.sw { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 6px; border: 1px solid var(--line); }
+code { font-family: var(--mono); font-size: .92em; }
+.table { width: 100%; border-collapse: collapse; font-size: 14px; background: var(--panel); border-radius: 14px; overflow: hidden; }
+.table th, .table td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.table th { font-size: 12px; color: var(--muted); font-weight: 600; }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
+.verdict { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 12px; padding: 14px 18px; max-width: 860px; }
+.verdict p { margin: 0 0 8px; }
+.verdict p:last-child { margin: 0; }
+.lightbox { position: fixed; inset: 0; background: rgba(5, 8, 12, .94); display: grid; place-items: center; z-index: 50; padding: 16px; cursor: zoom-out; }
+.lightbox img { max-height: 92vh; width: auto; border-radius: 8px; }
+footer { margin: 40px 0 30px; font-size: 12px; color: var(--muted); }
+/* ?embed=1: inside the moodboard's viewer, only the 3D stage and its controls */
+body.embed { background: transparent; overflow: hidden; }
+body.embed .wrap { max-width: none; padding: 0; }
+body.embed .wrap > :not(.viewer) { display: none; }
+body.embed .viewer { height: 100vh; grid-template-columns: minmax(0, 1fr) clamp(280px, 34%, 400px); gap: 0; }
+body.embed .stage { height: 100%; max-height: none; min-height: 0; border-radius: 16px 0 0 16px; }
+body.embed .side { background: var(--panel); border-radius: 0 16px 16px 0; padding: 10px; gap: 10px; overflow-y: auto; }
+body.embed .panel { border: 0; padding: 0; }
+/* the moodboard shows the reference on its own button: in the embed the side column is controls + description */
+body.embed .side .panel:first-child { display: none; }
+body.embed .seg button { font-size: 12px; padding: 4px 9px; }
+@media (max-width: 700px) {
+  body.embed .viewer { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
+  body.embed .stage { border-radius: 16px 16px 0 0; }
+  body.embed .side { border-radius: 0 0 16px 16px; max-height: 50vh; }
+}
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<script>if (new URLSearchParams(location.search).has("embed")) document.body.classList.add("embed");</script>
+<div class="wrap">
+  <div class="top"><a class="back" href="./">← Мудборд</a></div>
+  <p class="eyebrow">We Are Destroyers · лаборатория · 2026-11-25</p>
+  <h1>Браунстоуны: модель из Houdini</h1>
+  <p class="lead">Новая модель для карточки «Браунстоуны» по её рефу: два одинаковых трёхэтажных кирпичных дома под одной шиферной мансардой. Окна с лучковыми сандриками на консолях, замками и подоконниками на блоках; карниз с двухъярусными кронштейнами; у каждого дома дверь с пилястрами, консолями-завитками и козырьком над крыльцом с чугунными перилами; подвальные окна в цоколе; две люкарны с фронтонами; бортик вокруг плоской кровли. Пара 9.9 × 6.9 м по стенам, до верха бортика 14.7 м. Камера рефа восстановлена по двум точкам схода, размеры сняты с рефа через неё; невидимые стороны — с модели Hunyuan 3D 3.1 Pro. Рендер совпадает с рефом кадр в кадр, совпадение силуэта 0.978. Текстура — методом хижины. 1 платный вызов (модель-опора Hunyuan). Время: ≈1 ч 19 мин от старта до этой версии. В каталог игры и в Unity модель не добавлена.</p>
+  <p class="lead">Тыл и левый бок на рефе не видны: на тылу по четыре окна на этаж, подвальные окна и две люкарны (так их показывает и модель Hunyuan), левый бок — как правый. Реф местами противоречит своей перспективе: окна и двери первого этажа сдвинуты влево от колонок над ними, окна бока ниже этажей фасада, люкарны стоят зеркально относительно середины пары со сдвигом 0.15 м — модель держится рефа. Каждая деталь держится за опору: раздельные детали — стык 2 мм, деталь «в» другую — с перекрытием (gap_check.py).</p>
+
+  <section class="viewer" aria-label="3D-просмотр">
+    <div class="stage" id="stage">
+      <div class="labels" id="labels"></div>
+      <div class="loading" id="loading">Загрузка модели…</div>
+      <div class="hint">Тяните — вращать · колесо или щипок — зум · правой кнопкой — сдвиг</div>
+    </div>
+    <div class="side">
+      <div class="panel"><h3>Референс</h3><img class="refimg" src="lab/mansard-pair/img/reference.webp" alt="Референс браунстоунов"></div>
+      <div class="panel ctl">
+        <div><h3>Вариант</h3><div class="seg" id="pick" role="group" aria-label="Вариант"></div></div>
+        <div><h3>LOD</h3><div class="seg" id="lodseg" role="group" aria-label="LOD">
+          <button type="button" data-lod="0" aria-pressed="true">LOD0 · &lt;15 м</button>
+          <button type="button" data-lod="1" aria-pressed="false">LOD1 · 15–25 м</button>
+          <button type="button" data-lod="2" aria-pressed="false">LOD2 · &gt;25 м</button>
+        </div></div>
+        <div style="display:none"><h3>Состояние</h3><div class="seg" id="stateseg" role="group" aria-label="Состояние">
+          <button type="button" data-broken="0" aria-pressed="true">Целый</button>
+          <button type="button" data-broken="1" aria-pressed="false">Обломки</button>
+        </div><p class="small" id="statenote"></p></div>
+        <div><h3>Свет</h3><div class="seg" id="lightseg" role="group" aria-label="Свет">
+          <button type="button" data-light="game" aria-pressed="true">Как в игре</button>
+          <button type="button" data-light="pbr" aria-pressed="false">PBR · солнце по рефу</button>
+          <button type="button" data-light="baked" aria-pressed="false">Карта света</button>
+          <button type="button" data-light="normals" aria-pressed="false">Нормали</button>
+        </div><p class="small" id="lightnote"></p></div>
+        <div><h3>Вращение</h3><div class="seg" id="spinseg" role="group" aria-label="Автовращение">
+          <button type="button" data-spin="1" aria-pressed="false">Авто</button>
+          <button type="button" data-spin="0" aria-pressed="true">Стоп</button>
+        </div></div>
+        <p class="small" id="tris"></p>
+      </div>
+      <div class="panel info" id="info" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <h2>Как сделана</h2>
+  <div class="cards" id="cards"></div>
+
+  <h2>Детали против рефа</h2>
+  <div class="shots" style="grid-template-columns: 1fr;">
+    <figure style="margin:0"><img src="lab/mansard-pair/img/compare.webp" alt="Реф и рендер экспорта"><figcaption>Реф и рендер экспортированного скина, как в игре (цвет × запечённый свет), с камеры рефа</figcaption></figure>
+    <figure style="margin:0"><img src="lab/mansard-pair/img/crops.webp" alt="Кропы деталей: реф слева, модель справа"><figcaption>Кропы деталей с камеры рефа в тех же пикселях, в каждой паре слева реф, справа модель: люкарна, карниз с кронштейнами, ближний угол карниза и мансарды, окно фасада, левый вход, правый вход, бок, верх мансарды, цоколь и подвальное окно</figcaption></figure>
+  </div>
+
+  <h2>Со всех сторон</h2>
+  <div class="shots" style="grid-template-columns: 1fr 1fr 1fr;">
+    <figure style="margin:0"><img src="lab/mansard-pair/img/view_side_y000.webp" alt="Фасад с двумя входами"><figcaption>Фасад с двумя входами</figcaption></figure>
+    <figure style="margin:0"><img src="lab/mansard-pair/img/view_side_y045.webp" alt="Угол: фасад и правый бок"><figcaption>Угол: фасад и правый бок</figcaption></figure>
+    <figure style="margin:0"><img src="lab/mansard-pair/img/view_side_y090.webp" alt="Правый бок"><figcaption>Правый бок</figcaption></figure>
+    <figure style="margin:0"><img src="lab/mansard-pair/img/view_side_y135.webp" alt="Угол: правый бок и тыл"><figcaption>Угол: правый бок и тыл (тыл придуман)</figcaption></figure>
+    <figure style="margin:0"><img src="lab/mansard-pair/img/view_side_y180.webp" alt="Тыл (придуман)"><figcaption>Тыл (придуман: по четыре окна на этаж, подвальные окна, две люкарны)</figcaption></figure>
+    <figure style="margin:0"><img src="lab/mansard-pair/img/view_side_y270.webp" alt="Левый бок (как правый)"><figcaption>Левый бок (как правый)</figcaption></figure>
+    <figure style="margin:0"><img src="lab/mansard-pair/img/view_above.webp" alt="Сверху"><figcaption>Сверху</figcaption></figure>
+    <figure style="margin:0"><img src="lab/mansard-pair/img/view_low.webp" alt="Снизу"><figcaption>Снизу</figcaption></figure>
+    <figure style="margin:0"><img src="lab/mansard-pair/img/view_lod1_y030.webp" alt="LOD1"><figcaption>LOD1</figcaption></figure>
+    <figure style="margin:0"><img src="lab/mansard-pair/img/view_lod2_y030.webp" alt="LOD2"><figcaption>LOD2</figcaption></figure>
+  </div>
+
+  <footer>Модель: Houdini → Blender → разрушение SlopMachine → FBX, сюда — тот же скин в GLB. Цвета зон — медианы рендера экспортированного скина в Blender против медиан тех же зон рефа; рендер снят камерой рефа, зоны совпадают пиксель в пиксель.</footer>
+</div>
+
+<div class="lightbox" id="lightbox" hidden><img alt=""></div>
+
+<script type="module">
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+const BASE = "lab/mansard-pair/";
+const REF = {"brick": [207, 116, 75], "brick_side": [159, 90, 68], "trim": [246, 173, 112], "base": [206, 126, 81], "glass": [18, 85, 111], "door": [101, 56, 37], "slate": [84, 78, 86], "slate_side": [63, 63, 79], "rail": [77, 67, 70]};
+const ZONE_NAMES = {"brick": "Кирпич, фасад", "brick_side": "Кирпич, бок", "trim": "Кремовый камень", "base": "Цоколь и крыльцо", "glass": "Стекло", "door": "Дверь", "slate": "Шифер, фасад", "slate_side": "Шифер, бок", "rail": "Перила"};
+const V = [
+  {"id": "shack", "file": "houdini_mansard_pair", "broken": null, "n": 1, "name": "Метод хижины", "tag": "Houdini · кирпич, камень, краска, шифер: trim-листы + цвет вершин", "cost": "1 платный вызов (модель-опора Hunyuan 3D 3.1 Pro)", "paid": true, "unity": false, "like": "кадр совпадает с рефом (силуэт 0.978); окна с сандриками, карниз с кронштейнами, мансарда с люкарнами, входы с крыльцами как на рефе", "close": "два одинаковых трёхэтажных кирпичных дома с узким швом между ними, под одной шиферной мансардой: цоколь со скошенной полкой и базой, подвальные окна в каменной рамке; фасадные окна с переплётом 2 × 2, наличниками, плоской перемычкой над рамой, лучковым сандриком на консолях и замком, подоконником на двух блоках; на боку по два окна с простой рамкой, карнизиком и толстым подоконником; карниз у каждого дома свой (полка и корона), под ним двухъярусные кронштейны, на боку гладкий фриз; дверь с четырьмя филёнками в коробке, каменная панель над ней, пилястры с консолями-завитками, плоский козырёк; крыльцо: плита, шесть ступеней, площадка, ступенчатые щёки, чугунные перила со столбиками, колпаками, поручнем, нижним брусом и балясинами; мансарда с крутыми скатами, светлыми накладками на рёбрах и бортиком вокруг плоской кровли; люкарны с пилястрами и капителями, антаблементом, фронтоном и своей двускатной кровлей", "param": "да", "lods": [23074, 11746, 4914], "lodsNote": "LOD1 и LOD2 авторские: на LOD1 нет горбыльков переплётов, балясин, капителей люкарн, накладок на рёбрах мансарды и ручек дверей; на LOD2 нет переплётов, кронштейнов, консолей, замков, блоков под подоконниками, балясин и филёнок, люкарны упрощены", "how": "Камера рефа восстановлена по двум точкам схода (вертикали вертикальны; rms 1.13 px по кромкам стёкол каждого этажа, люкарн и подвальных окон и по четырём длинным кромкам бока). Масштаб — дверное полотно 2.2 м. Длины и высоты сняты с рефа через эту камеру: фасад 9.88 м, бок 6.92 м, этаж около 3 м; скаты мансарды — обратной проекцией её рёбер. Модель Hunyuan 3D 3.1 Pro села в камеру с совпадением 0.963; её план (9.52 × 8.35 м) и короткие крыльца (0.66 м против 2.55) не годятся, с неё взяты только невидимые стороны: окна и люкарны тыла. Четыре модуля Houdini: стены (корпуса, шов, цоколь, карнизы, кронштейны), окна, вход (двери, обрамление, крыльца, перила), мансарда с люкарнами; вход и мансарду писали два субагента параллельно. Каждый размер — параметр CTRL, в подсказке записано, откуда снято число.", "steps": ["Модель-опора Hunyuan 3D 3.1 Pro (1 платный вызов, $0.375). Посажена в камеру рефа (0.963); с неё взяты только тыл (4 × 3 окна, подвальные окна, две люкарны) и дальний бок, длины — с рефа.", "Камера рефа — двухточечная перспектива (rms 1.13 px). Рендер снимается этой же камерой: кадр совпадает с рефом.", "5 проходов по форме и 5 с текстурой. Реф сам себе противоречит в мелочах: окна и двери первого этажа сдвинуты влево от колонок над ними, окна бока ниже этажей фасада на 0.6 м, вынос цоколя от 0.05 до 0.25 м по углам — модель держится рефа, вынос цоколя взят по боку (0.10 м).", "Один раунд проверки кропов шестью субагентами; каждую правку сверял с силуэтом. Приняты: над окном плоская перемычка, на ней лучковый сандрик с «ушами» над консолями, замок ниже верха дуги; карниз толще и с большим выносом; люкарны шире, вперёд, со своей видимой кровлей и стоят зеркально относительно середины пары (как на рефе); цоколь мощнее; окна бока шире, с толстым подоконником; дверь уже, перила положе, столбики крупнее; скаты мансарды круче.", "Текстура методом хижины: кирпич, камень, краска (переплёты, стекло, двери), шифер. Шифер нарисован только горизонтальными рядами: вертикальные швы читались как кирпич. Тень бока на рефе холоднее: бок тонирован отдельно. Цвета всех девяти зон в пределах 0.96-1.03 от рефа.", "Проверки: стыки (gap_check), UV (uv_check), шаг кирпича (pattern_scale), пакет проверки текстур с двумя ревьюерами (FAIL нет); при разломе 2 осколка по 5-6 треугольников (ячейка 4 м, сид 3; ячейка 3 м давала 13-18)."], "tools": "Houdini 22 (hython без окна, VEX), numpy, Blender (экспорт, свет, рендеры), fal.ai Hunyuan 3D 3.1 Pro (модель-опора), SlopMachine fracture", "time": "≈1 ч 19 мин (16:27-17:46)", "texel": "1024 px/m на листах; четыре листа 2048", "zones": {"brick": [208, 115, 73], "brick_side": [159, 90, 67], "trim": [239, 174, 113], "base": [208, 128, 82], "glass": [18, 82, 109], "door": [102, 56, 37], "slate": [86, 79, 88], "slate_side": [63, 63, 79], "rail": [80, 67, 69]}, "zonesNote": "рендер экспортированного скина в Blender, как в игре (текстура × цвет вершин), с камеры рефа", "pros": ["параметрическая: корпуса, окна, двери, крыльца, карнизы, мансарда и люкарны меняются в Houdini", "кадр совпадает с рефом; размеры сняты с рефа через его камеру", "цвета зон в пределах 0.96-1.03 от рефа"], "cons": ["тыл и левый бок на рефе не видны: на тылу по четыре окна на этаж, подвальные окна и две люкарны (как у модели Hunyuan), левый бок — как правый", "кирпич на рефе едва намечен и нерегулярен: шаг 0.31 × 0.45 м взят с верха бока, единственной зоны, где читаются ряд и длина", "2 осколка по 5-6 треугольников при разломе", "в Unity не импортирована, в игре не проверена"], "improve": ["импорт в Unity"], "files": ["Tools/Houdini/mansard_pair_src/ (build.py, mp_lib.vfl, walls/windows/entrance/roof.vfl, cam.py, fit_vp.py, measure_ref.py, gen_masks_v6.py, uv_masks.py)", "Tools/Houdini/mansard_pair_tex/", "Tools/Houdini/solid_shapes.vfl"], "sheet": "sheet.webp", "sheetCap": "Реф, рендер скина как в игре и наложение силуэтов (красное — только у рефа, синее — только у нас)", "extra": [["sheets.webp", "Листы: кирпич, камень, краска, шифер (светлые листы окрашивает пигмент в вершинах)"]], "pbr": {"tint": true, "sun": [250, 38], "share": 0.55, "sheets": [["field", "Кирпич"], ["trim", "Камень"], ["paint", "Краска, стекло, двери"], ["roof", "Шифер"]], "derived": "Карты выведены из светлых листов (не измерены): швы кирпича и камня — канавки, краска — диэлектрик.", "note": "Свет считает просмотрщик: солнце (250°, 38°) с тенями, ровный заполняющий свет и отражения комнаты. Из вершин берётся только пигмент."}}
+];
+const SPACING = 17;
+
+// ---------- tables and cards ----------
+const sum = document.getElementById("summary");
+const cards = document.getElementById("cards");
+function sw(c) { return `<span class="sw" style="background: rgb(${c.join(",")})"></span>`; }
+// the PBR maps of a variant: per sheet colour / normal / roughness / metallic, then the two baked maps
+function pbrFigures(v) {
+  const kinds = [["", "цвет"], ["_Normal", "нормали"], ["_Roughness", "шероховатость"], ["_Metallic", "металл"]];
+  const fig = (file, cap) => `<figure style="margin:0"><img loading="lazy" src="${BASE}img/pbr/${file}.webp" alt="${cap}"><figcaption>${cap}</figcaption></figure>`;
+  return v.pbr.sheets.map(([sheet, name]) => kinds.map(([suf, kind]) => fig(v.id + "_" + sheet + suf, name + ": " + kind)).join("")).join("")
+    + fig(v.id + "_AO", "Запечённое AO (вторая развёртка LOD0)") + fig(v.id + "_Light", "Запечённый свет: AO × солнце × небо");
+}
+function pbrGrid(v) {
+  const cell = (file, cap) => `<figure><img loading="lazy" src="${BASE}img/pbr/${file}.webp" alt="${cap}"><figcaption>${cap}</figcaption></figure>`;
+  const kinds = [["", "цвет"], ["_Normal", "нормали"], ["_Roughness", "шерох."], ["_Metallic", "металл"]];
+  return `<div class="sub">Карты PBR</div><p class="small">${v.pbr.derived} Свет — переключатель «Свет» выше.</p>`
+    + v.pbr.sheets.map(([sheet, nm]) => `<div class="small"><b>${nm}</b></div><div class="pbrgrid">`
+      + kinds.map(([suf, k]) => cell(v.id + "_" + sheet + suf, k)).join("") + `</div>`).join("")
+    + `<div class="small"><b>Запечённое</b></div><div class="pbrgrid">${cell(v.id + "_AO", "AO")}${cell(v.id + "_Light", "свет")}</div>`;
+}
+function zonesTable(v) {
+  if (!v.zones) return `<p class="small">${v.zonesNote}</p>`;
+  const rows = Object.keys(ZONE_NAMES).filter(k => v.zones[k]).map(k => {
+    const a = v.zones[k], r = REF[k];
+    const d = Math.round(Math.hypot(a[0] - r[0], a[1] - r[1], a[2] - r[2]));
+    return `<tr><td>${ZONE_NAMES[k]}</td><td>${sw(a)}<span class="meta">${a.join(", ")}</span></td><td>${sw(r)}<span class="meta">${r.join(", ")}</span></td><td class="meta ${d > 30 ? "far" : ""}">${d}</td></tr>`;
+  }).join("");
+  return `<table class="zt"><thead><tr><th>Зона</th><th>Этот вариант</th><th>Реф</th><th>Разница</th></tr></thead><tbody>${rows}</tbody></table><p class="small">Медианы sRGB; разница — расстояние в RGB (0–441). Источник: ${v.zonesNote}.</p>`;
+}
+for (const v of V) {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `<td>${v.n}</td><td><b>${v.name}</b></td><td>${v.cost}</td><td>${v.like}</td><td>${v.close}</td><td>${v.param}</td><td class="meta">${v.lods.join(" / ")}<br>${v.lodsNote}</td>`;
+  if (sum) sum.appendChild(tr);   // one model: no summary table
+  const c = document.createElement("article");
+  c.className = "card"; c.id = "v-" + v.id;
+  c.innerHTML = `
+    <div>
+      <h3>${v.name}</h3>
+      <div class="badges"><span class="badge ${v.paid ? "paid" : "free"}">${v.cost}</span><span class="badge neutral">параметры: ${v.param}</span><span class="badge neutral">LOD ${v.lodsNote}</span></div>
+      <p>${v.how}</p>
+      <h4 class="sub">Как сделано</h4>
+      <ol class="steps">${v.steps.map(x => `<li>${x}</li>`).join("")}</ol>
+      <dl class="facts">
+        <dt>Инструменты</dt><dd>${v.tools}</dd>
+        <dt>Время</dt><dd>${v.time}</dd>
+        <dt>Чёткость</dt><dd>${v.texel}</dd>
+        <dt>Треугольники</dt><dd class="meta">LOD0 / LOD1 / LOD2: ${v.lods.join(" / ")}</dd>
+      </dl>
+      <div class="pc"><div><h4>Плюсы</h4><ul>${v.pros.map(x => `<li>${x}</li>`).join("")}</ul></div>
+      <div><h4>Минусы</h4><ul>${v.cons.map(x => `<li>${x}</li>`).join("")}</ul></div></div>
+      <h4 class="sub">Что можно улучшить</h4>
+      <ul class="plain">${v.improve.map(x => `<li>${x}</li>`).join("")}</ul>
+      <h4 class="sub">Цвета по зонам против рефа</h4>
+      ${zonesTable(v)}
+      <h4 class="sub">Файлы в проекте</h4>
+      <ul class="plain meta">${v.files.map(x => `<li>${x}</li>`).join("")}</ul>
+      <p class="meta">Имя ассета для игры (ещё не импортирован): <code>Resources/Houses/${v.file}</code></p>
+      <button type="button" class="show3d" data-show="${v.id}">Смотреть в 3D ↑</button>
+    </div>
+    <div class="shots">
+      <figure style="margin:0"><img loading="lazy" src="${BASE}img/${v.sheet}" alt="${v.sheetCap}"><figcaption>${v.sheetCap}</figcaption></figure>
+      ${v.unity === false ? "" : `<figure style="margin:0"><img loading="lazy" src="${BASE}img/unity_close_${v.id}.webp" alt="Вблизи в Unity"><figcaption>Вблизи в Unity</figcaption></figure>`}
+      ${(v.extra || []).map(([f, cap]) => `<figure style="margin:0"><img loading="lazy" src="${BASE}img/${f}" alt="${cap}"><figcaption>${cap}</figcaption></figure>`).join("")}
+      ${v.pbr ? pbrFigures(v) : ""}
+    </div>`;
+  cards.appendChild(c);
+}
+
+// lightbox for every screenshot
+const lb = document.getElementById("lightbox");
+document.addEventListener("click", e => {
+  const img = e.target.closest(".shots img, .refimg, .pbrgrid img");
+  if (img) { lb.querySelector("img").src = img.src; lb.hidden = false; return; }
+  if (e.target.closest("#lightbox")) lb.hidden = true;
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") lb.hidden = true; });
+
+// ---------- 3D ----------
+const stage = document.getElementById("stage");
+const labels = document.getElementById("labels");
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;            // only the PBR mode's sun casts; the unlit modes ignore shadows
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+stage.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 1, 0.05, 200);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.autoRotateSpeed = 1.2;
+controls.minDistance = 0.5; controls.maxDistance = 90;
+
+// a soft floor disc under every model, so it reads as standing
+const floorMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.08, depthWrite: false });
+
+const loader = new GLTFLoader();
+const items = [];
+let state = { pick: "shack", lod: 0, light: "game", broken: false };
+// PBR mode: a sun where the reference has it (fit_ref_light.py), an even fill and a dim room for the reflections
+// (the bench page's light: at full strength the room burnt the tops out)
+const pmrem = new THREE.PMREMGenerator(renderer);
+const roomEnv = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+const sunLight = new THREE.DirectionalLight(0xfff4e6, 0);
+sunLight.shadow.mapSize.set(4096, 4096);
+sunLight.shadow.bias = -0.0002;
+sunLight.shadow.normalBias = 0.004;
+sunLight.shadow.radius = 2.5;
+const fillLight = new THREE.AmbientLight(0xffffff, 0);
+scene.add(sunLight, sunLight.target, fillLight);
+// PBR mode: the model's shadow on the ground
+const shadowMat = new THREE.ShadowMaterial({ opacity: 0.28 });
+const texLoader = new THREE.TextureLoader();
+function bakedMap(url, srgb) {
+  const t = texLoader.load(url);
+  t.flipY = false; t.channel = 1;      // glTF's second UV set
+  // The light map multiplies the colour the way the game's vertex light does, in display (sRGB) values:
+  // 0.79 on a shaded wall means 0.79 of the lit wall on screen. The AO map is plain data for the PBR light.
+  if (srgb) t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+const ENV_FILL = 0.18;
+const SUN = 1.4, FILL = 1.3;
+function unlit(root, v) {
+  const maps = v.pbr ? { ao: bakedMap(BASE + "models/" + v.file + "_AO.png"), light: bakedMap(BASE + "models/" + v.file + "_Light.png", true) } : null;
+  root.traverse(o => {
+    if (!o.isMesh) return;
+    const src = o.material;
+    // A tinted variant keeps two colours per vertex: COLOR_0 = pigment x baked light (what the game shows) and
+    // _PIGMENT = the pigment alone (web_pbr_glb.py --tint). The PBR mode lights the model itself, so it takes
+    // the pigment. Two geometries share every buffer but the colour (swapping the "color" attribute on one
+    // geometry left a stale vertex array behind in some orders of the modes and drew the model black).
+    const g = o.geometry;
+    let gp = g;
+    if (v.pbr && v.pbr.tint && g.attributes._pigment) {
+      gp = new THREE.BufferGeometry();
+      for (const k in g.attributes) gp.setAttribute(k, g.attributes[k]);
+      gp.setAttribute("color", g.attributes._pigment);
+      gp.setIndex(g.index);
+      g.groups.forEach(x => gp.addGroup(x.start, x.count, x.materialIndex));
+    }
+    o.userData.geos = { game: g, pbr: gp };
+    o.castShadow = o.receiveShadow = true;
+    const m = new THREE.MeshBasicMaterial({ map: src.map || null, color: 0xffffff, vertexColors: !!o.geometry.attributes.color });
+    if (m.map) m.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    o.userData.mats = { game: m };
+    if (maps) {
+      // the GLB's own material: base colour, normal, roughness-metallic (pbr_maps.py). A basic material divides
+      // its light map by pi: the baked one gets that back in lightMapIntensity.
+      src.vertexColors = !!v.pbr.tint; src.envMapIntensity = ENV_FILL;
+      const second = !!o.geometry.attributes.uv1;        // only LOD0 has the unique UV set of the baked maps
+      if (second) { src.aoMap = maps.ao; src.aoMapIntensity = 1.0; }
+      o.userData.mats.pbr = src;
+      o.userData.mats.baked = second ? new THREE.MeshBasicMaterial({ map: src.map || null, lightMap: maps.light, lightMapIntensity: Math.PI, color: 0x000000, vertexColors: !!v.pbr.tint }) : m;
+      if (second) o.userData.mats.baked.color.set(0xffffff);
+      // the normal map itself as the colour, unlit: shows what the PBR mode gets from the maps
+      o.userData.mats.normals = new THREE.MeshBasicMaterial({ map: src.normalMap ? src.normalMap.clone() : null, color: 0xffffff });
+      if (o.userData.mats.normals.map) o.userData.mats.normals.map.colorSpace = THREE.NoColorSpace;
+    }
+    o.material = m;
+  });
+}
+
+Promise.all(V.map((v, i) => loader.loadAsync(BASE + "models/" + v.file + ".glb").then(g => {
+  const root = g.scene;
+  unlit(root, v);
+  const lods = [0, 1, 2].map(l => root.getObjectByName("LOD" + l));
+  // centre the model on its footprint, base on y = 0
+  const box = new THREE.Box3().setFromObject(lods[0]);
+  const c = box.getCenter(new THREE.Vector3());
+  const holder = new THREE.Group();
+  root.position.set(-c.x, -box.min.y, -c.z);
+  holder.add(root);
+  const disc = new THREE.Mesh(new THREE.CircleGeometry(Math.max(box.max.x - box.min.x, box.max.z - box.min.z) * 0.62, 48), floorMat);
+  disc.rotation.x = -Math.PI / 2; disc.position.y = 0.002;
+  holder.add(disc);
+  const catcher = new THREE.Mesh(new THREE.CircleGeometry(Math.max(box.max.x - box.min.x, box.max.z - box.min.z) * 4, 64), shadowMat);
+  catcher.rotation.x = -Math.PI / 2; catcher.position.y = 0.001; catcher.receiveShadow = true; catcher.visible = false;
+  holder.add(catcher);
+  holder.visible = false;  // shown by layout() once every model is in; the camera is not placed before that
+  scene.add(holder);
+  const tag = document.createElement("div");
+  tag.className = "tag";
+  tag.innerHTML = `<b>${v.n}. ${v.name}</b><span>${v.tag}</span>`;
+  tag.hidden = true;
+  labels.appendChild(tag);
+  items[i] = { v, holder, root, lods, tag, disc, catcher, height: box.max.y - box.min.y, reach: box.getSize(new THREE.Vector3()).length() * 0.5 };
+}))).then(() => {
+  document.getElementById("loading").remove();
+  layout(true);
+}).catch(err => { document.getElementById("loading").textContent = "Не удалось загрузить модель: " + err.message; });
+
+// the doors face +Z in the GLB; seen as the reference shows it: from the front-right (cam.py)
+const VIEW_ONE = new THREE.Vector3(0.336, 0.237, 0.912).normalize();   // the reference camera: front-right (20.2 deg), 13.7 deg from above (cam.py)
+// the pieces lie on the ground: seen from higher up, the whole heap in view
+const VIEW_BROKEN = new THREE.Vector3(0.3, 0.75, 0.6).normalize();
+
+function layout(resetCamera) {
+  const shown = items.filter(it => it.v.id === state.pick);
+  items.forEach(it => { it.holder.visible = shown.includes(it); it.tag.hidden = true; });   // one model: no caption over it
+  shown.forEach((it, k) => { it.holder.position.set((k - (shown.length - 1) / 2) * SPACING, 0, 0); });
+  items.forEach(it => it.lods.forEach((m, l) => { if (m) m.visible = l === state.lod; }));
+  // the broken model: the fracture's pieces alone, tumbled (web_pieces_glb.py), in place of the standing LODs
+  const canBreak = shown.some(it => it.v.broken);
+  items.forEach(it => {
+    const on = state.broken && !!it.brokenRoot;
+    if (it.brokenRoot) it.brokenRoot.visible = on;
+    if (on) it.lods.forEach(m => { if (m) m.visible = false; });
+  });
+  document.querySelectorAll("#stateseg button").forEach(b => { b.disabled = !canBreak; });
+  document.getElementById("statenote").textContent = !canBreak ? "Обломков нет."
+    : state.broken ? "278 кусков разрушения, каждый повёрнут случайно и положен на землю. Текстура × пигмент, без запечённого света: так игра рисует обломки. Граней разлома в файле нет: у куска только внешние грани."
+    : "Браунстоуны: пигмент × запечённый свет.";
+  applyLight(shown);
+  document.getElementById("tris").textContent = "Треугольники LOD" + state.lod + ": " + shown.map(it => it.v.lods[state.lod]).join("");
+  if (resetCamera) {
+    const it = shown[0];
+    if (state.broken && it.brokenRoot) {
+      const b = new THREE.Box3().setFromObject(it.brokenRoot);
+      const r = b.getSize(new THREE.Vector3()).length() * 0.5;
+      controls.target.copy(b.getCenter(new THREE.Vector3()));
+      camera.position.copy(controls.target).addScaledVector(VIEW_BROKEN, r / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * 0.95);
+    } else {
+      const h = it.height;
+      const dist = (it.reach * 1.05) / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2));    // wider than tall: fit the whole house
+      controls.target.set(0, h * 0.45, 0);
+      camera.position.copy(controls.target).addScaledVector(VIEW_ONE, dist);
+    }
+    controls.update();
+  }
+}
+
+// Ways to light a model: the game's (colour x vertex light), PBR (the GLB's materials under a sun), baked
+// (colour x the light map: a basic material takes its light map as its only light), the normal map.
+function applyLight(shown) {
+  const withPbr = shown.filter(it => it.v.pbr);
+  const mode = withPbr.length ? state.light : "game";
+  items.forEach(it => it.holder.traverse(o => {
+    if (!o.isMesh || !o.userData.mats) return;
+    o.material = o.userData.mats[it.v.pbr ? mode : "game"] || o.userData.mats.game;
+    // the light map is a light of its own too: it takes the pigment, not pigment x baked vertex light
+    const lit = mode === "pbr" || (mode === "baked" && o.material !== o.userData.mats.game);
+    const geo = o.userData.geos[it.v.pbr && lit ? "pbr" : "game"];
+    if (o.geometry !== geo) o.geometry = geo;
+  }));
+  const pbr = mode === "pbr";
+  scene.environment = pbr ? roomEnv : null;
+  sunLight.intensity = pbr ? SUN : 0;
+  fillLight.intensity = pbr ? FILL : 0;
+  sunLight.castShadow = pbr;
+  items.forEach(it => { it.catcher.visible = pbr && !!it.v.pbr && shown.includes(it); it.disc.visible = !it.catcher.visible; });
+  if (pbr) {
+    // the exporters' sun: yaw 270 = in front of the model, 0 = at its right side, in Blender's frame (Z up);
+    // the GLB is Y up with the front on +Z
+    const [yaw, pitch] = withPbr[0].v.pbr.sun.map(THREE.MathUtils.degToRad);
+    const dir = new THREE.Vector3(Math.cos(yaw) * Math.cos(pitch), Math.sin(pitch), -Math.sin(yaw) * Math.cos(pitch));
+    // the shadow map covers the lit model shown, and no more
+    const mid = withPbr[0].holder.position.clone();
+    const half = withPbr[0].reach * 1.08;
+    sunLight.target.position.copy(mid);
+    sunLight.position.copy(mid).addScaledVector(dir, 200);
+    const sc = sunLight.shadow.camera;
+    sc.left = sc.bottom = -half; sc.right = sc.top = half; sc.near = 200 - half * 1.5; sc.far = 200 + half * 1.5;
+    sc.updateProjectionMatrix();
+  }
+  const note = document.getElementById("lightnote");
+  note.textContent = !withPbr.length ? "Нет PBR-карт."
+    : mode === "pbr" ? withPbr[0].v.pbr.note
+    : mode === "baked" ? "Цвет × карта света (AO + солнце + небо), без источников в сцене. Карта лежит на LOD0."
+    : mode === "normals" ? "Карты нормалей на модели, без света: швы и края камня — канавки, штукатурка и краска гладкие."
+    : "Цвет × свет в вершинах: так дом рисует игра.";
+  document.querySelectorAll("#lightseg button").forEach(b => { b.disabled = !withPbr.length && b.dataset.light !== "game"; });
+}
+document.getElementById("lightseg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b || b.disabled) return;
+  state.light = b.dataset.light;
+  document.querySelectorAll("#lightseg button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  layout(false);
+});
+
+// picker
+const pick = document.getElementById("pick");
+V.map(v => [v.id, v.name]).forEach(([id, label]) => {
+  const b = document.createElement("button");
+  b.type = "button"; b.dataset.pick = id; b.textContent = label; b.setAttribute("aria-pressed", id === state.pick);
+  pick.appendChild(b);
+});
+function renderInfo() {
+  const box = document.getElementById("info");
+  const full = document.body.classList.contains("embed") ? "mansard-pair-3d.html" : "";
+  if (state.pick === "all") {
+    box.innerHTML = `<h3>Методы текстурирования</h3>` + V.map(v => `
+      <div class="row" data-goto="${v.id}"><b>${v.n}. ${v.name}</b> · <span class="badge ${v.paid ? "paid" : "free"}" style="display:inline">${v.cost}</span>
+      <span>${v.how.split(". ")[0]}.</span><span>Похоже на реф: ${v.like}; вблизи: ${v.close}; параметры: ${v.param}.</span></div>`).join("")
+      + `<p class="small" style="margin-top:8px">Выберите вариант — здесь появится полное описание.</p>`;
+    return;
+  }
+  const v = V.find(x => x.id === state.pick);
+  box.innerHTML = `
+    <h3>${v.name}</h3>
+    <div class="badges"><span class="badge ${v.paid ? "paid" : "free"}">${v.cost}</span><span class="badge neutral">параметры: ${v.param}</span></div>
+    <p>${v.how}</p>
+    <div class="sub">Как сделано</div>
+    <ol>${v.steps.map(x => `<li>${x}</li>`).join("")}</ol>
+    <dl class="facts"><dt>Инструменты</dt><dd>${v.tools}</dd><dt>Время</dt><dd>${v.time}</dd><dt>Чёткость</dt><dd>${v.texel}</dd>
+      <dt>LOD</dt><dd class="meta">${v.lods.join(" / ")} (${v.lodsNote})</dd></dl>
+    <div class="sub">Плюсы</div><ul>${v.pros.map(x => `<li>${x}</li>`).join("")}</ul>
+    <div class="sub">Минусы</div><ul>${v.cons.map(x => `<li>${x}</li>`).join("")}</ul>
+    <div class="sub">Что можно улучшить</div><ul>${v.improve.map(x => `<li>${x}</li>`).join("")}</ul>
+    ${v.pbr ? pbrGrid(v) : ""}
+    <div class="sub">Цвета по зонам против рефа</div>${zonesTable(v)}
+    ${full ? `<p><a href="${full}#v-${v.id}" target="_blank" rel="noopener">Карточка с картинками ↗</a></p>` : ""}`;
+}
+document.getElementById("info").addEventListener("click", e => {
+  const r = e.target.closest("[data-goto]");
+  if (r) setPick(r.dataset.goto);
+});
+
+function setPick(id) {
+  state.pick = id;
+  pick.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.pick === id));
+  renderInfo();
+  document.getElementById("info").scrollTop = 0;
+  layout(true);
+}
+pick.addEventListener("click", e => { const b = e.target.closest("button"); if (b) setPick(b.dataset.pick); });
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-show]");
+  if (!b) return;
+  setPick(b.dataset.show);
+  stage.scrollIntoView({ behavior: "smooth", block: "center" });
+});
+document.getElementById("stateseg").addEventListener("click", async e => {
+  const b = e.target.closest("button"); if (!b || b.disabled) return;
+  state.broken = b.dataset.broken === "1";
+  document.querySelectorAll("#stateseg button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  if (state.broken) {
+    for (const it of items) {
+      if (!it.v.broken || it.brokenRoot) continue;
+      const g = await loader.loadAsync(BASE + "models/" + it.v.broken + ".glb");
+      unlit(g.scene, { id: it.v.id });            // pieces have the game look only
+      // the fracture's files hold a piece's outer faces only, not the faces the break opens: both sides are
+      // drawn, so a piece is not seen through from behind
+      g.scene.traverse(o => { if (o.isMesh) o.material.side = THREE.DoubleSide; });
+      g.scene.position.copy(it.root.position);
+      it.holder.add(g.scene);
+      it.brokenRoot = g.scene;
+    }
+  }
+  layout(true);
+});
+document.getElementById("lodseg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  state.lod = +b.dataset.lod;
+  document.querySelectorAll("#lodseg button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  layout(false);
+});
+document.getElementById("spinseg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  controls.autoRotate = b.dataset.spin === "1";
+  document.querySelectorAll("#spinseg button").forEach(x => x.setAttribute("aria-pressed", x === b));
+});
+
+renderInfo();
+
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage);
+resize();
+
+const tmp = new THREE.Vector3();
+function frame() {
+  controls.update();
+  renderer.render(scene, camera);
+  const w = stage.clientWidth, h = stage.clientHeight;
+  for (const it of items) {
+    if (!it || !it.holder.visible) continue;
+    tmp.set(0, it.height + 0.35, 0).add(it.holder.position).project(camera);
+    const behind = tmp.z > 1;
+    it.tag.style.display = behind ? "none" : "";
+    it.tag.style.left = ((tmp.x + 1) / 2 * w) + "px";
+    it.tag.style.top = ((1 - tmp.y) / 2 * h) + "px";
+  }
+  requestAnimationFrame(frame);
+}
+frame();
+</script>
+</body>
+</html>

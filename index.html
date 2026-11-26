@@ -822,7 +822,8 @@ const LAB3D = { stilt_shack: { page: "shack-textures.html", label: "3D · вар
   supermarket: { page: "supermarket-3d.html", label: "3D · новая модель из Houdini" },
   hospital: { page: "hospital-3d.html", label: "3D · новая модель из Houdini" },
   yellow_three_storey_shop_mcp: { page: "yellow-shop-3d.html", label: "3D · новая модель из Houdini" },
-  "ochre-quoin-house": { page: "olive-bay-house-3d.html", label: "3D · новая модель из Houdini" } };
+  "ochre-quoin-house": { page: "olive-bay-house-3d.html", label: "3D · новая модель из Houdini" },
+  brownstone_row: { page: "mansard-pair-3d.html", label: "3D · новая модель из Houdini" } };
 // props with a 3D lab page (a new model of that catalogue prop, not yet in the game's catalogue)
 const LAB3D_PROPS = { fire_hydrant: { page: "hydrant-3d.html", label: "3D · новая модель из Houdini" },
   residential_fire_hydrant: { page: "residential-hydrant-3d.html", label: "3D · новая модель из Houdini" },
@@ -839,12 +840,12 @@ function labOf(it) { return (it.kind === "props" ? LAB3D_PROPS : LAB3D)[it.id]; 
 const READY = new Set(["h:stilt_shack", "h:cinderblock_hut", "h:stacked_shack", "h:tapered_ivory_tower_mcp",
   "h:fire_station", "h:police_station", "h:stone_church", "h:red_brick_four_storey_townhouse_clean", "h:strip_mall",
   "h:federal_painted_row", "p:residential_mailbox", "h:amber-bay-building-2", "p:residential_trash_bin", "h:gas_station", "h:supermarket", "p:residential_fire_hydrant", "h:hospital",
-  "p:iambird_hatchback_blue", "p:iambird_hatchback_pink", "p:iambird_wagon_green", "p:iambird_wagon_purple", "p:iambird_police_car", "p:iambird_taxi", "p:iambird_ice_cream_van", "p:iambird_van_blue", "p:iambird_van_orange", "p:picnic_table", "p:residential_street_lamp", "h:yellow_three_storey_shop_mcp", "h:ochre-quoin-house", "p:residential_traffic_light", "p:playground_slide"]);
+  "p:iambird_hatchback_blue", "p:iambird_hatchback_pink", "p:iambird_wagon_green", "p:iambird_wagon_purple", "p:iambird_police_car", "p:iambird_taxi", "p:iambird_ice_cream_van", "p:iambird_van_blue", "p:iambird_van_orange", "p:picnic_table", "p:residential_street_lamp", "h:yellow_three_storey_shop_mcp", "h:ochre-quoin-house", "p:residential_traffic_light", "p:playground_slide", "h:brownstone_row"]);
 const isReady = it => READY.has(KIND[it.kind].key + it.id);
 // Ready refs whose model is generated but still needs polish: the mark is yellow, not green. A newly generated
 // model goes into READY and here; take it out of here once it is polished.
 const POLISH = new Set(["h:federal_painted_row", "h:amber-bay-building-2",
-  "h:gas_station", "h:stone_church", "h:hospital"]);
+  "h:gas_station", "h:stone_church", "h:hospital", "h:brownstone_row"]);
 const isPolish = it => POLISH.has(KIND[it.kind].key + it.id);
 const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 // The refs each district's collage is built around: drawn larger and packed first.
