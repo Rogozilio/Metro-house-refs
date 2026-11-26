@@ -151,10 +151,10 @@ body.embed .seg button { font-size: 12px; padding: 4px 9px; }
 <script>if (new URLSearchParams(location.search).has("embed")) document.body.classList.add("embed");</script>
 <div class="wrap">
   <div class="top"><a class="back" href="./">← Мудборд</a></div>
-  <p class="eyebrow">We Are Destroyers · лаборатория · 2026-11-20</p>
+  <p class="eyebrow">We Are Destroyers · лаборатория · 2026-11-20, обновлено 2026-11-26</p>
   <h1>Каменная церковь: модель из Houdini</h1>
-  <p class="lead">Новая модель для карточки «Каменная церковь» по её стилизованному рефу: неф из песчаника с тремя стрельчатыми двухсветными окнами на боку, пилястрами и карнизом на кронштейнах, фронтон с копингами, башня с дверью под щипцовым козырьком, стрельчатым окном, звонницей с колоколом на балке и шпилем из черепицы с крестом. 6.8 × 19.2 м, карниз 6.0 м, крест ~15 м. Камера рефа восстановлена по точкам, рендер совпадает с рефом кадр в кадр. 281 кусок для разрушения. Текстура — методом хижины: тайловые поля кладки, черепицы и витража, полосы тёсаного камня и дерева, цвет каждой детали в вершинах, свет запечён. 0 платных вызовов. В каталог игры и в Unity модель не добавлена.</p>
-  <p class="lead">Промежуточный результат: 20 проходов самопроверки из 32. Тыл и левый бок на рефе не видны — придуманы (левый бок — зеркало правого). Карнизы и плита звонницы пока угловатые, у рефа скруглены; ручки двери темнее рефа.</p>
+  <p class="lead">Новая модель для карточки «Каменная церковь» по её стилизованному рефу: неф из песчаника с тремя стрельчатыми двухсветными окнами на боку, пилястрами и карнизом на кронштейнах, фронтон с копингами, башня с дверью под щипцовым козырьком, стрельчатым окном, звонницей с колоколом на балке и шпилем из черепицы с крестом. 6.8 × 19.2 м, карниз 6.0 м, крест ~15 м. Камера рефа восстановлена по точкам, рендер совпадает с рефом кадр в кадр. 291 кусок для разрушения. Текстура — методом хижины: тайловые поля кладки, черепицы и витража, полосы тёсаного камня и дерева, цвет каждой детали в вершинах, свет запечён. 0 платных вызовов. В каталог игры и в Unity модель не добавлена.</p>
+  <p class="lead">Проход p37 (26.11), по замечаниям: колокол висит в центре звонницы. Карниз — один камень со скруглённым верхом, над угловыми пилонами угловые камни с кнехтами, как на рефе; щели под карнизом и жёлоба у кровли больше нет. Тыл и левый бок на рефе не видны — придуманы (левый бок — зеркало правого). Ручки двери темнее рефа. В Unity лежит прежняя версия.</p>
 
   <section class="viewer" aria-label="3D-просмотр">
     <div class="stage" id="stage">
@@ -163,7 +163,7 @@ body.embed .seg button { font-size: 12px; padding: 4px 9px; }
       <div class="hint">Тяните — вращать · колесо или щипок — зум · правой кнопкой — сдвиг</div>
     </div>
     <div class="side">
-      <div class="panel"><h3>Референс</h3><img class="refimg" src="lab/stone-church/img/reference.webp" alt="Стилизованный референс каменной церкви"></div>
+      <div class="panel"><h3>Референс</h3><img class="refimg" src="lab/stone-church/img/reference.webp?v=p37" alt="Стилизованный референс каменной церкви"></div>
       <div class="panel ctl">
         <div><h3>Вариант</h3><div class="seg" id="pick" role="group" aria-label="Вариант"></div></div>
         <div><h3>LOD</h3><div class="seg" id="lodseg" role="group" aria-label="LOD">
@@ -196,22 +196,22 @@ body.embed .seg button { font-size: 12px; padding: 4px 9px; }
 
   <h2>Детали против рефа</h2>
   <div class="shots" style="grid-template-columns: 1fr;">
-    <figure style="margin:0"><img src="lab/stone-church/img/compare.webp" alt="Реф и рендер экспорта"><figcaption>Реф и рендер экспортированного скина, как в игре (цвет × запечённый свет), с камеры рефа</figcaption></figure>
-    <figure style="margin:0"><img src="lab/stone-church/img/crops.webp" alt="Кропы деталей: реф слева, модель справа"><figcaption>Кропы деталей с камеры рефа, в каждой паре слева реф, справа модель: крест и шпиль, звонница, окно башни, дверь, ступени, крылья, окно и карниз бока, крыша, тыльный угол</figcaption></figure>
+    <figure style="margin:0"><img src="lab/stone-church/img/compare.webp?v=p37" alt="Реф и рендер экспорта"><figcaption>Реф и рендер экспортированного скина, как в игре (цвет × запечённый свет), с камеры рефа</figcaption></figure>
+    <figure style="margin:0"><img src="lab/stone-church/img/crops.webp?v=p37" alt="Кропы деталей: реф слева, модель справа"><figcaption>Кропы деталей с камеры рефа, в каждой паре слева реф, справа модель: крест и шпиль, звонница, окно башни, дверь, ступени, крылья, окно и карниз бока, крыша, тыльный угол</figcaption></figure>
   </div>
 
   <h2>Со всех сторон</h2>
   <div class="shots" style="grid-template-columns: 1fr 1fr 1fr;">
-    <figure style="margin:0"><img src="lab/stone-church/img/view_side_y000.webp" alt="Фасад с башней"><figcaption>Фасад с башней</figcaption></figure>
-    <figure style="margin:0"><img src="lab/stone-church/img/view_side_y045.webp" alt="Угол: фасад и правый бок"><figcaption>Угол: фасад и правый бок</figcaption></figure>
-    <figure style="margin:0"><img src="lab/stone-church/img/view_side_y090.webp" alt="Правый бок"><figcaption>Правый бок</figcaption></figure>
-    <figure style="margin:0"><img src="lab/stone-church/img/view_side_y135.webp" alt="Угол: правый бок и тыл"><figcaption>Угол: правый бок и тыл (тыл придуман)</figcaption></figure>
-    <figure style="margin:0"><img src="lab/stone-church/img/view_side_y180.webp" alt="Тыл (придуман)"><figcaption>Тыл (придуман)</figcaption></figure>
-    <figure style="margin:0"><img src="lab/stone-church/img/view_side_y270.webp" alt="Левый бок (придуман)"><figcaption>Левый бок (придуман)</figcaption></figure>
-    <figure style="margin:0"><img src="lab/stone-church/img/view_above.webp" alt="Сверху"><figcaption>Сверху</figcaption></figure>
-    <figure style="margin:0"><img src="lab/stone-church/img/view_low.webp" alt="Снизу"><figcaption>Снизу</figcaption></figure>
-    <figure style="margin:0"><img src="lab/stone-church/img/view_lod1_y030.webp" alt="LOD1"><figcaption>LOD1</figcaption></figure>
-    <figure style="margin:0"><img src="lab/stone-church/img/view_lod2_y030.webp" alt="LOD2"><figcaption>LOD2</figcaption></figure>
+    <figure style="margin:0"><img src="lab/stone-church/img/view_side_y000.webp?v=p37" alt="Фасад с башней"><figcaption>Фасад с башней</figcaption></figure>
+    <figure style="margin:0"><img src="lab/stone-church/img/view_side_y045.webp?v=p37" alt="Угол: фасад и правый бок"><figcaption>Угол: фасад и правый бок</figcaption></figure>
+    <figure style="margin:0"><img src="lab/stone-church/img/view_side_y090.webp?v=p37" alt="Правый бок"><figcaption>Правый бок</figcaption></figure>
+    <figure style="margin:0"><img src="lab/stone-church/img/view_side_y135.webp?v=p37" alt="Угол: правый бок и тыл"><figcaption>Угол: правый бок и тыл (тыл придуман)</figcaption></figure>
+    <figure style="margin:0"><img src="lab/stone-church/img/view_side_y180.webp?v=p37" alt="Тыл (придуман)"><figcaption>Тыл (придуман)</figcaption></figure>
+    <figure style="margin:0"><img src="lab/stone-church/img/view_side_y270.webp?v=p37" alt="Левый бок (придуман)"><figcaption>Левый бок (придуман)</figcaption></figure>
+    <figure style="margin:0"><img src="lab/stone-church/img/view_above.webp?v=p37" alt="Сверху"><figcaption>Сверху</figcaption></figure>
+    <figure style="margin:0"><img src="lab/stone-church/img/view_low.webp?v=p37" alt="Снизу"><figcaption>Снизу</figcaption></figure>
+    <figure style="margin:0"><img src="lab/stone-church/img/view_lod1_y030.webp?v=p37" alt="LOD1"><figcaption>LOD1</figcaption></figure>
+    <figure style="margin:0"><img src="lab/stone-church/img/view_lod2_y030.webp?v=p37" alt="LOD2"><figcaption>LOD2</figcaption></figure>
   </div>
 
   <footer>Модель: Houdini → Blender → разрушение SlopMachine → FBX, сюда — тот же скин в GLB. Цвета зон — медианы рендера экспортированного скина в Blender против медиан тех же зон рефа; рендер снят камерой рефа, зоны совпадают пиксель в пиксель.</footer>
@@ -226,10 +226,11 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
 const BASE = "lab/stone-church/";
+const VER = "?v=p37";   // Pages caches files 10 min
 const REF = {"field_front": [221, 174, 134], "field_side": [188, 147, 116], "trim_front": [250, 205, 161], "trim_side": [230, 182, 149], "cornice": [251, 205, 160], "plinth_side": [183, 143, 113], "step": [222, 177, 136], "slate": [81, 75, 89], "spire_slate": [118, 103, 111], "door": [173, 80, 40], "glass_blue": [29, 77, 105], "bell": [219, 143, 59], "cross": [110, 81, 72]};
 const ZONE_NAMES = {"field_front": "Кладка, фасад", "field_side": "Кладка, бок (в тени)", "trim_front": "Песчаник, фасад", "trim_side": "Песчаник, бок", "cornice": "Карниз", "plinth_side": "Цоколь, бок", "step": "Ступени", "slate": "Черепица крыши", "spire_slate": "Черепица шпиля", "door": "Дверь", "glass_blue": "Витраж", "bell": "Колокол", "cross": "Крест"};
 const V = [
-  {"id": "shack", "file": "houdini_stone_church", "broken": "houdini_stone_church_pieces", "n": 1, "name": "Метод хижины", "tag": "Houdini · trim-листы и поля + цвет вершин", "cost": "0 платных вызовов", "paid": false, "unity": false, "like": "кадр совпадает с рефом; цвета зон в пределах ~10 уровней, кроме ручек двери", "close": "кладка рядами, квоины с V-швами, пилястры, карниз на кронштейнах с поясом, стрельчатые окна с переплётом-миндалиной и витражом, звонница с замковыми камнями, колокол на балке, шпиль с валиками, крест с шарами, козырёк двери с замком, ступени со скосом", "param": "да", "lods": [19012, 11120, 4598], "lodsNote": "авторские", "pieces": 281, "how": "Церковь построена в Houdini параметрической сетью из шести модулей: стены (кольца нефа, цоколя, башни и звонницы с арочными проёмами — чистые квады без булевых операций), пилястры и карнизы, крыша с копингами, башня (звонница, колокол, шпиль, крест), окна, дверь со ступенями. Каждый размер рефа — параметр CTRL.", "steps": ["Камера рефа восстановлена по точкам углов вместе с размерами церкви; рендер снимается этой же камерой — кадр совпадает с рефом.", "Конструкция прочитана в construction.md: части, опоры и стыки каждой детали, размеры с источником каждого числа; решения каждого прохода записаны там же.", "Текстура методом хижины: тайловое поле кладки (длина блока и высота ряда по стене — как на рефе), поле черепицы, витраж ромбами (треть светлых), полосы тёсаного камня и дерева. Пигмент каждой детали — в вершинах.", "Свет: солнце 295/40 (бок темнее фасада в 0.85, как на рефе), выравнивание больших граней, подъём света для колокола, креста, балки и боковин пилястр башни — только для целого здания, у обломков чистый пигмент.", "Самопроверка: 20 проходов с рендером с камеры рефа и таблицей зон; два круга из трёх проверяющих (фасад и башня, бок и крыша, цвет)."], "tools": "Houdini 22 (hython без окна, VEX), numpy, Blender (экспорт, свет, рендеры), SlopMachine fracture", "time": "≈11 ч", "texel": "в среднем ≈1020 px/m; пять листов 2048 (кладка, песчаник, черепица, витраж, дерево) + лист плоских цветов", "zones": {"field_front": [224, 175, 137], "field_side": [188, 147, 114], "trim_front": [248, 198, 158], "trim_side": [227, 185, 147], "cornice": [253, 213, 170], "plinth_side": [184, 144, 115], "step": [217, 173, 133], "slate": [81, 75, 89], "spire_slate": [118, 103, 111], "door": [173, 80, 40], "glass_blue": [24, 80, 112], "bell": [223, 148, 59], "cross": [103, 75, 66]}, "zonesNote": "рендер экспортированного скина в Blender, как в игре (текстура × цвет вершин), с камеры рефа", "pros": ["параметрическая: размеры, окна, башня, звонница, карнизы меняются в Houdini", "0 платных вызовов", "кадр и цвета зон совпадают с рефом"], "cons": ["карнизы и плита звонницы угловатые, у рефа скруглены", "ручки двери темнее рефа", "тыл и левый бок придуманы", "в Unity не импортирована, в игре не проверена; 20 из 32 проходов самопроверки"], "improve": ["скругления карнизов", "дверь: филёнки, без волокон", "оставшиеся проходы самопроверки", "импорт в Unity и проверка разрушения"], "files": ["Tools/Houdini/stone_church_src/ (build.py, params.vfl, lib.vfl, walls/trim/roof/tower/windows/door.vfl, gen_masks.py, uv_masks.py, house.env, cam.json, construction.md)", "Tools/Houdini/stone_church_tex/"], "sheet": "sheet.webp", "sheetCap": "Реф и рендер скина как в игре с камеры рефа", "extra": [["sheets.webp", "Листы: кладка, песчаник, черепица, витраж, дерево (светлые; цвет даёт пигмент в вершинах)"], ["pieces.webp", "Обломки как в игре: текстура × пигмент, каждый повёрнут случайно"]], "pbr": {"tint": true, "sun": [295, 40], "share": 0.55, "sheets": [["field", "Кладка"], ["trim", "Песчаник"], ["slate", "Черепица"], ["glass", "Витраж"], ["wood", "Дерево"]], "derived": "Карты выведены из светлых листов (не измерены): швы кладки и камня — канавки, ряды черепицы — лёгкий рельеф, свинец витража — канавки, дерево — краска.", "note": "Свет считает просмотрщик: солнце (295°, 40°) с тенями, ровный заполняющий свет и отражения комнаты. Из вершин берётся только пигмент."}}
+  {"id": "shack", "file": "houdini_stone_church", "broken": "houdini_stone_church_pieces", "n": 1, "name": "Метод хижины", "tag": "Houdini · trim-листы и поля + цвет вершин", "cost": "0 платных вызовов", "paid": false, "unity": false, "like": "кадр совпадает с рефом; цвета зон в пределах ~10 уровней, кроме ручек двери и карниза бока (-15 по красному)", "close": "кладка рядами, квоины с V-швами, пилястры, карниз одним камнем со скруглённым верхом, угловые камни с кнехтами, кронштейны под карнизом, стрельчатые окна с переплётом-миндалиной и витражом, звонница с замковыми камнями, колокол на балке, шпиль с валиками, крест с шарами, козырёк двери с замком, ступени со скосом", "param": "да", "lods": [18982, 11538, 4880], "lodsNote": "авторские", "pieces": 291, "how": "Церковь построена в Houdini параметрической сетью из шести модулей: стены (кольца нефа, цоколя, башни и звонницы с арочными проёмами — чистые квады без булевых операций), пилястры и карнизы, крыша с копингами, башня (звонница, колокол, шпиль, крест), окна, дверь со ступенями. Каждый размер рефа — параметр CTRL.", "steps": ["Камера рефа восстановлена по точкам углов вместе с размерами церкви; рендер снимается этой же камерой — кадр совпадает с рефом.", "Конструкция прочитана в construction.md: части, опоры и стыки каждой детали, размеры с источником каждого числа; решения каждого прохода записаны там же.", "Текстура методом хижины: тайловое поле кладки (длина блока и высота ряда по стене — как на рефе), поле черепицы, витраж ромбами (треть светлых), полосы тёсаного камня и дерева. Пигмент каждой детали — в вершинах.", "Свет: солнце 295/40 (бок темнее фасада в 0.85, как на рефе), выравнивание больших граней, подъём света для колокола, креста, балки и боковин пилястр башни — только для целого здания, у обломков чистый пигмент.", "Самопроверка: 34 прохода с рендером с камеры рефа, таблицей зон и глиняным рендером формы; по замечаниям ещё три (p35-p37) с крупными снимками колокола, карниза и углов фасада."], "tools": "Houdini 22 (hython без окна, VEX), numpy, Blender (экспорт, свет, рендеры), SlopMachine fracture", "time": "≈11 ч", "texel": "в среднем ≈1020 px/m; пять листов 2048 (кладка, песчаник, черепица, витраж, дерево) + лист плоских цветов", "zones": {"field_front": [220, 172, 134], "field_side": [176, 138, 107], "trim_front": [248, 199, 158], "trim_side": [227, 186, 148], "cornice": [236, 199, 158], "plinth_side": [184, 144, 114], "step": [217, 173, 133], "slate": [85, 79, 93], "spire_slate": [118, 103, 111], "door": [170, 78, 40], "glass_blue": [24, 80, 112], "bell": [199, 146, 60], "cross": [104, 75, 67]}, "zonesNote": "рендер экспортированного скина в Blender, как в игре (текстура × цвет вершин), с камеры рефа", "pros": ["параметрическая: размеры, окна, башня, звонница, карнизы меняются в Houdini", "0 платных вызовов", "кадр и цвета зон совпадают с рефом"], "cons": ["ручки двери темнее рефа", "карниз бока на 15 уровней менее красный, чем на рефе", "тыл и левый бок придуманы", "с камеры рефа колокол наполовину за правым откосом: он висит в центре башни, а не у проёма", "в Unity лежит прежняя версия, в игре не проверена"], "improve": ["цвет карниза бока", "дверь: ручки светлее", "импорт в Unity и проверка разрушения"], "files": ["Tools/Houdini/stone_church_src/ (build.py, params.vfl, lib.vfl, walls/trim/roof/tower/windows/door.vfl, gen_masks.py, uv_masks.py, house.env, cam.json, construction.md)", "Tools/Houdini/stone_church_tex/"], "sheet": "sheet.webp", "sheetCap": "Реф и рендер скина как в игре с камеры рефа", "extra": [["sheets.webp", "Листы: кладка, песчаник, черепица, витраж, дерево (светлые; цвет даёт пигмент в вершинах)"], ["pieces.webp", "Обломки как в игре: текстура × пигмент, каждый повёрнут случайно"]], "pbr": {"tint": true, "sun": [295, 40], "share": 0.55, "sheets": [["field", "Кладка"], ["trim", "Песчаник"], ["slate", "Черепица"], ["glass", "Витраж"], ["wood", "Дерево"]], "derived": "Карты выведены из светлых листов (не измерены): швы кладки и камня — канавки, ряды черепицы — лёгкий рельеф, свинец витража — канавки, дерево — краска.", "note": "Свет считает просмотрщик: солнце (295°, 40°) с тенями, ровный заполняющий свет и отражения комнаты. Из вершин берётся только пигмент."}}
 ];
 const SPACING = 17;
 
@@ -240,12 +241,12 @@ function sw(c) { return `<span class="sw" style="background: rgb(${c.join(",")})
 // the PBR maps of a variant: per sheet colour / normal / roughness / metallic, then the two baked maps
 function pbrFigures(v) {
   const kinds = [["", "цвет"], ["_Normal", "нормали"], ["_Roughness", "шероховатость"], ["_Metallic", "металл"]];
-  const fig = (file, cap) => `<figure style="margin:0"><img loading="lazy" src="${BASE}img/pbr/${file}.webp" alt="${cap}"><figcaption>${cap}</figcaption></figure>`;
+  const fig = (file, cap) => `<figure style="margin:0"><img loading="lazy" src="${BASE}img/pbr/${file}.webp${VER}" alt="${cap}"><figcaption>${cap}</figcaption></figure>`;
   return v.pbr.sheets.map(([sheet, name]) => kinds.map(([suf, kind]) => fig(v.id + "_" + sheet + suf, name + ": " + kind)).join("")).join("")
     + fig(v.id + "_AO", "Запечённое AO (вторая развёртка LOD0)") + fig(v.id + "_Light", "Запечённый свет: AO × солнце × небо");
 }
 function pbrGrid(v) {
-  const cell = (file, cap) => `<figure><img loading="lazy" src="${BASE}img/pbr/${file}.webp" alt="${cap}"><figcaption>${cap}</figcaption></figure>`;
+  const cell = (file, cap) => `<figure><img loading="lazy" src="${BASE}img/pbr/${file}.webp${VER}" alt="${cap}"><figcaption>${cap}</figcaption></figure>`;
   const kinds = [["", "цвет"], ["_Normal", "нормали"], ["_Roughness", "шерох."], ["_Metallic", "металл"]];
   return `<div class="sub">Карты PBR</div><p class="small">${v.pbr.derived} Свет — переключатель «Свет» выше.</p>`
     + v.pbr.sheets.map(([sheet, nm]) => `<div class="small"><b>${nm}</b></div><div class="pbrgrid">`
@@ -292,9 +293,9 @@ for (const v of V) {
       <button type="button" class="show3d" data-show="${v.id}">Смотреть в 3D ↑</button>
     </div>
     <div class="shots">
-      <figure style="margin:0"><img loading="lazy" src="${BASE}img/${v.sheet}" alt="${v.sheetCap}"><figcaption>${v.sheetCap}</figcaption></figure>
+      <figure style="margin:0"><img loading="lazy" src="${BASE}img/${v.sheet}${VER}" alt="${v.sheetCap}"><figcaption>${v.sheetCap}</figcaption></figure>
       ${v.unity === false ? "" : `<figure style="margin:0"><img loading="lazy" src="${BASE}img/unity_close_${v.id}.webp" alt="Вблизи в Unity"><figcaption>Вблизи в Unity</figcaption></figure>`}
-      ${(v.extra || []).map(([f, cap]) => `<figure style="margin:0"><img loading="lazy" src="${BASE}img/${f}" alt="${cap}"><figcaption>${cap}</figcaption></figure>`).join("")}
+      ${(v.extra || []).map(([f, cap]) => `<figure style="margin:0"><img loading="lazy" src="${BASE}img/${f}${VER}" alt="${cap}"><figcaption>${cap}</figcaption></figure>`).join("")}
       ${v.pbr ? pbrFigures(v) : ""}
     </div>`;
   cards.appendChild(c);
@@ -357,7 +358,7 @@ function bakedMap(url, srgb) {
 const ENV_FILL = 0.18;
 const SUN = 1.4, FILL = 1.3;
 function unlit(root, v) {
-  const maps = v.pbr ? { ao: bakedMap(BASE + "models/" + v.file + "_AO.png"), light: bakedMap(BASE + "models/" + v.file + "_Light.png", true) } : null;
+  const maps = v.pbr ? { ao: bakedMap(BASE + "models/" + v.file + "_AO.png" + VER), light: bakedMap(BASE + "models/" + v.file + "_Light.png" + VER, true) } : null;
   root.traverse(o => {
     if (!o.isMesh) return;
     const src = o.material;
@@ -396,7 +397,7 @@ function unlit(root, v) {
   });
 }
 
-Promise.all(V.map((v, i) => loader.loadAsync(BASE + "models/" + v.file + ".glb").then(g => {
+Promise.all(V.map((v, i) => loader.loadAsync(BASE + "models/" + v.file + ".glb" + VER).then(g => {
   const root = g.scene;
   unlit(root, v);
   const lods = [0, 1, 2].map(l => root.getObjectByName("LOD" + l));
@@ -445,7 +446,7 @@ function layout(resetCamera) {
   });
   document.querySelectorAll("#stateseg button").forEach(b => { b.disabled = !canBreak; });
   document.getElementById("statenote").textContent = !canBreak ? "Обломков нет."
-    : state.broken ? "281 кусок разрушения, каждый повёрнут случайно и положен на землю. Текстура × пигмент, без запечённого света: так игра рисует обломки. Граней разлома в файле нет: у куска только внешние грани."
+    : state.broken ? "291 кусок разрушения, каждый повёрнут случайно и положен на землю. Текстура × пигмент, без запечённого света: так игра рисует обломки. Граней разлома в файле нет: у куска только внешние грани."
     : "Целая церковь: пигмент × запечённый свет.";
   applyLight(shown);
   document.getElementById("tris").textContent = "Треугольники LOD" + state.lod + ": " + shown.map(it => it.v.lods[state.lod]).join("");
@@ -573,7 +574,7 @@ document.getElementById("stateseg").addEventListener("click", async e => {
   if (state.broken) {
     for (const it of items) {
       if (!it.v.broken || it.brokenRoot) continue;
-      const g = await loader.loadAsync(BASE + "models/" + it.v.broken + ".glb");
+      const g = await loader.loadAsync(BASE + "models/" + it.v.broken + ".glb" + VER);
       unlit(g.scene, { id: it.v.id });            // pieces have the game look only
       // the fracture's files hold a piece's outer faces only, not the faces the break opens: both sides are
       // drawn, so a piece is not seen through from behind
